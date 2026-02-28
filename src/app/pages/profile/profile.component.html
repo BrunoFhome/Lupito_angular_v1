@@ -1,0 +1,36 @@
+<div class="page-container">
+    <div class="profile-card" *ngIf="user">
+
+        <div class="profile-header">
+            <div class="avatar">{{ user.name.charAt(0).toUpperCase() }}</div>
+            <div class="profile-title">
+                <h1>{{ user.name }}</h1>
+                <span class="role-badge">{{ user.role }}</span>
+            </div>
+        </div>
+
+        <hr />
+
+        <div class="profile-info">
+            <div class="info-row">
+                <span class="info-label">Username</span>
+                <span class="info-value">&#64;{{ user.username }}</span>
+            </div>
+            <div class="info-row">
+                <span class="info-label">Email</span>
+                <span class="info-value">{{ user.email }}</span>
+            </div>
+            <div class="info-row">
+                <span class="info-label">Member since</span>
+                <span class="info-value">{{ user.joinDate }}</span>
+            </div>
+            <div class="info-row">
+                <span class="info-label">Bio</span>
+                <span class="info-value">{{ user.bio }}</span>
+            </div>
+        </div>
+
+        <button class="btn-logout" (click)="onLogout()">Logout</button>
+
+    </div>
+</div>

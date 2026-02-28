@@ -1,0 +1,44 @@
+<div class="page-container">
+  <div class="form-card">
+    <h1>Login</h1>
+    <p class="subtitle">Welcome back! Please sign in to your account.</p>
+
+    <form (ngSubmit)="onLogin()" #loginForm="ngForm">
+
+      <div class="form-group">
+        <label for="email">Email</label>
+        <input
+          id="email"
+          type="email"
+          [(ngModel)]="email"
+          name="email"
+          placeholder="Enter your email"
+          required
+        />
+      </div>
+
+      <div class="form-group">
+        <label for="password">Password</label>
+        <input
+          id="password"
+          type="password"
+          [(ngModel)]="password"
+          name="password"
+          placeholder="Enter your password"
+          required
+        />
+      </div>
+
+      <div class="error-message" *ngIf="errorMessage">
+        {{ errorMessage }}
+      </div>
+
+      <button type="submit" class="btn-primary">Login</button>
+
+    </form>
+
+    <p class="form-footer">
+      Don't have an account? <a routerLink="/register">Register here</a>
+    </p>
+  </div>
+</div>
