@@ -1,0 +1,51 @@
+<div class="learning-container">
+  <div class="path-section" *ngFor="let path of paths">
+    
+    <div class="path-header">
+      <div class="header-icon">
+        <svg viewBox="0 0 24 24" fill="none" class="w-6 h-6">
+          <path d="M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+          <line x1="4" y1="22" x2="4" y2="15" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </div>
+      <h2>{{ path.title }}</h2>
+      <span class="preview-badge">Visualizar</span>
+    </div>
+
+    <div class="progress-card">
+      <div class="progress-info">
+        <h3>{{ path.subtitle }}</h3>
+        <span class="progress-text">{{ path.progress }}/{{ path.total }}</span>
+      </div>
+      <div class="progress-bar-container">
+        <div class="progress-bar" [style.width.%]="(path.progress / path.total) * 100"></div>
+      </div>
+    </div>
+
+    <div class="lessons-grid">
+      <div class="lesson-node" *ngFor="let lesson of path.lessons">
+        <div class="node-circle" [ngClass]="{ 'unlocked': !lesson.locked, 'locked': lesson.locked }">
+          
+          <ng-container *ngIf="!lesson.locked">
+            <!-- Book Icon for unlocked -->
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path>
+              <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path>
+            </svg>
+          </ng-container>
+
+          <ng-container *ngIf="lesson.locked">
+            <!-- Padlock Icon for locked -->
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+              <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+            </svg>
+          </ng-container>
+
+        </div>
+        <span class="lesson-title">{{ lesson.title }}</span>
+      </div>
+    </div>
+
+  </div>
+</div>
