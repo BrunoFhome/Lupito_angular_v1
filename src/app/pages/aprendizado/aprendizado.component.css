@@ -1,0 +1,171 @@
+.learning-container {
+  padding: 40px;
+  max-width: 900px;
+  margin: 0 auto;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  color: #1c1c1c;
+}
+
+.path-section {
+  margin-bottom: 70px;
+}
+
+.path-header {
+  display: flex;
+  align-items: center;
+  margin-bottom: 24px;
+}
+
+.header-icon {
+  width: 48px;
+  height: 48px;
+  background-color: #2b70fa;
+  border-radius: 12px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  color: white;
+  margin-right: 16px;
+}
+
+.header-icon svg {
+  width: 26px;
+  height: 26px;
+}
+
+.path-header h2 {
+  font-size: 32px;
+  font-weight: 800;
+  margin: 0;
+  color: #1a1a1a;
+  letter-spacing: -0.5px;
+}
+
+.preview-badge {
+  font-size: 13px;
+  padding: 4px 10px;
+  background-color: #e5e5e5;
+  border: 1px solid #d4d4d4;
+  border-radius: 6px;
+  color: #4b4b4b;
+  margin-left: 20px;
+  font-weight: 600;
+  text-transform: uppercase;
+}
+
+.progress-card {
+  background-color: #2b70fa;
+  border-radius: 16px;
+  padding: 24px 30px;
+  color: white;
+  margin-bottom: 50px;
+  box-shadow: 0 4px 15px rgba(43, 112, 250, 0.15);
+}
+
+.progress-info {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 18px;
+}
+
+.progress-info h3 {
+  margin: 0;
+  font-size: 22px;
+  font-weight: 700;
+}
+
+.progress-text {
+  font-weight: 700;
+  font-size: 16px;
+}
+
+.progress-bar-container {
+  height: 14px;
+  background-color: rgba(255, 255, 255, 0.25);
+  border-radius: 10px;
+  overflow: hidden;
+}
+
+.progress-bar {
+  height: 100%;
+  background-color: rgba(255, 255, 255, 0.9);
+  border-radius: 10px;
+  transition: width 0.3s ease;
+}
+
+.lessons-grid {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  row-gap: 50px;
+  column-gap: 20px;
+  justify-items: center;
+}
+
+@media (max-width: 800px) {
+  .lessons-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+@media (max-width: 500px) {
+  .lessons-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+.lesson-node {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+  text-align: center;
+  width: 100px;
+}
+
+.node-circle {
+  width: 75px;
+  height: 75px;
+  border-radius: 50%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-bottom: 14px;
+  position: relative;
+  transition: transform 0.2s ease;
+  cursor: pointer;
+}
+
+.node-circle:hover {
+  transform: translateY(-2px);
+}
+
+.node-circle svg {
+  width: 32px;
+  height: 32px;
+}
+
+/* Unlocked Node Styling */
+.node-circle.unlocked {
+  background-color: #2b70fa;
+  color: white;
+  box-shadow: 0 6px 0 #1856d2;
+  margin-bottom: 20px; /* Offset the 6px box shadow to keep grid aligned */
+}
+
+/* Locked Node Styling */
+.node-circle.locked {
+  background-color: #f7f9fc;
+  color: #aeb6c1;
+  border: 4px solid #ced5e0;
+  box-shadow: 0 5px 0 #ced5e0;
+  margin-bottom: 19px; /* Offset the 5px box shadow */
+  pointer-events: none; /* Usually locked nodes can't be clicked */
+}
+
+.lesson-title {
+  font-size: 15px;
+  font-weight: 700;
+  color: #4b5563;
+  line-height: 1.3;
+}

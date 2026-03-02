@@ -1,0 +1,23 @@
+<nav class="sidebar">
+  <div class="logo-container">
+    <div class="logo-placeholder">LUPITO</div>
+  </div>
+  
+  <ul class="nav-links">
+    <li>
+      <a routerLink="/profile" routerLinkActive="active">Perfil</a>
+    </li>
+    <li>
+      <a routerLink="/kanban" routerLinkActive="active">Kanban</a>
+    </li>
+    <li>
+      <a routerLink="/aprendizado" routerLinkActive="active">Aprendizado</a>
+    </li>
+  </ul>
+
+  <div class="spacer"></div>
+  
+  <div class="logout-container">
+    <button (click)="authService.logout()" class="logout-btn">Sair</button>
+  </div>
+</nav>
