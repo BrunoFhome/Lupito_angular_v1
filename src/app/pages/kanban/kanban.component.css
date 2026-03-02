@@ -177,10 +177,45 @@
 .workspace-btn {
   background-color: #2563eb;
   color: white;
+  margin-bottom: 0.5rem;
 }
 
 .workspace-btn:hover {
   background-color: #1d4ed8;
+}
+
+.secondary-actions {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.secondary-btn {
+  background-color: #f1f5f9;
+  color: #64748b;
+  border: 1px solid #e2e8f0;
+  font-size: 0.75rem;
+  padding: 0.4rem;
+}
+
+.secondary-btn:hover {
+  background-color: #e2e8f0;
+  color: #334155;
+}
+
+.secondary-btn.check-btn:hover {
+  background-color: #d1fae5;
+  color: #059669;
+  border-color: #34d399;
+}
+
+.eval-btn {
+  background-color: #f59e0b; /* Amber */
+  color: white;
+  margin-bottom: 0.5rem;
+}
+
+.eval-btn:hover {
+  background-color: #d97706;
 }
 
 .card-footer {
@@ -188,6 +223,131 @@
   gap: 1rem;
   font-size: 0.75rem;
   color: #94a3b8;
+}
+
+/* Modal Styling */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+  backdrop-filter: blur(2px);
+}
+
+.modal-content {
+  background-color: white;
+  border-radius: 8px;
+  width: 90%;
+  max-width: 500px;
+  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+  overflow: hidden;
+}
+
+.modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1.25rem 1.5rem;
+  background-color: #f8fafc;
+  border-bottom: 1px solid #e2e8f0;
+}
+
+.modal-header h2 {
+  margin: 0;
+  font-size: 1.25rem;
+  color: #1e293b;
+}
+
+.close-btn {
+  background: none;
+  border: none;
+  font-size: 1.5rem;
+  color: #64748b;
+  cursor: pointer;
+  padding: 0;
+  line-height: 1;
+}
+
+.close-btn:hover { color: #0f172a; }
+
+.modal-body {
+  padding: 1.5rem;
+}
+
+.modal-instructions {
+  color: #475569;
+  font-size: 0.95rem;
+  margin-bottom: 1.5rem;
+  line-height: 1.5;
+}
+
+.checkbox-group {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.custom-checkbox {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.75rem;
+  cursor: pointer;
+  color: #334155;
+  font-size: 0.9rem;
+  line-height: 1.4;
+}
+
+.custom-checkbox input {
+  width: 18px;
+  height: 18px;
+  margin-top: 0.1rem;
+  cursor: pointer;
+}
+
+.modal-footer {
+  padding: 1.25rem 1.5rem;
+  background-color: #f8fafc;
+  border-top: 1px solid #e2e8f0;
+  display: flex;
+  justify-content: flex-end;
+  gap: 1rem;
+}
+
+.cancel-btn, .confirm-btn {
+  padding: 0.6rem 1.25rem;
+  border-radius: 4px;
+  font-weight: 600;
+  font-size: 0.9rem;
+  cursor: pointer;
+  border: none;
+}
+
+.cancel-btn {
+  background-color: #e2e8f0;
+  color: #475569;
+}
+
+.cancel-btn:hover { background-color: #cbd5e1; }
+
+.confirm-btn {
+  background-color: #10b981; /* Emerald */
+  color: white;
+  transition: opacity 0.2s;
+}
+
+.confirm-btn:hover:not(:disabled) {
+  background-color: #059669;
+}
+
+.confirm-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
 }
 
 .assignee-info, .date-info {

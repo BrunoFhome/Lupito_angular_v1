@@ -32,6 +32,29 @@
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon"><polyline points="16 18 22 12 16 6"></polyline><polyline points="8 6 2 12 8 18"></polyline></svg>
               Abrir Code Space
             </button>
+            <div class="secondary-actions">
+              <button class="action-btn secondary-btn" (click)="moveToTodo(task.id)" title="Voltar para A Fazer">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg>
+                Voltar
+              </button>
+              <button class="action-btn secondary-btn check-btn" (click)="moveToReview(task.id)" title="Enviar para Análise">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                Para Análise
+              </button>
+            </div>
+          </div>
+          
+          <div class="card-actions" *ngIf="col.mappedStatus === 'in-review'">
+            <button class="action-btn eval-btn" (click)="openEvaluationModal(task.id)">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>
+              Autoavaliação
+            </button>
+            <div class="secondary-actions">
+              <button class="action-btn secondary-btn" (click)="moveToDevelopment(task.id)" title="Voltar para Desenvolvimento" style="width: 100%;">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg>
+                Voltar Onde Parei
+              </button>
+            </div>
           </div>
           
           <div class="card-footer">
@@ -57,4 +80,50 @@
       </div>
     </div>
   </div>
+
+  <!-- Evaluation Modal Overlay -->
+  <div class="modal-overlay" *ngIf="selectedTaskIdForEvaluation">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2>Autoavaliação de Código</h2>
+        <button class="close-btn" (click)="closeEvaluationModal()">&times;</button>
+      </div>
+      
+      <div class="modal-body">
+        <p class="modal-instructions">Por favor, revise seu próprio código antes de confirmar a conclusão do projeto. Marque todas as opções abaixo se tiver certeza que aplicou os conceitos corretamente:</p>
+        
+        <div class="checkbox-group">
+          <label class="custom-checkbox">
+            <input type="checkbox" [(ngModel)]="evaluationChecks.bestPractices">
+            <span class="checkmark"></span>
+            Utilizei de fato as melhores práticas e padrões ensinados nesta lição.
+          </label>
+          
+          <label class="custom-checkbox">
+            <input type="checkbox" [(ngModel)]="evaluationChecks.meaningfulVariables">
+            <span class="checkmark"></span>
+            Minhas variáveis e funções têm nomes claros que fazem sentido.
+          </label>
+          
+          <label class="custom-checkbox">
+            <input type="checkbox" [(ngModel)]="evaluationChecks.codeTested">
+            <span class="checkmark"></span>
+            Eu testei/executei o código na Workspace e verifiquei ativamente a lógica.
+          </label>
+          
+          <label class="custom-checkbox">
+            <input type="checkbox" [(ngModel)]="evaluationChecks.noErrors">
+            <span class="checkmark"></span>
+            O código roda sem lançar erros no console (SyntaxErrors ou TypeErrors).
+          </label>
+        </div>
+      </div>
+      
+      <div class="modal-footer">
+        <button class="cancel-btn" (click)="closeEvaluationModal()">Cancelar</button>
+        <button class="confirm-btn" [disabled]="!allChecksCompleted" (click)="submitEvaluation()">Concluir Projeto</button>
+      </div>
+    </div>
+  </div>
+
 </div>
