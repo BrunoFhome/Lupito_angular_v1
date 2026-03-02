@@ -1,1 +1,60 @@
-<p>kanban works!</p>
+<div class="kanban-page">
+  <header class="kanban-header">
+    <h1>Gerenciador de Projetos</h1>
+    <!-- O botão '+ Novo Projeto' foi omitido conforme solicitado -->
+  </header>
+
+  <div class="board-container">
+    <div class="kanban-column" *ngFor="let col of columns">
+      <div class="column-header" [ngClass]="col.colorClass">
+        <h2>{{ col.title }}</h2>
+        <span class="task-count">{{ getTasksForColumn(col.mappedStatus).length }}</span>
+      </div>
+
+      <div class="column-content">
+        <div class="task-card" *ngFor="let task of getTasksForColumn(col.mappedStatus)">
+          <div class="card-header">
+            <h3>{{ task.title }}</h3>
+            <span class="priority-badge" [ngClass]="getPriorityClass(task.priority)">{{ task.priority }}</span>
+          </div>
+          
+          <p class="task-description">{{ task.description }}</p>
+          
+          <div class="card-actions" *ngIf="col.mappedStatus === 'todo'">
+            <button class="action-btn dev-btn" (click)="moveToDevelopment(task.id)">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon"><polygon points="5 4 15 12 5 20 5 4"></polygon><line x1="19" y1="5" x2="19" y2="19"></line></svg>
+              Iniciar Desenvolvimento
+            </button>
+          </div>
+
+          <div class="card-actions" *ngIf="col.mappedStatus === 'in-progress'">
+            <button class="action-btn workspace-btn" (click)="openWorkspace(task.id)">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon"><polyline points="16 18 22 12 16 6"></polyline><polyline points="8 6 2 12 8 18"></polyline></svg>
+              Abrir Code Space
+            </button>
+          </div>
+          
+          <div class="card-footer">
+            <div class="assignee-info">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon">
+                <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                <circle cx="12" cy="7" r="4"></circle>
+              </svg>
+              <span>{{ task.assignee }}</span>
+            </div>
+            
+            <div class="date-info">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon">
+                <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+                <line x1="16" y1="2" x2="16" y2="6"></line>
+                <line x1="8" y1="2" x2="8" y2="6"></line>
+                <line x1="3" y1="10" x2="21" y2="10"></line>
+              </svg>
+              <span>{{ task.date }}</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
