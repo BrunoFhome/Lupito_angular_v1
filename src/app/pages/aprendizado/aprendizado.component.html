@@ -23,7 +23,7 @@
     </div>
 
     <div class="lessons-grid">
-      <div class="lesson-node" *ngFor="let lesson of path.lessons">
+      <div class="lesson-node" *ngFor="let lesson of path.lessons" (click)="navigateToLesson(lesson)" [ngStyle]="{'cursor': lesson.locked ? 'not-allowed' : 'pointer'}">
         <div class="node-circle" [ngClass]="{ 'unlocked': !lesson.locked, 'locked': lesson.locked }">
           
           <ng-container *ngIf="!lesson.locked">

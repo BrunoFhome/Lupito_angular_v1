@@ -1,1 +1,96 @@
-<p>lesson works!</p>
+<div class="lesson-container" *ngIf="sectionDetails; else loading">
+  <div class="lesson-header">
+    <button class="back-btn" (click)="completeSection()">
+      <svg viewBox="0 0 24 24" fill="none" class="w-6 h-6">
+        <path d="M19 12H5M12 19l-7-7 7-7" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+      Sair
+    </button>
+    <div class="progress-bar-container">
+      <div class="progress-bar" [style.width.%]="(currentExerciseIndex / sectionDetails.exercises.length) * 100"></div>
+    </div>
+  </div>
+
+  <div class="exercise-content" *ngIf="currentExercise">
+    <h2 class="exercise-title">{{ currentExercise.title }}</h2>
+    
+    <div class="theory-box">
+      <p>{{ currentExercise.theory }}</p>
+    </div>
+
+    <div class="options-container">
+      <button 
+        *ngFor="let option of currentExercise.options; let i = index" 
+        class="option-btn"
+        [ngClass]="{
+          'selected': selectedOptionIndex === i && !isSubmitted,
+          'correct': isSubmitted && currentExercise.correctAnswerIndex === i,
+          'incorrect': isSubmitted && selectedOptionIndex === i && currentExercise.correctAnswerIndex !== i
+        }"
+        (click)="selectOption(i)"
+        [disabled]="isSubmitted"
+      >
+        <span class="option-text">{{ option }}</span>
+        
+        <svg *ngIf="isSubmitted && currentExercise.correctAnswerIndex === i" class="status-icon success-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <polyline points="20 6 9 17 4 12"></polyline>
+        </svg>
+
+        <svg *ngIf="isSubmitted && selectedOptionIndex === i && currentExercise.correctAnswerIndex !== i" class="status-icon error-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <line x1="18" y1="6" x2="6" y2="18"></line>
+          <line x1="6" y1="6" x2="18" y2="18"></line>
+        </svg>
+      </button>
+    </div>
+  </div>
+
+  <div class="footer-actions">
+    <!-- Submit Button (before answering) -->
+    <button 
+      class="action-btn submit-btn" 
+      *ngIf="!isSubmitted" 
+      [disabled]="selectedOptionIndex === null"
+      (click)="submitAnswer()">
+      Verificar Resposta
+    </button>
+
+    <!-- Feedback Area (after answering) -->
+    <div class="feedback-area" *ngIf="isSubmitted" [ngClass]="{'success': isCorrect, 'error': !isCorrect}">
+      <div class="feedback-message">
+        <h3 *ngIf="isCorrect">Correto! Mandou bem!</h3>
+        <h3 *ngIf="!isCorrect">Incorreto. Tente novamente!</h3>
+      </div>
+      
+      <!-- Next Button (if not last exercise and correct) -->
+      <button 
+        class="action-btn next-btn" 
+        *ngIf="isCorrect && currentExerciseIndex < sectionDetails.exercises.length - 1"
+        (click)="nextExercise()">
+        Avançar
+      </button>
+
+      <!-- Retry Button (if incorrect) -->
+      <button 
+        class="action-btn retry-btn" 
+        *ngIf="!isCorrect"
+        (click)="isSubmitted = false; selectedOptionIndex = null;">
+        Tentar Novamente
+      </button>
+
+      <!-- Complete Section Button (if last exercise and correct) -->
+      <button 
+        class="action-btn complete-btn" 
+        *ngIf="isCorrect && currentExerciseIndex === sectionDetails.exercises.length - 1"
+        (click)="completeSection()">
+        Concluir Seção
+      </button>
+    </div>
+  </div>
+</div>
+
+<ng-template #loading>
+  <div class="loading-state">
+    <div class="spinner"></div>
+    <p>Carregando lição...</p>
+  </div>
+</ng-template>

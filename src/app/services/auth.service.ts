@@ -1,5 +1,7 @@
 import { Injectable } from '@angular/core';
+import { HttpClient } from '@angular/common/http';
 import { Router } from '@angular/router';
+import { Observable, tap, BehaviorSubject } from 'rxjs';
 
 export interface User {
   id: number;
@@ -15,8 +17,10 @@ export interface User {
   providedIn: 'root'
 })
 export class AuthService {
+  private apiUrl = 'http://localhost:8081/auth';
+  private loggedIn = new BehaviorSubject<boolean>(this.hasToken());
 
-  // Static mock user - replace with real API data later
+  // Static mock user - temporary fallback if not using Spring user fetching yet
   private mockUser: User = {
     id: 1,
     name: 'Luiz Pinto',
@@ -27,38 +31,43 @@ export class AuthService {
     bio: 'Computer Science student passionate about programming and learning new technologies.'
   };
 
-  private loggedIn = false;
+  constructor(private http: HttpClient, private router: Router) {}
 
-  constructor(private router: Router) {}
-
-  login(email: string, password: string): boolean {
-    // Mock validation - replace with real API call later
-    if (email && password) {
-      this.loggedIn = true;
-      return true;
-    }
-    return false;
+  private hasToken(): boolean {
+    return !!localStorage.getItem('token');
   }
 
-  register(name: string, email: string, password: string): boolean {
-    // Mock registration - replace with real API call later
-    if (name && email && password) {
-      this.loggedIn = true;
-      return true;
-    }
-    return false;
+  login(email: string, password: string): Observable<any> {
+    return this.http.post<any>(`${this.apiUrl}/login`, { email, password }).pipe(
+      tap(response => {
+        if (response.token) {
+          localStorage.setItem('token', response.token);
+          this.loggedIn.next(true);
+        }
+      })
+    );
+  }
+
+  register(name: string, email: string, password: string): Observable<any> {
+    return this.http.post<any>(`${this.apiUrl}/register`, { name, email, password });
   }
 
   logout(): void {
-    this.loggedIn = false;
+    localStorage.removeItem('token');
+    this.loggedIn.next(false);
     this.router.navigate(['/login']);
   }
 
   isLoggedIn(): boolean {
-    return this.loggedIn;
+    return this.hasToken();
+  }
+
+  isLoggedInObservable(): Observable<boolean> {
+    return this.loggedIn.asObservable();
   }
 
   getCurrentUser(): User {
+    // You should later implement a real call to get user Profile from API
     return this.mockUser;
   }
 }

@@ -25,11 +25,14 @@ export class LoginComponent {
             return;
         }
 
-        const success = this.authService.login(this.email, this.password);
-        if (success) {
-            this.router.navigate(['/profile']);
-        } else {
-            this.errorMessage = 'Invalid credentials. Please try again.';
-        }
+        this.authService.login(this.email, this.password).subscribe({
+            next: () => {
+                this.router.navigate(['/profile']);
+            },
+            error: (err) => {
+                console.error(err);
+                this.errorMessage = 'Invalid credentials. Please try again.';
+            }
+        });
     }
 }
