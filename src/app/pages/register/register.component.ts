@@ -33,16 +33,20 @@ export class RegisterComponent {
             return;
         }
 
-        if (this.password.length < 6) {
-            this.errorMessage = 'Password must be at least 6 characters.';
+        if (this.password.length < 3) {
+            this.errorMessage = 'Password must be at least 3 characters.';
             return;
         }
 
-        const success = this.authService.register(this.name, this.email, this.password);
-        if (success) {
-            this.router.navigate(['/profile']);
-        } else {
-            this.errorMessage = 'Registration failed. Please try again.';
-        }
+        this.authService.register(this.name, this.email, this.password).subscribe({
+            next: () => {
+                // After successful registration, route them back to login
+                this.router.navigate(['/login']);
+            },
+            error: (err) => {
+                console.error(err);
+                this.errorMessage = 'Registration failed. Email might already be taken.';
+            }
+        });
     }
 }

@@ -2,35 +2,38 @@
     <div class="profile-card" *ngIf="user">
 
         <div class="profile-header">
-            <div class="avatar">{{ user.name.charAt(0).toUpperCase() }}</div>
+            <div class="avatar">{{ user.name ? user.name.charAt(0).toUpperCase() : 'U' }}</div>
             <div class="profile-title">
                 <h1>{{ user.name }}</h1>
-                <span class="role-badge">{{ user.role }}</span>
+                <span class="role-badge" *ngIf="user.role">{{ user.role }}</span>
             </div>
         </div>
 
         <hr />
 
         <div class="profile-info">
-            <div class="info-row">
+            <div class="info-row" *ngIf="user.username">
                 <span class="info-label">Username</span>
                 <span class="info-value">&#64;{{ user.username }}</span>
             </div>
+            
             <div class="info-row">
                 <span class="info-label">Email</span>
                 <span class="info-value">{{ user.email }}</span>
             </div>
-            <div class="info-row">
+            
+            <div class="info-row" *ngIf="user.joinDate">
                 <span class="info-label">Member since</span>
-                <span class="info-value">{{ user.joinDate }}</span>
+                <span class="info-value">{{ user.joinDate | date:'mediumDate' }}</span>
             </div>
-            <div class="info-row">
+            
+            <div class="bio-section" *ngIf="user.bio">
                 <span class="info-label">Bio</span>
-                <span class="info-value">{{ user.bio }}</span>
+                <p class="bio-text">{{ user.bio }}</p>
             </div>
         </div>
 
         <button class="btn-logout" (click)="onLogout()">Logout</button>
 
-    </div>
+   </div>
 </div>

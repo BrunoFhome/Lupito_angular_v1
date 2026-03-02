@@ -102,3 +102,10 @@ hr {
 .btn-logout:hover {
     background-color: #c0392b;
 }
+.bio-section { margin-top: 20px; display: flex; flex-direction: column; gap: 10px; }
+.bio-textarea { width: 100%; border: 1px solid #dce1e7; border-radius: 4px; padding: 10px; font-family: inherit; font-size: 14px; min-height: 100px; resize: vertical; }
+.btn-save { padding: 8px 16px; background-color: #4CAF50; color: white; border: none; border-radius: 4px; cursor: pointer; align-self: flex-start; }
+.btn-save:hover { background-color: #45a049; }
+
+.loading-state { font-size: 18px; color: #666; text-align: center; margin-top: 50px; }
+.error-message { color: #d32f2f; background-color: #ffebee; border: 1px solid #ffcdd2; padding: 10px; border-radius: 4px; margin-bottom: 20px; text-align: center; }
