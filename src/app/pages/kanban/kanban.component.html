@@ -17,9 +17,9 @@
             <h3>{{ task.title }}</h3>
             <span class="priority-badge" [ngClass]="getPriorityClass(task.priority)">{{ task.priority }}</span>
           </div>
-          
+
           <p class="task-description">{{ task.description }}</p>
-          
+
           <div class="card-actions" *ngIf="col.mappedStatus === 'todo'">
             <button class="action-btn dev-btn" (click)="moveToDevelopment(task.id)">
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon"><polygon points="5 4 15 12 5 20 5 4"></polygon><line x1="19" y1="5" x2="19" y2="19"></line></svg>
@@ -43,7 +43,7 @@
               </button>
             </div>
           </div>
-          
+
           <div class="card-actions" *ngIf="col.mappedStatus === 'in-review'">
             <button class="action-btn eval-btn" (click)="openEvaluationModal(task.id)">
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>
@@ -56,16 +56,15 @@
               </button>
             </div>
           </div>
-          
-          <div class="card-footer">
-            <div class="assignee-info">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon">
-                <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
-                <circle cx="12" cy="7" r="4"></circle>
-              </svg>
-              <span>{{ task.assignee }}</span>
-            </div>
-            
+
+          <div class="card-actions" *ngIf="col.mappedStatus === 'done'">
+            <button class="action-btn secondary-btn" (click)="moveToReview(task.id)" title="Voltar para Análise" style="width: 100%;">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg>
+              Retornar para Análise
+            </button>
+          </div>
+
+          <div class="card-footer" style="justify-content: flex-end;">
             <div class="date-info">
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon">
                 <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
@@ -88,7 +87,7 @@
         <h2>Autoavaliação de Código</h2>
         <button class="close-btn" (click)="closeEvaluationModal()">&times;</button>
       </div>
-      
+
       <div class="modal-body">
         <p class="modal-instructions">Por favor, revise seu próprio código antes de confirmar a conclusão do projeto. Marque todas as opções abaixo se tiver certeza que aplicou os conceitos corretamente:</p>
         
@@ -102,28 +101,32 @@
           <label class="custom-checkbox">
             <input type="checkbox" [(ngModel)]="evaluationChecks.meaningfulVariables">
             <span class="checkmark"></span>
-            Minhas variáveis e funções têm nomes claros que fazem sentido.
+            As variáveis e funções possuem nomes claros e com significado.
           </label>
-          
+
           <label class="custom-checkbox">
             <input type="checkbox" [(ngModel)]="evaluationChecks.codeTested">
             <span class="checkmark"></span>
-            Eu testei/executei o código na Workspace e verifiquei ativamente a lógica.
+            Testei o código e validei em diferentes cenários básicos de uso.
           </label>
-          
+
           <label class="custom-checkbox">
             <input type="checkbox" [(ngModel)]="evaluationChecks.noErrors">
             <span class="checkmark"></span>
-            O código roda sem lançar erros no console (SyntaxErrors ou TypeErrors).
+            O console não apresenta erros e o projeto funciona conforme os requisitos.
           </label>
         </div>
       </div>
-      
+
       <div class="modal-footer">
         <button class="cancel-btn" (click)="closeEvaluationModal()">Cancelar</button>
-        <button class="confirm-btn" [disabled]="!allChecksCompleted" (click)="submitEvaluation()">Concluir Projeto</button>
+        <button class="confirm-btn" 
+                [disabled]="!allChecksCompleted" 
+                [class.active]="allChecksCompleted"
+                (click)="submitEvaluation()">
+          Confirmar e Concluir
+        </button>
       </div>
     </div>
   </div>
-
 </div>

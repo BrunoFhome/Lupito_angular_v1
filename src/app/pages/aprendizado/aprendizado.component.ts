@@ -1,11 +1,14 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
+import { AuthService, User } from '../../services/auth.service';
+import { LearningService } from '../../services/learning.service';
 
 interface Lesson {
   title: string;
   locked: boolean;
   id?: string;
+  globalIndex?: number;
 }
 
 interface LearningPath {
@@ -23,17 +26,17 @@ interface LearningPath {
   templateUrl: './aprendizado.component.html',
   styleUrl: './aprendizado.component.css'
 })
-export class AprendizadoComponent {
-  constructor(private router: Router) {}
+export class AprendizadoComponent implements OnInit {
+  user: User | null = null;
 
   paths: LearningPath[] = [
     {
       title: "Logic with JavaScript",
       subtitle: "Trilha de Lógica - Iniciante",
-      progress: 1,
+      progress: 0,
       total: 10,
       lessons: [
-        { title: 'Introdução', locked: false, id: 'logic-1' },
+        { title: 'Introdução', locked: true, id: 'logic-1' },
         { title: 'Variáveis', locked: true, id: 'logic-2' },
         { title: 'Tipos', locked: true, id: 'logic-3' },
         { title: 'Condicionais', locked: true, id: 'logic-4' },
@@ -51,7 +54,7 @@ export class AprendizadoComponent {
       progress: 0,
       total: 10,
       lessons: [
-        { title: 'HTML Básico', locked: false, id: 'web-1' },
+        { title: 'HTML Básico', locked: true, id: 'web-1' },
         { title: 'Tags Textuais', locked: true, id: 'web-2' },
         { title: 'Estruturação', locked: true, id: 'web-3' },
         { title: 'CSS Básico', locked: true, id: 'web-4' },
@@ -64,6 +67,47 @@ export class AprendizadoComponent {
       ]
     }
   ];
+
+  constructor(
+    private router: Router, 
+    private authService: AuthService,
+    private learningService: LearningService
+  ) {}
+
+  ngOnInit(): void {
+    // Populate global indices
+    this.paths.forEach(path => {
+      path.lessons.forEach(lesson => {
+        if (lesson.id) {
+          lesson.globalIndex = this.learningService.getLessonGlobalIndex(lesson.id);
+        }
+      });
+    });
+
+    this.authService.getCurrentUser().subscribe(u => {
+      this.user = u;
+      let userProgress = (u && u.learningProgress) ? u.learningProgress : 0;
+      this.applyProgress(userProgress);
+    });
+  }
+
+  applyProgress(learningProgress: number): void {
+    // Calculate path progress
+    let logicCompleted = Math.min(learningProgress, 10);
+    this.paths[0].progress = logicCompleted;
+    
+    let webCompleted = Math.max(0, Math.min(learningProgress - 10, 10));
+    this.paths[1].progress = webCompleted;
+
+    // A lesson is unlocked if its globalIndex <= learningProgress
+    this.paths.forEach(path => {
+      path.lessons.forEach(lesson => {
+        if (lesson.globalIndex !== undefined) {
+          lesson.locked = lesson.globalIndex > learningProgress;
+        }
+      });
+    });
+  }
 
   navigateToLesson(lesson: Lesson) {
     if (!lesson.locked && lesson.id) {
