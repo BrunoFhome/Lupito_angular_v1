@@ -23,11 +23,18 @@ export class LearningService {
 
   constructor() { }
 
+  getLessonGlobalIndex(lessonId: string): number {
+    const defaultOrder = [
+      'logic-1', 'logic-2', 'logic-3', 'logic-4', 'logic-5',
+      'logic-6', 'logic-7', 'logic-8', 'logic-9', 'logic-10',
+      'web-1', 'web-2', 'web-3', 'web-4', 'web-5',
+      'web-6', 'web-7', 'web-8', 'web-9', 'web-10'
+    ];
+    return defaultOrder.indexOf(lessonId);
+  }
+
   // Simulated method to fetch section data (3 exercises) based on section ID
   getSectionDetails(id: string): Observable<SectionDetails> {
-    // In a real scenario, this would be: return this.http.get<SectionDetails>(`/api/sections/${id}`);
-    
-    // Returning mock data for any ID to demonstrate the 3-exercise flow
     const mockData: SectionDetails = {
       id: id,
       title: `Lógica de Programação - Seção ${id}`,
@@ -74,3 +81,4 @@ export class LearningService {
     return of(mockData).pipe(delay(500)); // Simulate network delay
   }
 }
+

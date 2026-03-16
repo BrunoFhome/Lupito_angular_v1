@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common'; // Required for ngIf and ngFor i
 import { ActivatedRoute, Router } from '@angular/router';
 import { LearningService, SectionDetails, Exercise } from '../../services/learning.service';
 import { KanbanService } from '../../services/kanban.service';
+import { AuthService, User } from '../../services/auth.service';
 
 @Component({
   selector: 'app-lesson',
@@ -14,19 +15,24 @@ import { KanbanService } from '../../services/kanban.service';
 export class LessonComponent implements OnInit {
   sectionDetails: SectionDetails | null = null;
   currentExerciseIndex: number = 0;
-  
+
   selectedOptionIndex: number | null = null;
   isSubmitted: boolean = false;
   isCorrect: boolean = false;
+  
+  user: User | null = null;
 
   constructor(
     private route: ActivatedRoute,
     private router: Router,
     private learningService: LearningService,
-    private kanbanService: KanbanService
+    private kanbanService: KanbanService,
+    private authService: AuthService
   ) {}
 
   ngOnInit(): void {
+    this.authService.getCurrentUser().subscribe(u => this.user = u);
+
     // Listen to route changes to get the dynamic id
     this.route.paramMap.subscribe(params => {
       const sectionId = params.get('id');
@@ -90,9 +96,31 @@ export class LessonComponent implements OnInit {
         assignee: 'Você (Aluno)',
         status: 'todo'
       });
+
+      // Update User Progress
+      if (this.user) {
+        const globalIndex = this.learningService.getLessonGlobalIndex(this.sectionDetails.id);
+        const currentProgress = this.user.learningProgress || 0;
+        
+        // If they just completed the currently highest unlocked lesson
+        // and we want to unlock the NEXT one (globalIndex + 1):
+        if (globalIndex >= currentProgress) {
+            this.user.learningProgress = globalIndex + 1;
+            this.authService.updateUserProfile(this.user).subscribe({
+                next: () => {
+                    this.router.navigate(['/aprendizado']);
+                },
+                error: (err) => {
+                    console.error('Failed to update progress', err);
+                    this.router.navigate(['/aprendizado']);
+                }
+            });
+            return;
+        }
+      }
     }
-    
-    // Navigate back to the learning path
+
+    // Navigate back to the learning path if no progress needed updating
     this.router.navigate(['/aprendizado']);
   }
 
@@ -102,3 +130,6 @@ export class LessonComponent implements OnInit {
     this.isCorrect = false;
   }
 }
+
+
+

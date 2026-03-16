@@ -11,6 +11,7 @@ export interface User {
   role: string;
   joinDate: string;
   bio: string;
+  learningProgress?: number;
 }
 
 @Injectable({
@@ -122,3 +123,5 @@ private getAuthHeaders(): { headers: HttpHeaders } {
     return storedId ? parseInt(storedId, 10) : null;
   }
 }
+
+

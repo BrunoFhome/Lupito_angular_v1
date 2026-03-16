@@ -2,50 +2,99 @@
     <div style="color: red; padding: 20px;" *ngIf="errorMessage">
         Erro ao carregar perfil: {{ errorMessage }}
     </div>
-    <div class="profile-card" *ngIf="user">
 
-        <div class="profile-header">
-            <div class="avatar">{{ user.name ? user.name.charAt(0).toUpperCase() : 'U' }}</div>
-            <div class="profile-title">
-                <h1>{{ user.name }}</h1>
-                <span class="role-badge" *ngIf="user.role">{{ user.role }}</span>
+    <div class="profile-layout" *ngIf="user">
+
+        <!-- Header / Perfil Pessoal -->
+        <div class="profile-card">
+            <div class="profile-header-section">
+                <div class="avatar">
+                    <img src="https://i.pravatar.cc/150?img=11" alt="Avatar User" *ngIf="user.name" />
+                    <span *ngIf="!user.name">{{ user.name ? user.name.charAt(0).toUpperCase() : 'U' }}</span>
+                </div>
+
+                <div class="profile-details">
+                    <h1>{{ user.name }}</h1>
+                    <h3 class="role-title">Desenvolvedor(a) Full Stack</h3>
+
+                    <div class="bio-section">
+                        <div *ngIf="isEditingBio" class="bio-edit-container">
+                            <textarea [(ngModel)]="user.bio" rows="4" placeholder="Fale um pouco sobre você..."></textarea>
+                            <div class="bio-actions">
+                                <button class="btn-save" (click)="saveBio()">Salvar</button>
+                                <button class="btn-cancel" (click)="toggleEditBio()">Cancelar</button>
+                            </div>
+                        </div>
+                        <div *ngIf="!isEditingBio" class="bio-text-container">
+                            <p class="bio-text">{{ user.bio || 'Desenvolvedor(a) apaixonado(a) por criar soluções inovadoras. Sempre em busca de novos desafios e aprendizados.' }}</p>
+                            <button class="btn-edit-icon" (click)="toggleEditBio()">✎</button>
+                        </div>
+                    </div>
+
+                    <div class="social-links">
+                        <span class="location"><i class="icon-location">📌</i> São Paulo, Brasil</span>
+                        <span class="email"><i class="icon-email">✉️</i> {{ user.email }}</span>
+                    </div>
+
+                    <div class="social-icons">
+                        <button class="icon-btn">GitHub</button>
+                        <button class="icon-btn">LinkedIn</button>
+                        <button class="icon-btn">Web</button>
+                    </div>
+                </div>
             </div>
         </div>
 
-        <hr />
+        <!-- Seção de Portfólio -->
+        <div class="portfolio-section">
+            <div class="portfolio-header">
+                <h2>Portfólio de Projetos</h2>
+                <p>Clique em um projeto para ver o código completo</p>
+            </div>
 
-        <div class="profile-info">
-            <div class="info-row" *ngIf="user.username">
-                <span class="info-label">Username</span>
-                <span class="info-value">&#64;{{ user.username }}</span>
-            </div>
-            
-            <div class="info-row">
-                <span class="info-label">Email</span>
-                <span class="info-value">{{ user.email }}</span>
-            </div>
-            
-            <div class="info-row" *ngIf="user.joinDate">
-                <span class="info-label">Member since</span>
-                <span class="info-value">{{ user.joinDate | date:'mediumDate' }}</span>
-            </div>
-            
-            <div class="bio-section">
-                <div class="bio-header" style="display:flex; justify-content: space-between; align-items: center;">
-                    <span class="info-label">Bio</span>
-                    <button class="btn-edit" (click)="toggleEditBio()" *ngIf="!isEditingBio">Edit</button>
-                    <button class="btn-save" (click)="saveBio()" *ngIf="isEditingBio">Save</button>
-                </div>
-                <div *ngIf="isEditingBio">
-                    <textarea [(ngModel)]="user.bio" rows="4" style="width: 100%; margin-top: 10px;" placeholder="Tell us about yourself..."></textarea>
-                </div>
-                <div *ngIf="!isEditingBio">
-                    <p class="bio-text">{{ user.bio || 'No bio provided yet.' }}</p>
+            <div class="projects-grid">
+                <div class="project-card" *ngFor="let project of mockProjects" (click)="openProject(project)">
+                    <div class="project-icon">
+                        <span>&lt;/&gt;</span>
+                    </div>
+                    <div class="project-info">
+                        <h3>{{ project.title }}</h3>
+                        <p>{{ project.description }}</p>
+                        <div class="project-footer">
+                            <span class="tech-badge">{{ project.tech }}</span>
+                            <span class="project-date">📅 {{ project.date }}</span>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
 
-        <button class="btn-logout" (click)="onLogout()">Logout</button>
+   </div>
 
+   <!-- Modal do Projeto -->
+   <div class="modal-overlay" *ngIf="selectedProject" (click)="closeProject()">
+        <div class="modal-content" (click)="$event.stopPropagation()">
+            <div class="modal-header">
+                <div class="modal-title-area">
+                    <h2>{{ selectedProject.title }}</h2>
+                    <p>{{ selectedProject.description }}</p>
+                    <div class="modal-badges">
+                        <span class="tech-badge">{{ selectedProject.tech }}</span>
+                        <span class="project-date">{{ selectedProject.date }}</span>
+                    </div>
+                </div>
+                <button class="modal-close" (click)="closeProject()">✕</button>
+            </div>
+            
+            <div class="modal-body">
+                <div class="code-header">
+                    <h3>Código Fonte</h3>
+                    <button class="btn-copy" (click)="copyCode()">🗐 Copiar código</button>
+                </div>
+                <div class="code-container">
+                    <pre><code>{{ selectedProject.code }}</code></pre>
+                </div>
+            </div>
+        </div>
    </div>
 </div>
