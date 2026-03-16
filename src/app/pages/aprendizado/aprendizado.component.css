@@ -130,37 +130,61 @@
   display: flex;
   justify-content: center;
   align-items: center;
-  margin-bottom: 14px;
   position: relative;
-  transition: transform 0.2s ease;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
   cursor: pointer;
+  border: 4px solid transparent; 
 }
 
-.node-circle:hover {
-  transform: translateY(-2px);
+.node-circle:active {
+  transform: translateY(4px) !important;
+  box-shadow: none !important;
+  margin-bottom: 24px !important;
 }
 
-.node-circle svg {
+.node-circle svg, .node-circle mat-icon {
   width: 32px;
   height: 32px;
+  font-size: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 /* Unlocked Node Styling */
 .node-circle.unlocked {
-  background-color: #2b70fa;
+  background-color: #ff9800; /* Orange background for active/unlocked */
   color: white;
-  box-shadow: 0 6px 0 #1856d2;
-  margin-bottom: 20px; /* Offset the 6px box shadow to keep grid aligned */
+  border: 4px solid #f57c00;
+  box-shadow: 0 6px 0 #e65100;
+  margin-bottom: 20px;
+}
+.node-circle.unlocked:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 0 #e65100;
 }
 
 /* Locked Node Styling */
 .node-circle.locked {
   background-color: #f7f9fc;
   color: #aeb6c1;
-  border: 4px solid #ced5e0;
-  box-shadow: 0 5px 0 #ced5e0;
-  margin-bottom: 19px; /* Offset the 5px box shadow */
-  pointer-events: none; /* Usually locked nodes can't be clicked */
+  border: 4px solid #e2e8f0;
+  box-shadow: 0 6px 0 #cbd5e1;
+  margin-bottom: 20px;
+  pointer-events: none;
+}
+
+/* Completed Node Styling */
+.node-circle.completed {
+  background-color: #4caf50;
+  color: white;
+  border: 4px solid #43a047;
+  box-shadow: 0 6px 0 #2e7d32;
+  margin-bottom: 20px;
+}
+.node-circle.completed:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 0 #2e7d32;
 }
 
 .lesson-title {

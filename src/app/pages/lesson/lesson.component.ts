@@ -21,6 +21,11 @@ export class LessonComponent implements OnInit {
   isCorrect: boolean = false;
   
   user: User | null = null;
+  
+  // Track parameters
+  courseId: number | null = null;
+  sectionOrder: number | null = null;
+  lessonOrder: number | null = null;
 
   constructor(
     private route: ActivatedRoute,
@@ -39,6 +44,12 @@ export class LessonComponent implements OnInit {
       if (sectionId) {
         this.fetchLesson(sectionId);
       }
+    });
+
+    this.route.queryParamMap.subscribe(params => {
+       if (params.has('courseId')) this.courseId = +params.get('courseId')!;
+       if (params.has('sectionOrder')) this.sectionOrder = +params.get('sectionOrder')!;
+       if (params.has('lessonOrder')) this.lessonOrder = +params.get('lessonOrder')!;
     });
   }
 
@@ -88,6 +99,7 @@ export class LessonComponent implements OnInit {
 
   completeSection(): void {
     // Automatically issue a new project to Kanban "A Fazer" after completing a section
+    // Assuming backend takes care of unlocking via its endpoint, but the frontend currently manually pushes:
     if (this.sectionDetails) {
       this.kanbanService.addTask({
         title: `Projeto Recompensa: ${this.sectionDetails.title}`,
@@ -97,26 +109,29 @@ export class LessonComponent implements OnInit {
         status: 'todo'
       });
 
-      // Update User Progress
-      if (this.user) {
-        const globalIndex = this.learningService.getLessonGlobalIndex(this.sectionDetails.id);
-        const currentProgress = this.user.learningProgress || 0;
-        
-        // If they just completed the currently highest unlocked lesson
-        // and we want to unlock the NEXT one (globalIndex + 1):
-        if (globalIndex >= currentProgress) {
-            this.user.learningProgress = globalIndex;
-            this.authService.updateUserProfile(this.user).subscribe({
-                next: () => {
-                    this.router.navigate(['/aprendizado']);
-                },
-                error: (err) => {
-                    console.error('Failed to update progress', err);
-                    this.router.navigate(['/aprendizado']);
-                }
-            });
-            return;
-        }
+      if (this.user && this.courseId && this.sectionOrder && this.lessonOrder) {
+          // 1. Update course-specific progression (prevents track 2 from unlocking)
+          this.learningService.completeLesson(this.user.id, this.courseId, this.sectionOrder, this.lessonOrder).subscribe({
+             next: () => {
+                 // 2. Also bump the global learningProgress for Kanban unlock compatibility
+                 if (this.user) {
+                     const globalIndex = this.learningService.getLessonGlobalIndex(this.sectionDetails!.id);
+                     if (globalIndex >= (this.user.learningProgress || 0)) {
+                         this.user.learningProgress = globalIndex;
+                         this.authService.updateUserProfile(this.user).subscribe(() => {
+                             this.router.navigate(['/aprendizado']);
+                         });
+                         return;
+                     }
+                 }
+                 this.router.navigate(['/aprendizado']);
+             },
+             error: (err) => {
+                 console.error('Failed to complete lesson', err);
+                 this.router.navigate(['/aprendizado']);
+             }
+          });
+          return;
       }
     }
 
@@ -130,6 +145,7 @@ export class LessonComponent implements OnInit {
     this.isCorrect = false;
   }
 }
+
 
 
 

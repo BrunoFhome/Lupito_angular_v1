@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { MatIconModule } from '@angular/material/icon';
 import { Router } from '@angular/router';
 import { KanbanService, KanbanTask } from '../../services/kanban.service';
 
@@ -14,9 +15,9 @@ export interface Column {
 @Component({
   selector: 'app-kanban',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, MatIconModule],
   templateUrl: './kanban.component.html',
-  styleUrl: './kanban.component.css'
+  styleUrls: ['./kanban.component.css']
 })
 export class KanbanComponent implements OnInit {
   tasks: KanbanTask[] = [];
