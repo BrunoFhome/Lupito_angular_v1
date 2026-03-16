@@ -21,6 +21,11 @@ export class LessonComponent implements OnInit {
   isCorrect: boolean = false;
 
   user: User | null = null;
+  
+  // Track parameters
+  courseId: number | null = null;
+  sectionOrder: number | null = null;
+  lessonOrder: number | null = null;
 
   constructor(
     private route: ActivatedRoute,
@@ -39,6 +44,12 @@ export class LessonComponent implements OnInit {
       if (sectionId) {
         this.fetchLesson(sectionId);
       }
+    });
+
+    this.route.queryParamMap.subscribe(params => {
+       if (params.has('courseId')) this.courseId = +params.get('courseId')!;
+       if (params.has('sectionOrder')) this.sectionOrder = +params.get('sectionOrder')!;
+       if (params.has('lessonOrder')) this.lessonOrder = +params.get('lessonOrder')!;
     });
   }
 
@@ -86,50 +97,42 @@ export class LessonComponent implements OnInit {
     }
   }
 
-  exitLesson(): void {
-    this.router.navigate(['/aprendizado']);
-  }
-
   completeSection(): void {
-    if (this.sectionDetails && this.user) {
-      const lessonIdNumber = parseInt(this.sectionDetails.id, 10);
-      const token = localStorage.getItem('token');
-      
-      const updateProgressAndNavigate = () => {
-         if (this.user) {
-            const globalIndex = this.learningService.getLessonGlobalIndex(this.sectionDetails!.id);
-            const currentProgress = this.user.learningProgress || 0;
-
-            if (globalIndex >= currentProgress) {
-                this.user.learningProgress = globalIndex;
-                this.authService.updateUserProfile(this.user).subscribe({
-                    next: () => {
-                        this.router.navigate(['/aprendizado']);
-                    },
-                    error: (err) => {
-                        console.error('Failed to update progress', err);
-                        this.router.navigate(['/aprendizado']);
-                    }
-                });
-                return;
-            }
-          }
-          this.router.navigate(['/aprendizado']);
-      };
-
-      this.http.post('http://localhost:8081/api/kanban/tasks/unlock/' + lessonIdNumber, {}, {
-        headers: { 'Authorization': 'Bearer ' + token }
-      }).subscribe({
-        next: () => {
-           console.log('Task unlocked successfully.');
-           updateProgressAndNavigate();
-        },
-        error: (err) => {
-           console.error('Error unlocking task (or already unlocked). Proceeding...', err);
-           updateProgressAndNavigate();
-        }
+    // Automatically issue a new project to Kanban "A Fazer" after completing a section
+    // Assuming backend takes care of unlocking via its endpoint, but the frontend currently manually pushes:
+    if (this.sectionDetails) {
+      this.kanbanService.addTask({
+        title: `Projeto Recompensa: ${this.sectionDetails.title}`,
+        description: 'Implementar na prática os conceitos aprendidos nesta lição.',
+        priority: 'Média',
+        assignee: 'Você (Aluno)',
+        status: 'todo'
       });
-      return;
+
+      if (this.user && this.courseId && this.sectionOrder && this.lessonOrder) {
+          // 1. Update course-specific progression (prevents track 2 from unlocking)
+          this.learningService.completeLesson(this.user.id, this.courseId, this.sectionOrder, this.lessonOrder).subscribe({
+             next: () => {
+                 // 2. Also bump the global learningProgress for Kanban unlock compatibility
+                 if (this.user) {
+                     const globalIndex = this.learningService.getLessonGlobalIndex(this.sectionDetails!.id);
+                     if (globalIndex >= (this.user.learningProgress || 0)) {
+                         this.user.learningProgress = globalIndex;
+                         this.authService.updateUserProfile(this.user).subscribe(() => {
+                             this.router.navigate(['/aprendizado']);
+                         });
+                         return;
+                     }
+                 }
+                 this.router.navigate(['/aprendizado']);
+             },
+             error: (err) => {
+                 console.error('Failed to complete lesson', err);
+                 this.router.navigate(['/aprendizado']);
+             }
+          });
+          return;
+      }
     }
     this.router.navigate(['/aprendizado']);
   }
@@ -140,3 +143,8 @@ export class LessonComponent implements OnInit {
     this.isCorrect = false;
   }
 }
+
+
+
+
+

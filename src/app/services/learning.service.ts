@@ -44,11 +44,20 @@ export interface ExerciseDTO {
   lessonId: number;
 }
 
+export interface UserProgressDTO {
+  id: number;
+  userId: number;
+  courseId: number;
+  currentSectionOrder: number;
+  currentLessonOrder: number;
+}
+
 @Injectable({
   providedIn: 'root'
 })
 export class LearningService {
   private apiUrl = 'http://localhost:8081/api/learning-path';
+  private progressUrl = 'http://localhost:8081/api/progress';
 
   constructor(private http: HttpClient) { }
 
@@ -63,6 +72,18 @@ export class LearningService {
 
   getLessonGlobalIndex(lessonId: string): number {
     return parseInt(lessonId, 10);
+  }
+
+  getUserProgress(courseId: number, userId: number): Observable<UserProgressDTO> {
+    return this.http.get<UserProgressDTO>(`${this.progressUrl}/${courseId}?userId=${userId}`, this.getAuthHeaders());
+  }
+
+  completeLesson(userId: number, courseId: number, currentSectionOrder: number, currentLessonOrder: number): Observable<UserProgressDTO> {
+    return this.http.post<UserProgressDTO>(
+      `${this.progressUrl}/complete-lesson?userId=${userId}&courseId=${courseId}&currentSectionOrder=${currentSectionOrder}&currentLessonOrder=${currentLessonOrder}`, 
+      {}, 
+      this.getAuthHeaders()
+    );
   }
 
   getCourses(): Observable<CourseDTO[]> {
