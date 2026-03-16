@@ -1,8 +1,8 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common'; // Required for ngIf and ngFor ideally
 import { ActivatedRoute, Router } from '@angular/router';
+import { HttpClient } from '@angular/common/http';
 import { LearningService, SectionDetails, Exercise } from '../../services/learning.service';
-import { KanbanService } from '../../services/kanban.service';
 import { AuthService, User } from '../../services/auth.service';
 
 @Component({
@@ -19,7 +19,7 @@ export class LessonComponent implements OnInit {
   selectedOptionIndex: number | null = null;
   isSubmitted: boolean = false;
   isCorrect: boolean = false;
-  
+
   user: User | null = null;
   
   // Track parameters
@@ -31,8 +31,8 @@ export class LessonComponent implements OnInit {
     private route: ActivatedRoute,
     private router: Router,
     private learningService: LearningService,
-    private kanbanService: KanbanService,
-    private authService: AuthService
+    private authService: AuthService,
+    private http: HttpClient
   ) {}
 
   ngOnInit(): void {
@@ -85,7 +85,7 @@ export class LessonComponent implements OnInit {
 
   submitAnswer(): void {
     if (this.selectedOptionIndex === null || !this.currentExercise || this.isSubmitted) return;
-
+    
     this.isSubmitted = true;
     this.isCorrect = (this.selectedOptionIndex === this.currentExercise.correctAnswerIndex);
   }
@@ -134,8 +134,6 @@ export class LessonComponent implements OnInit {
           return;
       }
     }
-
-    // Navigate back to the learning path if no progress needed updating
     this.router.navigate(['/aprendizado']);
   }
 
