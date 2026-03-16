@@ -1,6 +1,6 @@
 <div class="learning-container">
   <div class="path-section" *ngFor="let path of paths">
-    
+
     <div class="path-header">
       <div class="header-icon">
         <svg viewBox="0 0 24 24" fill="none" class="w-6 h-6">
@@ -24,9 +24,14 @@
 
     <div class="lessons-grid">
       <div class="lesson-node" *ngFor="let lesson of path.lessons" (click)="navigateToLesson(lesson)" [ngStyle]="{'cursor': lesson.locked ? 'not-allowed' : 'pointer'}">
-        <div class="node-circle" [ngClass]="{ 'unlocked': !lesson.locked, 'locked': lesson.locked }">
+        <div class="node-circle" [ngClass]="{ 'unlocked': !lesson.locked && !lesson.completed, 'locked': lesson.locked, 'completed': lesson.completed }">
           
-          <ng-container *ngIf="!lesson.locked">
+          <ng-container *ngIf="lesson.completed">
+            <!-- Check Icon for completed -->
+            <mat-icon style="font-size: 32px; width: 32px; height: 32px; display: flex; align-items: center; justify-content: center;">check_circle</mat-icon>
+          </ng-container>
+
+          <ng-container *ngIf="!lesson.locked && !lesson.completed">
             <!-- Book Icon for unlocked -->
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
               <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path>

@@ -2,11 +2,15 @@ import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
 import { AuthService, User } from '../../services/auth.service';
-import { LearningService } from '../../services/learning.service';
+import { LearningService, CourseDTO, SectionDTO, LessonDTO } from '../../services/learning.service';
+import { forkJoin, Observable, of } from 'rxjs';
+import { catchError, map, switchMap, tap } from 'rxjs/operators';
+import { MatIconModule } from '@angular/material/icon';
 
 interface Lesson {
   title: string;
   locked: boolean;
+  completed: boolean;
   id?: string;
   globalIndex?: number;
 }
@@ -22,90 +26,102 @@ interface LearningPath {
 @Component({
   selector: 'app-aprendizado',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, MatIconModule],
   templateUrl: './aprendizado.component.html',
   styleUrl: './aprendizado.component.css'
 })
 export class AprendizadoComponent implements OnInit {
   user: User | null = null;
-
-  paths: LearningPath[] = [
-    {
-      title: "Logic with JavaScript",
-      subtitle: "Trilha de Lógica - Iniciante",
-      progress: 0,
-      total: 10,
-      lessons: [
-        { title: 'Introdução', locked: true, id: 'logic-1' },
-        { title: 'Variáveis', locked: true, id: 'logic-2' },
-        { title: 'Tipos', locked: true, id: 'logic-3' },
-        { title: 'Condicionais', locked: true, id: 'logic-4' },
-        { title: 'Laços', locked: true, id: 'logic-5' },
-        { title: 'Funções', locked: true, id: 'logic-6' },
-        { title: 'Arrays', locked: true, id: 'logic-7' },
-        { title: 'Objetos', locked: true, id: 'logic-8' },
-        { title: 'Eventos', locked: true, id: 'logic-9' },
-        { title: 'Projeto', locked: true, id: 'logic-10' }
-      ]
-    },
-    {
-      title: "Html CSS and JS",
-      subtitle: "Trilha Web - Iniciante",
-      progress: 0,
-      total: 10,
-      lessons: [
-        { title: 'HTML Básico', locked: true, id: 'web-1' },
-        { title: 'Tags Textuais', locked: true, id: 'web-2' },
-        { title: 'Estruturação', locked: true, id: 'web-3' },
-        { title: 'CSS Básico', locked: true, id: 'web-4' },
-        { title: 'Box Model', locked: true, id: 'web-5' },
-        { title: 'Flexbox', locked: true, id: 'web-6' },
-        { title: 'Grid', locked: true, id: 'web-7' },
-        { title: 'JS na Web', locked: true, id: 'web-8' },
-        { title: 'Manipulação DOM', locked: true, id: 'web-9' },
-        { title: 'Projeto Final', locked: true, id: 'web-10' }
-      ]
-    }
-  ];
+  paths: LearningPath[] = [];
 
   constructor(
-    private router: Router, 
+    private router: Router,
     private authService: AuthService,
     private learningService: LearningService
   ) {}
 
   ngOnInit(): void {
-    // Populate global indices
-    this.paths.forEach(path => {
-      path.lessons.forEach(lesson => {
-        if (lesson.id) {
-          lesson.globalIndex = this.learningService.getLessonGlobalIndex(lesson.id);
-        }
-      });
-    });
-
     this.authService.getCurrentUser().subscribe(u => {
       this.user = u;
       let userProgress = (u && u.learningProgress) ? u.learningProgress : 0;
-      this.applyProgress(userProgress);
+      this.loadCourses(userProgress);
     });
   }
 
-  applyProgress(learningProgress: number): void {
-    // Calculate path progress
-    let logicCompleted = Math.min(learningProgress, 10);
-    this.paths[0].progress = logicCompleted;
-    
-    let webCompleted = Math.max(0, Math.min(learningProgress - 10, 10));
-    this.paths[1].progress = webCompleted;
+  loadCourses(learningProgress: number): void {
+    this.learningService.getCourses().pipe(
+      switchMap(courses => {
+        if (!courses || courses.length === 0) return of([]);
+        
+        const courseObservables = courses.map(course => this.buildLearningPath(course));
+        return forkJoin(courseObservables);
+      }),
+      catchError(err => {
+        console.error('Error fetching courses', err);
+        return of([]);
+      })
+    ).subscribe(paths => {
+      this.paths = paths;
+      this.applyProgress(learningProgress);
+    });
+  }
 
-    // A lesson is unlocked if its globalIndex <= learningProgress
+  buildLearningPath(course: CourseDTO): Observable<LearningPath> {
+    return this.learningService.getSectionsByCourse(course.id).pipe(
+      switchMap(sections => {
+         if (!sections || sections.length === 0) {
+            return of({
+              title: course.title,
+              subtitle: course.description,
+              progress: 0,
+              total: 0,
+              lessons: []
+            } as LearningPath);
+         }
+
+         const lessonsObservables = sections.map(sec => this.learningService.getLessonsBySection(sec.id));
+         return forkJoin(lessonsObservables).pipe(
+           map(nestedLessons => {
+              const allLessons: Lesson[] = [];
+              nestedLessons.forEach((secLessons, idx) => {
+                 secLessons.forEach(l => {
+                    allLessons.push({
+                       title: l.title,
+                       locked: true,
+                       completed: false,
+                       id: l.id.toString(),
+                       globalIndex: l.listOrder 
+                    });
+                 });
+              });
+              
+              return {
+                title: course.title,
+                subtitle: course.description,
+                progress: 0,
+                total: allLessons.length,
+                lessons: allLessons
+              } as LearningPath;
+           })
+         );
+      })
+    );
+  }
+
+  applyProgress(learningProgress: number): void {
     this.paths.forEach(path => {
+      let completedLessons = 0;
       path.lessons.forEach(lesson => {
         if (lesson.globalIndex !== undefined) {
-          lesson.locked = lesson.globalIndex > learningProgress;
+          lesson.locked = lesson.globalIndex > learningProgress + 1;
+          lesson.completed = lesson.globalIndex <= learningProgress;
+
+          if (lesson.completed) {
+             completedLessons++;
+          }
         }
       });
+      path.progress = completedLessons;
     });
   }
 

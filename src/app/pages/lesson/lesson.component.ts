@@ -1,8 +1,8 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common'; // Required for ngIf and ngFor ideally
 import { ActivatedRoute, Router } from '@angular/router';
+import { HttpClient } from '@angular/common/http';
 import { LearningService, SectionDetails, Exercise } from '../../services/learning.service';
-import { KanbanService } from '../../services/kanban.service';
 import { AuthService, User } from '../../services/auth.service';
 
 @Component({
@@ -19,15 +19,15 @@ export class LessonComponent implements OnInit {
   selectedOptionIndex: number | null = null;
   isSubmitted: boolean = false;
   isCorrect: boolean = false;
-  
+
   user: User | null = null;
 
   constructor(
     private route: ActivatedRoute,
     private router: Router,
     private learningService: LearningService,
-    private kanbanService: KanbanService,
-    private authService: AuthService
+    private authService: AuthService,
+    private http: HttpClient
   ) {}
 
   ngOnInit(): void {
@@ -74,7 +74,7 @@ export class LessonComponent implements OnInit {
 
   submitAnswer(): void {
     if (this.selectedOptionIndex === null || !this.currentExercise || this.isSubmitted) return;
-
+    
     this.isSubmitted = true;
     this.isCorrect = (this.selectedOptionIndex === this.currentExercise.correctAnswerIndex);
   }
@@ -86,41 +86,51 @@ export class LessonComponent implements OnInit {
     }
   }
 
+  exitLesson(): void {
+    this.router.navigate(['/aprendizado']);
+  }
+
   completeSection(): void {
-    // Automatically issue a new project to Kanban "A Fazer" after completing a section
-    if (this.sectionDetails) {
-      this.kanbanService.addTask({
-        title: `Projeto Recompensa: ${this.sectionDetails.title}`,
-        description: 'Implementar na prática os conceitos aprendidos nesta lição.',
-        priority: 'Média',
-        assignee: 'Você (Aluno)',
-        status: 'todo'
-      });
+    if (this.sectionDetails && this.user) {
+      const lessonIdNumber = parseInt(this.sectionDetails.id, 10);
+      const token = localStorage.getItem('token');
+      
+      const updateProgressAndNavigate = () => {
+         if (this.user) {
+            const globalIndex = this.learningService.getLessonGlobalIndex(this.sectionDetails!.id);
+            const currentProgress = this.user.learningProgress || 0;
 
-      // Update User Progress
-      if (this.user) {
-        const globalIndex = this.learningService.getLessonGlobalIndex(this.sectionDetails.id);
-        const currentProgress = this.user.learningProgress || 0;
-        
-        // If they just completed the currently highest unlocked lesson
-        // and we want to unlock the NEXT one (globalIndex + 1):
-        if (globalIndex >= currentProgress) {
-            this.user.learningProgress = globalIndex + 1;
-            this.authService.updateUserProfile(this.user).subscribe({
-                next: () => {
-                    this.router.navigate(['/aprendizado']);
-                },
-                error: (err) => {
-                    console.error('Failed to update progress', err);
-                    this.router.navigate(['/aprendizado']);
-                }
-            });
-            return;
+            if (globalIndex >= currentProgress) {
+                this.user.learningProgress = globalIndex;
+                this.authService.updateUserProfile(this.user).subscribe({
+                    next: () => {
+                        this.router.navigate(['/aprendizado']);
+                    },
+                    error: (err) => {
+                        console.error('Failed to update progress', err);
+                        this.router.navigate(['/aprendizado']);
+                    }
+                });
+                return;
+            }
+          }
+          this.router.navigate(['/aprendizado']);
+      };
+
+      this.http.post('http://localhost:8081/api/kanban/tasks/unlock/' + lessonIdNumber, {}, {
+        headers: { 'Authorization': 'Bearer ' + token }
+      }).subscribe({
+        next: () => {
+           console.log('Task unlocked successfully.');
+           updateProgressAndNavigate();
+        },
+        error: (err) => {
+           console.error('Error unlocking task (or already unlocked). Proceeding...', err);
+           updateProgressAndNavigate();
         }
-      }
+      });
+      return;
     }
-
-    // Navigate back to the learning path if no progress needed updating
     this.router.navigate(['/aprendizado']);
   }
 
@@ -130,6 +140,3 @@ export class LessonComponent implements OnInit {
     this.isCorrect = false;
   }
 }
-
-
-
