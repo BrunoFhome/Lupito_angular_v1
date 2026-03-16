@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Router } from '@angular/router';
 import { Observable, tap, BehaviorSubject } from 'rxjs';
 
@@ -66,8 +66,59 @@ export class AuthService {
     return this.loggedIn.asObservable();
   }
 
-  getCurrentUser(): User {
-    // You should later implement a real call to get user Profile from API
-    return this.mockUser;
+private getAuthHeaders(): { headers: HttpHeaders } {
+    const token = localStorage.getItem('token');
+    return {
+      headers: new HttpHeaders({
+        'Authorization': `Bearer ${token}`
+      })
+    };
+  }
+
+  getCurrentUser(): Observable<User> {
+    const userId = this.getCurrentUserId();
+    if (!userId) {
+      return new Observable<User>(observer => {
+        observer.next(this.mockUser);
+        observer.complete();
+      });
+    }
+    return this.http.get<User>(`http://localhost:8081/users/${userId}`, this.getAuthHeaders());        
+  }
+
+  updateUserProfile(user: User): Observable<User> {
+    const userId = this.getCurrentUserId();
+    if (!userId) {
+      return new Observable<User>(observer => {
+        this.mockUser = { ...this.mockUser, ...user };
+        observer.next(this.mockUser);
+        observer.complete();
+      });
+    }
+    return this.http.put<User>(`http://localhost:8081/users/${userId}`, user, this.getAuthHeaders());  
+  }
+
+  private getCurrentUserId(): number | null {
+    const token = localStorage.getItem('token');
+    if (token) {
+      try {
+        let payload = token.split('.')[1];
+        payload = payload.replace(/-/g, '+').replace(/_/g, '/');
+        const pad = payload.length % 4;
+        if (pad) {
+          if (pad === 1) {
+            throw new Error('InvalidLengthError: Input base64url string is the wrong length to determine padding');
+          }
+          payload += new Array(5 - pad).join('=');
+        }
+        const decoded = JSON.parse(atob(payload));
+        return decoded.userId || null;
+      } catch (e) {
+        console.error('Error decoding token', e);
+        return null;
+      }
+    }
+    const storedId = localStorage.getItem('userId');
+    return storedId ? parseInt(storedId, 10) : null;
   }
 }

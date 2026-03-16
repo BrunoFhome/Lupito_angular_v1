@@ -1,4 +1,7 @@
 <div class="page-container">
+    <div style="color: red; padding: 20px;" *ngIf="errorMessage">
+        Erro ao carregar perfil: {{ errorMessage }}
+    </div>
     <div class="profile-card" *ngIf="user">
 
         <div class="profile-header">
@@ -27,9 +30,18 @@
                 <span class="info-value">{{ user.joinDate | date:'mediumDate' }}</span>
             </div>
             
-            <div class="bio-section" *ngIf="user.bio">
-                <span class="info-label">Bio</span>
-                <p class="bio-text">{{ user.bio }}</p>
+            <div class="bio-section">
+                <div class="bio-header" style="display:flex; justify-content: space-between; align-items: center;">
+                    <span class="info-label">Bio</span>
+                    <button class="btn-edit" (click)="toggleEditBio()" *ngIf="!isEditingBio">Edit</button>
+                    <button class="btn-save" (click)="saveBio()" *ngIf="isEditingBio">Save</button>
+                </div>
+                <div *ngIf="isEditingBio">
+                    <textarea [(ngModel)]="user.bio" rows="4" style="width: 100%; margin-top: 10px;" placeholder="Tell us about yourself..."></textarea>
+                </div>
+                <div *ngIf="!isEditingBio">
+                    <p class="bio-text">{{ user.bio || 'No bio provided yet.' }}</p>
+                </div>
             </div>
         </div>
 
