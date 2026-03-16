@@ -28,9 +28,6 @@
             <button class="action-btn workspace-btn" (click)="updateTaskStatus(task.id, 'in-progress')">
               Iniciar Tarefa
             </button>
-            <div class="secondary-actions">
-              <button class="action-btn secondary-btn" (click)="openWorkspace(task.id)">Espaço de Trabalho</button>
-            </div>
           </div>
         </div>
         <div *ngIf="getTasksByStatus('todo').length === 0" style="padding: 1rem; color: #64748b; font-size: 0.85rem; text-align: center;">
@@ -61,7 +58,7 @@
             </button>
             <div class="secondary-actions">
               <button class="action-btn secondary-btn" (click)="updateTaskStatus(task.id, 'todo')">Voltar</button>
-              <button class="action-btn secondary-btn" (click)="openWorkspace(task.id)">Espaço</button>
+              <button class="action-btn secondary-btn" (click)="openWorkspace(task.id)">Espaço de Trabalho</button>
             </div>
           </div>
         </div>
@@ -85,8 +82,8 @@
           </div>
           <p class="task-description">{{ task.description }}</p>
           <div class="card-actions">
-            <button class="action-btn workspace-btn" style="background-color: #10b981;" (click)="updateTaskStatus(task.id, 'done')">
-              Aprovar / Concluir
+            <button class="action-btn workspace-btn" style="background-color: #10b981;" (click)="openEvaluation(task)">
+              Aprovar
             </button>
             <div class="secondary-actions">
               <button class="action-btn secondary-btn" (click)="updateTaskStatus(task.id, 'in-progress')">Ajustar</button>
@@ -121,5 +118,44 @@
       </div>
     </div>
 
+  </div>
+</div>
+
+<!-- Modal de Auto Avaliação -->
+<div class="modal-overlay" *ngIf="showEvaluation" (click)="closeEvaluation()">
+  <div class="modal-content" (click)="$event.stopPropagation()">
+    <div class="modal-header">
+      <h2>Auto Avaliação</h2>
+      <button class="close-btn" (click)="closeEvaluation()">&times;</button>
+    </div>
+    <div class="modal-body">
+      <p class="modal-instructions">
+        Antes de concluir a tarefa <strong>{{ evaluationTask?.title }}</strong>, confirme que você atendeu todos os critérios abaixo:
+      </p>
+      <div class="checkbox-group">
+        <label class="custom-checkbox">
+          <input type="checkbox" [(ngModel)]="evalChecks[0]">
+          <span>Completei todos os exercícios propostos na tarefa.</span>
+        </label>
+        <label class="custom-checkbox">
+          <input type="checkbox" [(ngModel)]="evalChecks[1]">
+          <span>Compreendi os conceitos teóricos abordados.</span>
+        </label>
+        <label class="custom-checkbox">
+          <input type="checkbox" [(ngModel)]="evalChecks[2]">
+          <span>Testei meu código e ele funciona corretamente.</span>
+        </label>
+        <label class="custom-checkbox">
+          <input type="checkbox" [(ngModel)]="evalChecks[3]">
+          <span>Me sinto confiante para aplicar o que aprendi em novos desafios.</span>
+        </label>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="cancel-btn" (click)="closeEvaluation()">Cancelar</button>
+      <button class="confirm-btn" [disabled]="!allChecked()" (click)="confirmEvaluation()">
+        Concluir
+      </button>
+    </div>
   </div>
 </div>

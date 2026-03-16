@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
 import { MatIconModule } from '@angular/material/icon';
 import { Router } from '@angular/router';
 import { NavbarComponent } from '../../components/navbar/navbar.component';
@@ -8,12 +9,17 @@ import { KanbanService, KanbanTask } from '../../services/kanban.service';
 @Component({
   selector: 'app-kanban',
   standalone: true,
-  imports: [CommonModule, MatIconModule, NavbarComponent],
+  imports: [CommonModule, MatIconModule, NavbarComponent, FormsModule],
   templateUrl: './kanban.component.html',
   styleUrls: ['./kanban.component.css']
 })
 export class KanbanComponent implements OnInit {
   tasks: KanbanTask[] = [];
+
+  // Auto avaliação modal
+  showEvaluation: boolean = false;
+  evaluationTask: KanbanTask | null = null;
+  evalChecks: boolean[] = [false, false, false, false];
 
   constructor(private router: Router, private kanbanService: KanbanService) {}
 
@@ -34,5 +40,27 @@ export class KanbanComponent implements OnInit {
 
   openWorkspace(taskId: number) {
     this.router.navigate(['/workspace', taskId]);
+  }
+
+  openEvaluation(task: KanbanTask) {
+    this.evaluationTask = task;
+    this.evalChecks = [false, false, false, false];
+    this.showEvaluation = true;
+  }
+
+  closeEvaluation() {
+    this.showEvaluation = false;
+    this.evaluationTask = null;
+  }
+
+  allChecked(): boolean {
+    return this.evalChecks.every(c => c === true);
+  }
+
+  confirmEvaluation() {
+    if (this.evaluationTask && this.allChecked()) {
+      this.updateTaskStatus(this.evaluationTask.id, 'done');
+      this.closeEvaluation();
+    }
   }
 }
