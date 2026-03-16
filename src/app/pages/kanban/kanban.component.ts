@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
 import { MatIconModule } from '@angular/material/icon';
 import { Router } from '@angular/router';
 import { NavbarComponent } from '../../components/navbar/navbar.component';
@@ -8,7 +9,7 @@ import { KanbanService, KanbanTask } from '../../services/kanban.service';
 @Component({
   selector: 'app-kanban',
   standalone: true,
-  imports: [CommonModule, MatIconModule, NavbarComponent],
+  imports: [CommonModule, FormsModule, MatIconModule],
   templateUrl: './kanban.component.html',
   styleUrls: ['./kanban.component.css']
 })
