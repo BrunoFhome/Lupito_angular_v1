@@ -105,7 +105,7 @@ export class LessonComponent implements OnInit {
         // If they just completed the currently highest unlocked lesson
         // and we want to unlock the NEXT one (globalIndex + 1):
         if (globalIndex >= currentProgress) {
-            this.user.learningProgress = globalIndex + 1;
+            this.user.learningProgress = globalIndex;
             this.authService.updateUserProfile(this.user).subscribe({
                 next: () => {
                     this.router.navigate(['/aprendizado']);
@@ -130,6 +130,7 @@ export class LessonComponent implements OnInit {
     this.isCorrect = false;
   }
 }
+
 
 
 
