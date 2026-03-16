@@ -5,10 +5,12 @@ import { AuthService, User } from '../../services/auth.service';
 import { LearningService, CourseDTO, SectionDTO, LessonDTO } from '../../services/learning.service';
 import { forkJoin, Observable, of } from 'rxjs';
 import { catchError, map, switchMap, tap } from 'rxjs/operators';
+import { MatIconModule } from '@angular/material/icon';
 
 interface Lesson {
   title: string;
   locked: boolean;
+  completed: boolean;
   id?: string;
   globalIndex?: number;
 }
@@ -24,7 +26,7 @@ interface LearningPath {
 @Component({
   selector: 'app-aprendizado',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, MatIconModule],
   templateUrl: './aprendizado.component.html',
   styleUrl: './aprendizado.component.css'
 })
@@ -50,7 +52,7 @@ export class AprendizadoComponent implements OnInit {
     this.learningService.getCourses().pipe(
       switchMap(courses => {
         if (!courses || courses.length === 0) return of([]);
-
+        
         const courseObservables = courses.map(course => this.buildLearningPath(course));
         return forkJoin(courseObservables);
       }),
@@ -76,31 +78,29 @@ export class AprendizadoComponent implements OnInit {
               lessons: []
             } as LearningPath);
          }
-         
+
          const lessonsObservables = sections.map(sec => this.learningService.getLessonsBySection(sec.id));
          return forkJoin(lessonsObservables).pipe(
            map(nestedLessons => {
               const allLessons: Lesson[] = [];
-              nestedLessons.forEach(sectionLessons => {
-                 sectionLessons.forEach(lesson => {
+              nestedLessons.forEach((secLessons, idx) => {
+                 secLessons.forEach(l => {
                     allLessons.push({
-                       title: lesson.title,
+                       title: l.title,
                        locked: true,
-                       id: lesson.id.toString(),
-                       globalIndex: this.learningService.getLessonGlobalIndex(lesson.id.toString())
+                       completed: false,
+                       id: l.id.toString(),
+                       globalIndex: l.listOrder 
                     });
                  });
               });
               
-              // Sort lessons by ID just in case
-              allLessons.sort((a,b) => (a.globalIndex || 0) - (b.globalIndex || 0));
-
               return {
-                 title: course.title,
-                 subtitle: course.description,
-                 progress: 0,
-                 total: allLessons.length,
-                 lessons: allLessons
+                title: course.title,
+                subtitle: course.description,
+                progress: 0,
+                total: allLessons.length,
+                lessons: allLessons
               } as LearningPath;
            })
          );
@@ -113,11 +113,10 @@ export class AprendizadoComponent implements OnInit {
       let completedLessons = 0;
       path.lessons.forEach(lesson => {
         if (lesson.globalIndex !== undefined) {
-          // Unlocked if learningProgress is >= to the globalIndex
-          // e.g. progress = 1 means first lesson (globalIndex=1) is unlocked
-          lesson.locked = lesson.globalIndex > learningProgress + 1; // + 1 because if user has 0 progress, index 1 should be unlocked
-          
-          if (lesson.globalIndex <= learningProgress) {
+          lesson.locked = lesson.globalIndex > learningProgress + 1;
+          lesson.completed = lesson.globalIndex <= learningProgress;
+
+          if (lesson.completed) {
              completedLessons++;
           }
         }
