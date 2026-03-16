@@ -1,65 +1,93 @@
 <div class="workspace-layout">
-  <!-- Top Navigation Bar -->
+
+  <!-- Header -->
   <header class="workspace-header">
-    <div class="left-section">
+    <div class="header-left">
       <button class="back-btn" (click)="goBack()">
-        <svg viewBox="0 0 24 24" fill="none" class="w-6 h-6">
+        <svg viewBox="0 0 24 24" fill="none" width="16" height="16">
           <path d="M19 12H5M12 19l-7-7 7-7" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
         </svg>
-        Voltar para o Kanban
+        Voltar
       </button>
       <div class="task-info" *ngIf="task">
-        <h2>{{ task.title }}</h2>
-        <span class="badge">{{ task.priority }}</span>
+        <span class="task-title">{{ task.title }}</span>
+        <span class="badge-priority">{{ task.priority }}</span>
+        <span class="badge-done" *ngIf="isCompleted">✓ Concluída</span>
       </div>
     </div>
-    
-    <div class="actions">
-      <button class="run-btn" (click)="runCode()">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-          <polygon points="5 3 19 12 5 21 5 3"></polygon>
+    <div class="header-right">
+      <button class="btn-run" (click)="runCode()" [disabled]="isRunning">
+        <svg viewBox="0 0 24 24" fill="currentColor" width="14" height="14">
+          <polygon points="5 3 19 12 5 21 5 3"/>
         </svg>
-        Executar
+        {{ isRunning ? 'Executando...' : 'Executar' }}
       </button>
-      <button class="submit-btn" (click)="submitProject()">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-          <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline>
-        </svg>
-        Concluir Tarefa
+      <button class="btn-submit" [disabled]="isCompleted" (click)="completeTask()">
+        {{ isCompleted ? '✓ Concluída' : 'Concluir Tarefa' }}
       </button>
     </div>
   </header>
 
-  <!-- Main Content Area -->
-  <div class="workspace-main">
-    
-    <!-- Left Sidebar: Instructions -->
-    <aside class="instructions-panel">
-      <h3>Instruções do Desafio</h3>
-      <div *ngIf="task" class="task-details">
-        <p class="desc">{{ task.description }}</p>
-        <div class="requirements">
-          <h4>Requisitos:</h4>
-          <ul>
-            <li>Implementar a lógica necessária conforme a descrição.</li>
-            <li>Certifique-se de que não haja erros de sintaxe.</li>
-            <li>Teste seu código clicando em "Executar".</li>
-          </ul>
+  <!-- Body -->
+  <div class="workspace-body">
+
+    <!-- Left: Instructions -->
+    <aside class="panel-instructions">
+      <div class="panel-title">Instruções</div>
+      <div *ngIf="task" class="instructions-content">
+        <p class="task-desc">{{ task.description }}</p>
+        <pre *ngIf="task.challengeInstructions" class="instructions-text">{{ task.challengeInstructions }}</pre>
+        <div *ngIf="!task.challengeInstructions" class="instructions-text">
+          <p>Implemente a lógica conforme a descrição acima.</p>
         </div>
       </div>
-      <div *ngIf="!task" class="error-msg">
-        Nenhuma tarefa encontrada.
-      </div>
+      <p *ngIf="!task" class="loading">Carregando...</p>
     </aside>
 
-    <!-- Right Sidebar: Editor -->
-    <main class="editor-container">
-      <ngx-monaco-editor 
-        class="monaco-editor-comp" 
-        [options]="editorOptions" 
-        [(ngModel)]="code">
-      </ngx-monaco-editor>
-    </main>
+    <!-- Right: Editor + Output -->
+    <div class="panel-editor">
 
+      <!-- Editor toolbar -->
+      <div class="editor-toolbar">
+        <span class="lang-tag">{{ language | uppercase }}</span>
+        <span class="toolbar-label">Editor de Código</span>
+        <span class="save-status" [ngClass]="saveStatus">
+          <ng-container *ngIf="saveStatus === 'saving'">● Salvando...</ng-container>
+          <ng-container *ngIf="saveStatus === 'saved'">✓ Salvo</ng-container>
+          <ng-container *ngIf="saveStatus === 'error'">✕ Erro ao salvar</ng-container>
+        </span>
+      </div>
+
+      <!-- Code textarea -->
+      <textarea
+        class="code-area"
+        [ngModel]="code"
+        (ngModelChange)="onCodeChange($event)"
+        spellcheck="false"
+        autocorrect="off"
+        autocapitalize="off"
+        autocomplete="off"
+        (keydown.tab)="onTabKey($event)"
+        placeholder="Escreva seu código aqui...">
+      </textarea>
+
+      <!-- Output -->
+      <div class="output-panel" *ngIf="output">
+        <div class="output-toolbar">
+          <span class="output-label">▶ Saída</span>
+          <button class="btn-clear" (click)="clearOutput()">✕ Fechar</button>
+        </div>
+        <iframe
+          *ngIf="outputType === 'html'"
+          [srcdoc]="htmlPreview"
+          class="html-preview"
+          sandbox="allow-scripts">
+        </iframe>
+        <pre *ngIf="outputType !== 'html'"
+          class="output-text"
+          [class.output-error]="outputType === 'error'">{{ output }}</pre>
+      </div>
+
+    </div>
   </div>
 </div>

@@ -1,163 +1,307 @@
+/* =============================================
+   Layout raiz
+   ============================================= */
 .workspace-layout {
   display: flex;
   flex-direction: column;
-  height: calc(100vh - 60px); /* Adjust based on your global navbar */
+  height: 100vh;
+  overflow: hidden;
   background-color: #1e1e1e;
-  color: #fff;
+  color: #d4d4d4;
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
 }
 
-/* Header Styles */
+/* =============================================
+   Header
+   ============================================= */
 .workspace-header {
   display: flex;
-  justify-content: space-between;
   align-items: center;
-  padding: 0.75rem 1.5rem;
+  justify-content: space-between;
+  padding: 0.6rem 1.25rem;
   background-color: #252526;
-  border-bottom: 1px solid #333;
+  border-bottom: 1px solid #3c3c3c;
+  flex-shrink: 0;
 }
 
-.left-section {
+.header-left {
   display: flex;
   align-items: center;
-  gap: 1.5rem;
+  gap: 1rem;
 }
 
 .back-btn {
   display: flex;
   align-items: center;
-  gap: 0.5rem;
+  gap: 0.4rem;
   background: none;
   border: none;
-  color: #cccccc;
+  color: #aaa;
   cursor: pointer;
-  font-size: 0.9rem;
+  font-size: 0.85rem;
+  padding: 0.3rem 0.5rem;
+  border-radius: 4px;
 }
-
-.back-btn:hover {
-  color: #fff;
-}
-
-.back-btn svg {
-  width: 18px;
-  height: 18px;
-}
+.back-btn:hover { color: #fff; background-color: #333; }
 
 .task-info {
   display: flex;
   align-items: center;
-  gap: 1rem;
-  padding-left: 1.5rem;
+  gap: 0.6rem;
+  padding-left: 1rem;
   border-left: 1px solid #444;
 }
 
-.task-info h2 {
-  font-size: 1.1rem;
-  margin: 0;
-  font-weight: 500;
+.task-title {
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: #fff;
 }
 
-.badge {
+.badge-priority {
   background-color: #4CAF50;
-  color: white;
-  padding: 0.2rem 0.5rem;
-  border-radius: 4px;
+  color: #fff;
   font-size: 0.7rem;
-  font-weight: bold;
+  font-weight: 700;
+  padding: 0.15rem 0.5rem;
+  border-radius: 3px;
 }
 
-.actions {
-  display: flex;
-  gap: 1rem;
+.badge-done {
+  background-color: #2196F3;
+  color: #fff;
+  font-size: 0.7rem;
+  font-weight: 700;
+  padding: 0.15rem 0.5rem;
+  border-radius: 3px;
 }
 
-.run-btn, .submit-btn {
+.header-right {
   display: flex;
   align-items: center;
-  gap: 0.5rem;
-  padding: 0.5rem 1rem;
+  gap: 0.6rem;
+}
+
+.btn-run {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  background-color: #4CAF50;
+  color: #fff;
   border: none;
+  padding: 0.45rem 1rem;
   border-radius: 4px;
-  font-size: 0.9rem;
+  font-size: 0.85rem;
   font-weight: 600;
   cursor: pointer;
-  color: white;
 }
+.btn-run:hover { background-color: #45a049; }
+.btn-run:disabled { background-color: #555; cursor: not-allowed; }
 
-.run-btn {
-  background-color: #4CAF50;
-}
-
-.run-btn:hover { background-color: #45a049; }
-
-.submit-btn {
+.btn-submit {
   background-color: #2196F3;
+  color: #fff;
+  border: none;
+  padding: 0.45rem 1rem;
+  border-radius: 4px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  cursor: pointer;
 }
+.btn-submit:hover { background-color: #1976D2; }
+.btn-submit:disabled { background-color: #555; cursor: not-allowed; }
 
-.submit-btn:hover { background-color: #1976D2; }
-
-.actions svg {
-  width: 16px;
-  height: 16px;
-}
-
-/* Main Layout: Split panels */
-.workspace-main {
+/* =============================================
+   Body: left + right panels
+   ============================================= */
+.workspace-body {
   display: flex;
   flex: 1;
+  min-height: 0;
   overflow: hidden;
 }
 
-.instructions-panel {
-  width: 300px;
+/* =============================================
+   Left panel: Instructions
+   ============================================= */
+.panel-instructions {
+  width: 280px;
+  flex-shrink: 0;
   background-color: #252526;
-  border-right: 1px solid #333;
-  padding: 1.5rem;
-  overflow-y: auto;
+  border-right: 1px solid #3c3c3c;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
 }
 
-.instructions-panel h3 {
-  font-size: 1.1rem;
-  margin-top: 0;
-  margin-bottom: 1rem;
+.panel-title {
+  font-size: 0.8rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
   color: #4CAF50;
+  padding: 0.75rem 1rem 0.5rem;
+  border-bottom: 1px solid #3c3c3c;
+  flex-shrink: 0;
 }
 
-.task-details .desc {
-  font-size: 0.95rem;
+.instructions-content {
+  flex: 1;
+  overflow-y: auto;
+  padding: 1rem;
+}
+
+.task-desc {
+  font-size: 0.88rem;
+  color: #ccc;
   line-height: 1.5;
-  color: #cccccc;
-  margin-bottom: 1.5rem;
+  margin: 0 0 1rem;
 }
 
-.requirements h4 {
-  font-size: 0.95rem;
-  color: #fff;
-  margin-bottom: 0.5rem;
+.instructions-text {
+  font-size: 0.85rem;
+  line-height: 1.6;
+  color: #ccc;
+  white-space: pre-wrap;
+  word-break: break-word;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  margin: 0;
 }
 
-.requirements ul {
-  padding-left: 1.2rem;
-  color: #cccccc;
-  font-size: 0.9rem;
+.loading {
+  color: #888;
+  padding: 1rem;
+  font-size: 0.88rem;
 }
 
-.requirements li {
-  margin-bottom: 0.5rem;
-}
-
-.error-msg {
-  color: #f44336;
-}
-
-/* Editor Container */
-.editor-container {
+/* =============================================
+   Right panel: Editor
+   ============================================= */
+.panel-editor {
   flex: 1;
   display: flex;
   flex-direction: column;
+  min-width: 0;
+  overflow: hidden;
 }
 
-.monaco-editor-comp {
-  height: 100%;
+.editor-toolbar {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  padding: 0.35rem 0.75rem;
+  background-color: #2d2d2d;
+  border-bottom: 1px solid #3c3c3c;
+  flex-shrink: 0;
+}
+
+.lang-tag {
+  background-color: #0e639c;
+  color: #fff;
+  font-size: 0.7rem;
+  font-weight: 700;
+  padding: 0.1rem 0.45rem;
+  border-radius: 3px;
+  letter-spacing: 0.05em;
+}
+
+.toolbar-label {
+  font-size: 0.78rem;
+  color: #888;
+}
+
+.save-status {
+  margin-left: auto;
+  font-size: 0.75rem;
+  font-weight: 500;
+  transition: color 0.3s;
+}
+.save-status.saving { color: #888; }
+.save-status.saved   { color: #4CAF50; }
+.save-status.error   { color: #f48771; }
+
+/* =============================================
+   Code textarea
+   ============================================= */
+.code-area {
+  flex: 1;
+  min-height: 0;
   width: 100%;
+  background-color: #1e1e1e;
+  color: #d4d4d4;
+  font-family: 'Consolas', 'Courier New', 'Fira Code', monospace;
+  font-size: 14px;
+  line-height: 1.6;
+  padding: 1rem 1.25rem;
+  border: none;
+  outline: none;
+  resize: none;
+  tab-size: 4;
+  box-sizing: border-box;
+  caret-color: #fff;
+}
+.code-area::placeholder { color: #555; }
+.code-area:focus { background-color: #1e1e1e; }
+
+/* =============================================
+   Output panel
+   ============================================= */
+.output-panel {
+  flex-shrink: 0;
+  height: 220px;
+  display: flex;
+  flex-direction: column;
+  border-top: 2px solid #3c3c3c;
+  background-color: #1a1a1a;
+}
+
+.output-toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.3rem 0.75rem;
+  background-color: #2d2d2d;
+  border-bottom: 1px solid #3c3c3c;
+  flex-shrink: 0;
+}
+
+.output-label {
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: #ccc;
+}
+
+.btn-clear {
+  background: none;
+  border: 1px solid #555;
+  color: #aaa;
+  font-size: 0.72rem;
+  padding: 0.1rem 0.45rem;
+  border-radius: 3px;
+  cursor: pointer;
+}
+.btn-clear:hover { background-color: #444; color: #fff; }
+
+.output-text {
+  flex: 1;
+  overflow: auto;
+  margin: 0;
+  padding: 0.75rem 1.25rem;
+  font-family: 'Consolas', 'Courier New', monospace;
+  font-size: 0.88rem;
+  line-height: 1.5;
+  color: #d4d4d4;
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+
+.output-text.output-error {
+  color: #f48771;
+}
+
+.html-preview {
+  flex: 1;
+  width: 100%;
+  border: none;
+  background: #fff;
 }

@@ -27,8 +27,11 @@
         <div class="node-circle" [ngClass]="{ 'unlocked': !lesson.locked && !lesson.completed, 'locked': lesson.locked, 'completed': lesson.completed }">
           
           <ng-container *ngIf="lesson.completed">
-            <!-- Check Icon for completed -->
-            <mat-icon style="font-size: 32px; width: 32px; height: 32px; display: flex; align-items: center; justify-content: center;">check_circle</mat-icon>
+            <!-- Book Icon for completed (green) -->
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path>
+              <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path>
+            </svg>
           </ng-container>
 
           <ng-container *ngIf="!lesson.locked && !lesson.completed">

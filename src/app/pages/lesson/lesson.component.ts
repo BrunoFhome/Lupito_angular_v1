@@ -98,42 +98,32 @@ export class LessonComponent implements OnInit {
   }
 
   completeSection(): void {
-    // Automatically issue a new project to Kanban "A Fazer" after completing a section
-    // Assuming backend takes care of unlocking via its endpoint, but the frontend currently manually pushes:
-    if (this.sectionDetails) {
-      this.kanbanService.addTask({
-        title: `Projeto Recompensa: ${this.sectionDetails.title}`,
-        description: 'Implementar na prática os conceitos aprendidos nesta lição.',
-        priority: 'Média',
-        assignee: 'Você (Aluno)',
-        status: 'todo'
+    if (this.user && this.courseId && this.sectionOrder && this.lessonOrder) {
+      this.learningService.completeLesson(this.user.id, this.courseId, this.sectionOrder, this.lessonOrder).subscribe({
+        next: () => {
+          if (this.user && this.sectionDetails) {
+            const globalIndex = this.learningService.getLessonGlobalIndex(this.sectionDetails.id);
+            if (globalIndex >= (this.user.learningProgress || 0)) {
+              this.user.learningProgress = globalIndex;
+              this.authService.updateUserProfile(this.user).subscribe(() => {
+                this.router.navigate(['/aprendizado']);
+              });
+              return;
+            }
+          }
+          this.router.navigate(['/aprendizado']);
+        },
+        error: (err) => {
+          console.error('Failed to complete lesson', err);
+          this.router.navigate(['/aprendizado']);
+        }
       });
-
-      if (this.user && this.courseId && this.sectionOrder && this.lessonOrder) {
-          // 1. Update course-specific progression (prevents track 2 from unlocking)
-          this.learningService.completeLesson(this.user.id, this.courseId, this.sectionOrder, this.lessonOrder).subscribe({
-             next: () => {
-                 // 2. Also bump the global learningProgress for Kanban unlock compatibility
-                 if (this.user) {
-                     const globalIndex = this.learningService.getLessonGlobalIndex(this.sectionDetails!.id);
-                     if (globalIndex >= (this.user.learningProgress || 0)) {
-                         this.user.learningProgress = globalIndex;
-                         this.authService.updateUserProfile(this.user).subscribe(() => {
-                             this.router.navigate(['/aprendizado']);
-                         });
-                         return;
-                     }
-                 }
-                 this.router.navigate(['/aprendizado']);
-             },
-             error: (err) => {
-                 console.error('Failed to complete lesson', err);
-                 this.router.navigate(['/aprendizado']);
-             }
-          });
-          return;
-      }
+    } else {
+      this.router.navigate(['/aprendizado']);
     }
+  }
+
+  exitLesson(): void {
     this.router.navigate(['/aprendizado']);
   }
 

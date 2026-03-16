@@ -10,6 +10,9 @@ export interface KanbanTask {
   priority: string;
   assignee: string;
   status: 'todo' | 'in-progress' | 'in-review' | 'done';
+  challengeInstructions?: string;
+  starterCode?: string;
+  userCode?: string;
 }
 
 @Injectable({
@@ -30,6 +33,16 @@ export class KanbanService {
     };
   }
 
+  private getJsonHeaders(): { headers: HttpHeaders } {
+    const token = localStorage.getItem('token');
+    return {
+      headers: new HttpHeaders({
+        'Authorization': 'Bearer ' + token,
+        'Content-Type': 'application/json'
+      })
+    };
+  }
+
   loadTasks(): void {
     this.http.get<KanbanTask[]>(this.apiUrl + '/tasks', this.getAuthHeaders())
       .subscribe(tasks => {
@@ -39,6 +52,14 @@ export class KanbanService {
 
   getTasks(): Observable<KanbanTask[]> {
     return this.tasksSubject.asObservable();
+  }
+
+  saveCode(taskId: number, code: string): Observable<void> {
+    return this.http.put<void>(
+      `${this.apiUrl}/tasks/${taskId}/code`,
+      JSON.stringify({ code }),
+      this.getJsonHeaders()
+    );
   }
 
   updateTaskStatus(taskId: any, newStatus: KanbanTask['status']) {

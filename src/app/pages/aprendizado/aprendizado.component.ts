@@ -54,7 +54,8 @@ export class AprendizadoComponent implements OnInit {
     this.learningService.getCourses().pipe(
       switchMap(courses => {
         if (!courses || courses.length === 0) return of([]);
-        const courseObservables = courses.map(course => this.buildLearningPath(course));
+        courses.sort((a, b) => a.id - b.id);
+        const courseObservables = courses.map((course, index) => this.buildLearningPath(course, index === 0));
         return forkJoin(courseObservables);
       }),
       catchError(err => {
@@ -66,7 +67,7 @@ export class AprendizadoComponent implements OnInit {
     });
   }
 
-  buildLearningPath(course: CourseDTO): Observable<LearningPath> {
+  buildLearningPath(course: CourseDTO, isFirstCourse: boolean = false): Observable<LearningPath> {
     return forkJoin({
        sections: this.learningService.getSectionsByCourse(course.id),
        progress: this.user ? this.learningService.getUserProgress(course.id, this.user.id).pipe(
@@ -113,8 +114,8 @@ export class AprendizadoComponent implements OnInit {
                          } else if (section.listOrder === progress.currentSectionOrder && lesson.listOrder === progress.currentLessonOrder) {
                              isLocked = false;
                          }
-                      } else {
-                         // Default fallback: unlock the first lesson of the first section
+                      } else if (isFirstCourse) {
+                         // Default fallback: unlock the first lesson only for the first course
                          if (section.listOrder === 1 && lesson.listOrder === 1) {
                              isLocked = false;
                          }

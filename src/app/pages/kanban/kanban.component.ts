@@ -9,7 +9,7 @@ import { KanbanService, KanbanTask } from '../../services/kanban.service';
 @Component({
   selector: 'app-kanban',
   standalone: true,
-  imports: [CommonModule, MatIconModule, NavbarComponent],
+  imports: [CommonModule, FormsModule, MatIconModule, NavbarComponent],
   templateUrl: './kanban.component.html',
   styleUrls: ['./kanban.component.css']
 })
