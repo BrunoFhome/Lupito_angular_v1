@@ -24,7 +24,7 @@
   width: 36px;
   height: 36px;
   border-radius: 50%;
-  border-left-color: #2196F3;
+  border-left-color: #00b4cc;
   animation: spin 1s linear infinite;
 }
 
@@ -35,7 +35,7 @@
 
 /* ── Boas-vindas ─────────────────────────────────── */
 .welcome-banner {
-  background: linear-gradient(135deg, #1e3a5f 0%, #2b70fa 100%);
+  background: linear-gradient(135deg, #005f6b 0%, #00b4cc 100%);
   border-radius: 16px;
   padding: 32px 36px;
   color: white;
@@ -103,7 +103,7 @@
 .link-btn {
   background: none;
   border: none;
-  color: #2b70fa;
+  color: #00b4cc;
   font-size: 0.875rem;
   font-weight: 500;
   cursor: pointer;
@@ -141,13 +141,13 @@
 .course-icon {
   width: 44px;
   height: 44px;
-  background: #eff6ff;
+  background: rgba(0, 180, 204, 0.1);
   border-radius: 10px;
   display: flex;
   align-items: center;
   justify-content: center;
   flex-shrink: 0;
-  color: #2b70fa;
+  color: #00b4cc;
 }
 
 .course-icon svg {
@@ -196,7 +196,7 @@
 }
 
 .pct-done  { background: #dcfce7; color: #16a34a; }
-.pct-mid   { background: #dbeafe; color: #1d4ed8; }
+.pct-mid   { background: rgba(0, 180, 204, 0.12); color: #008c9e; }
 .pct-low   { background: #f1f5f9; color: #64748b; }
 
 .progress-track {
@@ -213,7 +213,7 @@
 }
 
 .fill-done { background: #22c55e; }
-.fill-mid  { background: #2b70fa; }
+.fill-mid  { background: #00b4cc; }
 .fill-low  { background: #94a3b8; }
 
 /* Footer do card */
@@ -263,7 +263,7 @@
 }
 
 .btn-continue {
-  background: #2b70fa;
+  background: #00b4cc;
   color: white;
   border: none;
   border-radius: 8px;
@@ -276,7 +276,7 @@
   flex-shrink: 0;
 }
 
-.btn-continue:hover { background: #1d5fdf; }
+.btn-continue:hover { background: #008c9e; }
 .btn-continue:disabled { background: #cbd5e1; cursor: not-allowed; }
 
 /* ── Bottom grid ─────────────────────────────────── */
@@ -336,7 +336,7 @@
   color: #1e293b;
 }
 
-.kstat-blue   { color: #2b70fa; }
+.kstat-blue   { color: #00b4cc; }
 .kstat-yellow { color: #f59e0b; }
 .kstat-green  { color: #22c55e; }
 
@@ -368,7 +368,7 @@
 .next-step-icon {
   width: 38px;
   height: 38px;
-  background: #2b70fa;
+  background: #00b4cc;
   color: white;
   border-radius: 50%;
   display: flex;
@@ -403,7 +403,7 @@
 }
 
 .btn-primary {
-  background: #2b70fa;
+  background: #00b4cc;
   color: white;
   border: none;
   border-radius: 8px;
@@ -415,7 +415,7 @@
   transition: background 0.2s;
 }
 
-.btn-primary:hover { background: #1d5fdf; }
+.btn-primary:hover { background: #008c9e; }
 
 .next-step-empty {
   justify-content: center;

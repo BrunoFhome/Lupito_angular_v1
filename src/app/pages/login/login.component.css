@@ -1,31 +1,46 @@
+/* ── Página ───────────────────────────────────────────── */
 .page-container {
   display: flex;
   justify-content: center;
   align-items: center;
+  gap: 64px;
   min-height: 100vh;
-  background-color: #f4f6f8;
+  background-color: #ffffff;
+  padding: 40px 24px;
+  box-sizing: border-box;
 }
 
+/* ── Card do formulário ──────────────────────────────── */
 .form-card {
   background: #ffffff;
-  border: 1px solid #dce1e7;
-  border-radius: 8px;
-  padding: 40px;
+  border: 1px solid #e2e8f0;
+  border-radius: 16px;
+  padding: 40px 36px;
   width: 100%;
-  max-width: 400px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  max-width: 380px;
+  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.08);
+  flex-shrink: 0;
+}
+
+.form-logo {
+  display: block;
+  width: 200px !important;
+  max-width: 200px !important;
+  height: auto;
+  margin: 0 auto 8px auto;
 }
 
 h1 {
   margin: 0 0 4px 0;
-  font-size: 24px;
-  color: #1a1a2e;
+  font-size: 26px;
+  color: #343838;
+  font-weight: 700;
 }
 
 .subtitle {
   color: #666;
   font-size: 14px;
-  margin: 0 0 24px 0;
+  margin: 0 0 28px 0;
 }
 
 .form-group {
@@ -43,16 +58,18 @@ h1 {
 .form-group input {
   width: 100%;
   padding: 10px 12px;
-  border: 1px solid #ccc;
-  border-radius: 6px;
+  border: 1px solid #dce1e7;
+  border-radius: 8px;
   font-size: 14px;
   box-sizing: border-box;
   transition: border-color 0.2s;
+  background: #f8fafc;
 }
 
 .form-group input:focus {
   outline: none;
-  border-color: #4a90d9;
+  border-color: #00b4cc;
+  background: #fff;
 }
 
 .error-message {
@@ -65,13 +82,28 @@ h1 {
   margin-bottom: 16px;
 }
 
+.forgot-link {
+  text-align: right;
+  margin-bottom: 16px;
+  font-size: 13px;
+}
+
+.forgot-link a {
+  color: #00b4cc;
+  text-decoration: none;
+}
+
+.forgot-link a:hover {
+  text-decoration: underline;
+}
+
 .btn-primary {
   width: 100%;
-  padding: 11px;
-  background-color: #4a90d9;
+  padding: 12px;
+  background-color: #00b4cc;
   color: white;
   border: none;
-  border-radius: 6px;
+  border-radius: 8px;
   font-size: 15px;
   font-weight: 600;
   cursor: pointer;
@@ -79,7 +111,7 @@ h1 {
 }
 
 .btn-primary:hover {
-  background-color: #357abd;
+  background-color: #008c9e;
 }
 
 .form-footer {
@@ -91,7 +123,7 @@ h1 {
 }
 
 .form-footer a {
-  color: #4a90d9;
+  color: #00b4cc;
   text-decoration: none;
   font-weight: 600;
 }
@@ -100,17 +132,49 @@ h1 {
   text-decoration: underline;
 }
 
-.forgot-link {
-  text-align: right;
-  margin-bottom: 16px;
-  font-size: 13px;
+/* ── Wrapper da imagem ───────────────────────────────── */
+.image-wrapper {
+  flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 20px;
 }
 
-.forgot-link a {
-  color: #4a90d9;
-  text-decoration: none;
+.welcome-text {
+  margin: 0;
+  font-size: 28px;
+  font-weight: 700;
+  color: #343838;
+  letter-spacing: -0.5px;
 }
 
-.forgot-link a:hover {
-  text-decoration: underline;
+.image-circle {
+  width: 380px;
+  height: 380px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #b2ebf2 0%, #00dffc 50%, #00b4cc 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+}
+
+.welcome-img {
+  width: 90%;
+  height: 90%;
+  object-fit: contain;
+  display: block;
+}
+
+/* ── Responsividade ──────────────────────────────────── */
+@media (max-width: 860px) {
+  .page-container {
+    flex-direction: column;
+    gap: 32px;
+  }
+
+  .image-wrapper {
+    display: none;
+  }
 }

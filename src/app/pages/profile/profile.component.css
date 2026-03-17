@@ -35,8 +35,8 @@
     width: 120px;
     height: 120px;
     border-radius: 50%;
-    background-color: #e8f0fb;
-    color: #4a90d9;
+    background-color: rgba(0, 180, 204, 0.1);
+    color: #00b4cc;
     font-size: 40px;
     font-weight: bold;
     display: flex;
@@ -64,7 +64,7 @@
 .profile-details h1 {
     margin: 0;
     font-size: 26px;
-    color: #1a1a2e;
+    color: #343838;
     font-weight: 700;
 }
 
@@ -106,7 +106,7 @@
 }
 
 .btn-edit-icon:hover {
-    color: #4a90d9;
+    color: #00b4cc;
     background: #f1f5f9;
 }
 
@@ -128,8 +128,8 @@
 }
 
 .bio-edit-container textarea:focus {
-    border-color: #4a90d9;
-    box-shadow: 0 0 0 3px rgba(74, 144, 217, 0.1);
+    border-color: #00b4cc;
+    box-shadow: 0 0 0 3px rgba(0, 180, 204, 0.1);
 }
 
 .bio-actions {
@@ -228,8 +228,8 @@
 .project-icon {
     width: 40px;
     height: 40px;
-    background: #f0f7ff;
-    color: #3b82f6;
+    background: rgba(0, 180, 204, 0.1);
+    color: #00b4cc;
     border-radius: 8px;
     display: flex;
     align-items: center;

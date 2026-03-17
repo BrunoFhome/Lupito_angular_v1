@@ -58,7 +58,7 @@
   margin-bottom: 2rem;
   font-size: 1rem;
   color: #555;
-  border-left: 4px solid #2196F3;
+  border-left: 4px solid #00b4cc;
 }
 
 .options-container {
@@ -85,8 +85,8 @@
 }
 
 .option-btn.selected {
-  border-color: #2196F3;
-  background-color: #e3f2fd;
+  border-color: #00b4cc;
+  background-color: rgba(0, 180, 204, 0.1);
 }
 
 .option-btn.correct {
@@ -125,11 +125,11 @@
 }
 
 .submit-btn {
-  background-color: #2196F3;
+  background-color: #00b4cc;
 }
 
 .submit-btn:hover:not(:disabled) {
-  background-color: #1976D2;
+  background-color: #008c9e;
 }
 
 .feedback-area {
@@ -212,7 +212,7 @@
   width: 36px;
   height: 36px;
   border-radius: 50%;
-  border-left-color: #2196F3;
+  border-left-color: #00b4cc;
   animation: spin 1s linear infinite;
   margin-bottom: 1rem;
 }
@@ -239,8 +239,8 @@
 
 .theory-badge {
   display: inline-block;
-  background: #e3f2fd;
-  color: #1565c0;
+  background: rgba(0, 180, 204, 0.12);
+  color: #008c9e;
   font-size: 0.75rem;
   font-weight: 600;
   text-transform: uppercase;
@@ -254,7 +254,7 @@
   margin: 0;
   font-size: 1.8rem;
   font-weight: 700;
-  color: #1a1a2e;
+  color: #343838;
 }
 
 /* Rich text content */
@@ -321,11 +321,11 @@
 }
 
 .rich-text-content blockquote {
-  border-left: 4px solid #2196F3;
+  border-left: 4px solid #00b4cc;
   margin: 1rem 0;
   padding: 0.5rem 1rem;
-  background: #e3f2fd;
-  color: #1565c0;
+  background: rgba(0, 180, 204, 0.1);
+  color: #008c9e;
   border-radius: 0 6px 6px 0;
 }
 
@@ -338,14 +338,14 @@
 }
 
 .start-btn {
-  background-color: #2196F3;
+  background-color: #00b4cc;
   width: auto;
   padding: 0.9rem 2.5rem;
   font-size: 1rem;
 }
 
 .start-btn:hover {
-  background-color: #1976D2;
+  background-color: #008c9e;
 }
 
 /* ── Tela de Resumo ─────────────────────────────────────── */
@@ -376,7 +376,7 @@
 .summary-score h2 {
   margin: 0;
   font-size: 1.6rem;
-  color: #1a1a2e;
+  color: #343838;
 }
 
 .score-description {
@@ -404,9 +404,9 @@
 }
 
 .score-good {
-  border-color: #2196F3;
-  background-color: #e3f2fd;
-  color: #1565c0;
+  border-color: #00b4cc;
+  background-color: rgba(0, 180, 204, 0.1);
+  color: #008c9e;
 }
 
 .score-poor {

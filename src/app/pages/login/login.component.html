@@ -1,7 +1,10 @@
 <div class="page-container">
+
+  <!-- Formulário -->
   <div class="form-card">
+    <img src="assets/images/logo_lupitoo.png" alt="Lupito" class="form-logo" />
     <h1>Login</h1>
-    <p class="subtitle">Welcome back! Please sign in to your account.</p>
+    <p class="subtitle">Bem-vindo de volta! Entre na sua conta.</p>
 
     <form (ngSubmit)="onLogin()" #loginForm="ngForm">
 
@@ -12,19 +15,19 @@
           type="email"
           [(ngModel)]="email"
           name="email"
-          placeholder="Enter your email"
+          placeholder="seu@email.com"
           required
         />
       </div>
 
       <div class="form-group">
-        <label for="password">Password</label>
+        <label for="password">Senha</label>
         <input
           id="password"
           type="password"
           [(ngModel)]="password"
           name="password"
-          placeholder="Enter your password"
+          placeholder="Sua senha"
           required
         />
       </div>
@@ -37,12 +40,21 @@
         <a routerLink="/forgot-password">Esqueci minha senha</a>
       </div>
 
-      <button type="submit" class="btn-primary">Login</button>
+      <button type="submit" class="btn-primary">Entrar</button>
 
     </form>
 
     <p class="form-footer">
-      Don't have an account? <a routerLink="/register">Register here</a>
+      Não tem uma conta? <a routerLink="/register">Cadastre-se</a>
     </p>
   </div>
+
+  <!-- Imagem com background circular -->
+  <div class="image-wrapper">
+    <p class="welcome-text">BEM-VINDO!</p>
+    <div class="image-circle">
+      <img src="assets/images/bemvindo.png" alt="Bem-vindo ao Lupito" class="welcome-img" />
+    </div>
+  </div>
+
 </div>

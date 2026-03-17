@@ -68,7 +68,7 @@
 }
 
 .badge-done {
-  background-color: #2196F3;
+  background-color: #00b4cc;
   color: #fff;
   font-size: 0.7rem;
   font-weight: 700;
@@ -99,7 +99,7 @@
 .btn-run:disabled { background-color: #555; cursor: not-allowed; }
 
 .btn-submit {
-  background-color: #2196F3;
+  background-color: #00b4cc;
   color: #fff;
   border: none;
   padding: 0.45rem 1rem;
@@ -108,7 +108,7 @@
   font-weight: 600;
   cursor: pointer;
 }
-.btn-submit:hover { background-color: #1976D2; }
+.btn-submit:hover { background-color: #008c9e; }
 .btn-submit:disabled { background-color: #555; cursor: not-allowed; }
 
 /* =============================================
@@ -196,7 +196,7 @@
 }
 
 .lang-tag {
-  background-color: #0e639c;
+  background-color: #008c9e;
   color: #fff;
   font-size: 0.7rem;
   font-weight: 700;

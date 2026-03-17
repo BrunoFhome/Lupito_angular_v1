@@ -22,7 +22,7 @@
 .header-icon {
   width: 48px;
   height: 48px;
-  background-color: #2b70fa;
+  background-color: #00b4cc;
   border-radius: 12px;
   display: flex;
   justify-content: center;
@@ -46,12 +46,12 @@
 
 /* ── Card de progresso ───────────────────────────────────────────────────────── */
 .progress-card {
-  background-color: #2b70fa;
+  background-color: #00b4cc;
   border-radius: 16px;
   padding: 24px 30px;
   color: white;
   margin-bottom: 48px;
-  box-shadow: 0 4px 20px rgba(43, 112, 250, 0.2);
+  box-shadow: 0 4px 20px rgba(0, 180, 204, 0.2);
 }
 
 .progress-info {
