@@ -91,4 +91,25 @@ export class ProfileComponent implements OnInit, OnDestroy {
             alert('Código copiado!');
         }
     }
+
+    get earnedBadgesCount(): number {
+        return this.badges.filter(b => b.earned).length;
+    }
+
+    get badges(): { label: string; icon: string; description: string; earned: boolean }[] {
+        const progress = this.user?.learningProgress ?? 0;
+        const done = this.completedProjects.length;
+        const streak = this.user?.currentStreak ?? 0;
+
+        return [
+            { label: 'Primeira Missão', icon: '🎯', description: 'Completou a primeira aula', earned: progress >= 1 },
+            { label: 'Estudante Dedicado', icon: '📚', description: 'Completou 5 aulas', earned: progress >= 5 },
+            { label: 'Mestre do Conhecimento', icon: '🧠', description: 'Completou 10 aulas', earned: progress >= 10 },
+            { label: 'Primeiro Projeto', icon: '🚀', description: 'Concluiu o primeiro projeto', earned: done >= 1 },
+            { label: 'Portfólio em Crescimento', icon: '💼', description: 'Concluiu 3 projetos', earned: done >= 3 },
+            { label: 'Desenvolvedor Completo', icon: '🏅', description: 'Concluiu 5 projetos', earned: done >= 5 },
+            { label: 'Em Sequência', icon: '🔥', description: '3 dias seguidos de estudo', earned: streak >= 3 },
+            { label: 'Uma Semana Forte', icon: '⚡', description: '7 dias seguidos de estudo', earned: streak >= 7 },
+        ];
+    }
 }

@@ -31,6 +31,21 @@
                         </div>
                     </div>
 
+                    <div class="profile-stats-row">
+                        <div class="profile-stat">
+                            <span class="stat-val">{{ user.learningProgress ?? 0 }}</span>
+                            <span class="stat-lbl">Aulas concluídas</span>
+                        </div>
+                        <div class="profile-stat">
+                            <span class="stat-val">{{ completedProjects.length }}</span>
+                            <span class="stat-lbl">Projetos</span>
+                        </div>
+                        <div class="profile-stat">
+                            <span class="stat-val streak-val">{{ user.currentStreak ?? 0 }}🔥</span>
+                            <span class="stat-lbl">Dias seguidos</span>
+                        </div>
+                    </div>
+
                     <div class="social-links">
                         <span class="location"><i class="icon-location">📌</i> São Paulo, Brasil</span>
                         <span class="email"><i class="icon-email">✉️</i> {{ user.email }}</span>
@@ -41,6 +56,25 @@
                         <button class="icon-btn">LinkedIn</button>
                         <button class="icon-btn">Web</button>
                     </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Seção de Conquistas -->
+        <div class="badges-section">
+            <div class="badges-header">
+                <h2>Conquistas</h2>
+                <span class="badges-count">{{ earnedBadgesCount }} / {{ badges.length }} desbloqueadas</span>
+            </div>
+            <div class="badges-grid">
+                <div class="badge-card" *ngFor="let badge of badges" [class.badge-locked]="!badge.earned">
+                    <div class="badge-icon">{{ badge.icon }}</div>
+                    <div class="badge-info">
+                        <span class="badge-label">{{ badge.label }}</span>
+                        <span class="badge-desc">{{ badge.description }}</span>
+                    </div>
+                    <span class="badge-status" *ngIf="badge.earned">✓</span>
+                    <span class="badge-status badge-status-locked" *ngIf="!badge.earned">🔒</span>
                 </div>
             </div>
         </div>

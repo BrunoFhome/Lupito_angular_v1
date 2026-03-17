@@ -13,6 +13,7 @@ export interface User {
   joinDate: string;
   bio: string;
   learningProgress?: number;
+  currentStreak?: number;
 }
 
 @Injectable({
