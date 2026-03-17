@@ -14,6 +14,8 @@ export interface User {
   bio: string;
   learningProgress?: number;
   currentStreak?: number;
+  city?: string;
+  state?: string;
 }
 
 @Injectable({
@@ -51,8 +53,8 @@ export class AuthService {
     );
   }
 
-  register(name: string, email: string, password: string): Observable<any> {
-    return this.http.post<any>(`${this.apiUrl}/register`, { name, email, password });
+  register(name: string, email: string, password: string, city?: string, state?: string): Observable<any> {
+    return this.http.post<any>(`${this.apiUrl}/register`, { name, email, password, city, state });
   }
 
   logout(): void {

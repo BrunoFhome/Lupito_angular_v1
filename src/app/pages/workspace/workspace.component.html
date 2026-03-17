@@ -50,8 +50,8 @@
         <span class="toolbar-label">Editor de Código</span>
         <span class="save-status" [ngClass]="saveStatus">
           <ng-container *ngIf="saveStatus === 'saving'">● Salvando...</ng-container>
-          <ng-container *ngIf="saveStatus === 'saved'">✓ Salvo</ng-container>
-          <ng-container *ngIf="saveStatus === 'error'">✕ Erro ao salvar</ng-container>
+          <ng-container *ngIf="saveStatus === 'saved'">✓ Salvo às {{ lastSavedAt | date:'HH:mm:ss' }}</ng-container>
+          <ng-container *ngIf="saveStatus === 'error'">✕ Salvo localmente (sem conexão)</ng-container>
         </span>
       </div>
 

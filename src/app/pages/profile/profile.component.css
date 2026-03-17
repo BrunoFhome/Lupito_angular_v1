@@ -455,6 +455,64 @@
     cursor: not-allowed;
 }
 
+/* Localização editável */
+.location-wrapper {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    flex-wrap: wrap;
+}
+
+.location-empty {
+    color: #94a3b8;
+    font-style: italic;
+}
+
+.btn-edit-location {
+    font-size: 13px;
+    padding: 2px 6px;
+    opacity: 0.5;
+}
+
+.btn-edit-location:hover {
+    opacity: 1;
+}
+
+.location-edit-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-wrap: wrap;
+}
+
+.location-edit-row select,
+.location-edit-row input[type="text"] {
+    padding: 6px 10px;
+    border: 1px solid #cbd5e1;
+    border-radius: 6px;
+    font-size: 13px;
+    color: #1e293b;
+    background: #fff;
+}
+
+.location-edit-row select {
+    max-width: 180px;
+}
+
+.location-edit-row input[type="text"] {
+    max-width: 140px;
+}
+
+.btn-save-sm {
+    padding: 5px 12px !important;
+    font-size: 13px !important;
+}
+
+.btn-cancel-sm {
+    padding: 5px 10px !important;
+    font-size: 13px !important;
+}
+
 /* Stats row no perfil */
 .profile-stats-row {
     display: flex;

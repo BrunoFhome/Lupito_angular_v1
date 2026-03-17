@@ -47,7 +47,34 @@
                     </div>
 
                     <div class="social-links">
-                        <span class="location"><i class="icon-location">📌</i> São Paulo, Brasil</span>
+                        <!-- Localização editável -->
+                        <div class="location-wrapper">
+                            <ng-container *ngIf="!isEditingLocation">
+                                <span class="location">
+                                    <i class="icon-location">📌</i>
+                                    <span *ngIf="user.city || user.state">
+                                        {{ user.city }}{{ user.city && user.state ? ', ' : '' }}{{ user.state }}
+                                    </span>
+                                    <span *ngIf="!user.city && !user.state" class="location-empty">Localização não informada</span>
+                                </span>
+                                <button class="btn-edit-icon btn-edit-location" (click)="toggleEditLocation()">✎</button>
+                            </ng-container>
+
+                            <ng-container *ngIf="isEditingLocation">
+                                <div class="location-edit-row">
+                                    <select [(ngModel)]="user.state" name="profileState">
+                                        <option value="">Estado</option>
+                                        <option *ngFor="let s of brazilianStates" [value]="s.sigla">
+                                            {{ s.sigla }} — {{ s.nome }}
+                                        </option>
+                                    </select>
+                                    <input type="text" [(ngModel)]="user.city" name="profileCity" placeholder="Cidade" />
+                                    <button class="btn-save btn-save-sm" (click)="saveLocation()">Salvar</button>
+                                    <button class="btn-cancel btn-cancel-sm" (click)="toggleEditLocation()">✕</button>
+                                </div>
+                            </ng-container>
+                        </div>
+
                         <span class="email"><i class="icon-email">✉️</i> {{ user.email }}</span>
                     </div>
 

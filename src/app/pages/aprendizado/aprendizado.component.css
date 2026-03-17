@@ -1,18 +1,21 @@
+/* ── Página ─────────────────────────────────────────────────────────────────── */
 .learning-container {
   padding: 40px;
-  max-width: 900px;
+  max-width: 960px;
   margin: 0 auto;
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
   color: #1c1c1c;
 }
 
 .path-section {
-  margin-bottom: 70px;
+  margin-bottom: 80px;
 }
 
+/* ── Cabeçalho da trilha ─────────────────────────────────────────────────────── */
 .path-header {
   display: flex;
   align-items: center;
+  gap: 16px;
   margin-bottom: 24px;
 }
 
@@ -25,7 +28,7 @@
   justify-content: center;
   align-items: center;
   color: white;
-  margin-right: 16px;
+  flex-shrink: 0;
 }
 
 .header-icon svg {
@@ -34,54 +37,46 @@
 }
 
 .path-header h2 {
-  font-size: 32px;
+  font-size: 30px;
   font-weight: 800;
   margin: 0;
   color: #1a1a1a;
   letter-spacing: -0.5px;
 }
 
-.preview-badge {
-  font-size: 13px;
-  padding: 4px 10px;
-  background-color: #e5e5e5;
-  border: 1px solid #d4d4d4;
-  border-radius: 6px;
-  color: #4b4b4b;
-  margin-left: 20px;
-  font-weight: 600;
-  text-transform: uppercase;
-}
-
+/* ── Card de progresso ───────────────────────────────────────────────────────── */
 .progress-card {
   background-color: #2b70fa;
   border-radius: 16px;
   padding: 24px 30px;
   color: white;
-  margin-bottom: 50px;
-  box-shadow: 0 4px 15px rgba(43, 112, 250, 0.15);
+  margin-bottom: 48px;
+  box-shadow: 0 4px 20px rgba(43, 112, 250, 0.2);
 }
 
 .progress-info {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 18px;
+  margin-bottom: 16px;
 }
 
 .progress-info h3 {
   margin: 0;
-  font-size: 22px;
+  font-size: 20px;
   font-weight: 700;
 }
 
 .progress-text {
-  font-weight: 700;
-  font-size: 16px;
+  font-size: 14px;
+  font-weight: 600;
+  background: rgba(255,255,255,0.2);
+  padding: 4px 12px;
+  border-radius: 20px;
 }
 
 .progress-bar-container {
-  height: 14px;
+  height: 12px;
   background-color: rgba(255, 255, 255, 0.25);
   border-radius: 10px;
   overflow: hidden;
@@ -91,117 +86,168 @@
   height: 100%;
   background-color: rgba(255, 255, 255, 0.9);
   border-radius: 10px;
-  transition: width 0.3s ease;
+  transition: width 0.6s ease;
 }
 
-.lessons-grid {
-  display: grid;
-  grid-template-columns: repeat(5, 1fr);
-  row-gap: 50px;
-  column-gap: 20px;
-  justify-items: center;
+/* ── Mapa da trilha ──────────────────────────────────────────────────────────── */
+
+/* Wrapper com scroll horizontal em telas pequenas */
+.trail-scroll {
+  overflow-x: auto;
+  padding-bottom: 24px;
 }
 
-@media (max-width: 800px) {
-  .lessons-grid {
-    grid-template-columns: repeat(3, 1fr);
-  }
-}
-
-@media (max-width: 500px) {
-  .lessons-grid {
-    grid-template-columns: repeat(2, 1fr);
-  }
-}
-
-.lesson-node {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: flex-start;
-  text-align: center;
-  width: 100px;
-}
-
-.node-circle {
-  width: 75px;
-  height: 75px;
-  border-radius: 50%;
-  display: flex;
-  justify-content: center;
-  align-items: center;
+/* Container do mapa: posiciona SVG + nós em camadas */
+.trail-map {
   position: relative;
-  transition: transform 0.2s ease, box-shadow 0.2s ease;
-  cursor: pointer;
-  border: 4px solid transparent; 
+  /* width e height vêm do componente via [style] */
 }
 
-.node-circle:active {
-  transform: translateY(4px) !important;
-  box-shadow: none !important;
-  margin-bottom: 24px !important;
-}
-
-.node-circle svg, .node-circle mat-icon {
-  width: 32px;
-  height: 32px;
-  font-size: 32px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-/* Unlocked Node Styling */
-.node-circle.unlocked {
-  background-color: #ff9800; /* Orange background for active/unlocked */
-  color: white;
-  border: 4px solid #f57c00;
-  box-shadow: 0 6px 0 #e65100;
-  margin-bottom: 20px;
-}
-.node-circle.unlocked:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 8px 0 #e65100;
-}
-
-/* Locked Node Styling */
-.node-circle.locked {
-  background-color: #f7f9fc;
-  color: #aeb6c1;
-  border: 4px solid #e2e8f0;
-  box-shadow: 0 6px 0 #cbd5e1;
-  margin-bottom: 20px;
+/* ── SVG de conexões ─────────────────────────────────────────────────────────── */
+.trail-svg {
+  position: absolute;
+  top: 0;
+  left: 0;
   pointer-events: none;
 }
 
-/* Completed Node Styling */
-.node-circle.completed {
-  background-color: #4caf50;
-  color: white;
-  border: 4px solid #43a047;
-  box-shadow: 0 6px 0 #2e7d32;
-  margin-bottom: 20px;
-}
-.node-circle.completed:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 8px 0 #2e7d32;
+.trail-seg {
+  fill: none;
+  stroke-width: 8;
 }
 
-.lesson-title {
-  font-size: 15px;
+/* Segmento concluído: verde sólido */
+.seg-done {
+  stroke: #4caf50;
+}
+
+/* Segmento atual (próxima lição): laranja tracejado */
+.seg-current {
+  stroke: #ff9800;
+  stroke-dasharray: 14 7;
+}
+
+/* Segmento bloqueado: cinza claro */
+.seg-locked {
+  stroke: #dde3ed;
+}
+
+/* ── Nós ─────────────────────────────────────────────────────────────────────── */
+.trail-node {
+  position: absolute;
+  /* centraliza o nó no ponto (x, y) calculado */
+  transform: translate(-50%, -50%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 130px;
+  z-index: 2;
+}
+
+.trail-node.node-completed,
+.trail-node.node-unlocked {
+  cursor: pointer;
+}
+
+.trail-node.node-locked {
+  cursor: not-allowed;
+}
+
+/* Círculo base */
+.node-circle {
+  width: 72px;
+  height: 72px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 4px solid transparent;
+  transition: transform 0.18s ease, box-shadow 0.18s ease;
+  margin-bottom: 10px;
+}
+
+.node-circle svg {
+  width: 30px;
+  height: 30px;
+}
+
+/* Estado: concluído ── verde */
+.node-completed .node-circle {
+  background-color: #4caf50;
+  border-color: #43a047;
+  box-shadow: 0 6px 0 #2e7d32;
+  color: white;
+}
+.node-completed:hover .node-circle {
+  transform: translateY(-3px);
+  box-shadow: 0 9px 0 #2e7d32;
+}
+.node-completed:active .node-circle {
+  transform: translateY(3px);
+  box-shadow: 0 2px 0 #2e7d32;
+}
+
+/* Estado: desbloqueado / atual ── laranja com pulso */
+.node-unlocked .node-circle {
+  background-color: #ff9800;
+  border-color: #f57c00;
+  box-shadow: 0 6px 0 #e65100;
+  color: white;
+  animation: pulse-node 2s ease-in-out infinite;
+}
+.node-unlocked:hover .node-circle {
+  animation: none;
+  transform: translateY(-3px);
+  box-shadow: 0 9px 0 #e65100;
+}
+.node-unlocked:active .node-circle {
+  animation: none;
+  transform: translateY(3px);
+  box-shadow: 0 2px 0 #e65100;
+}
+
+/* Estado: bloqueado ── cinza */
+.node-locked .node-circle {
+  background-color: #f1f5f9;
+  border-color: #dde3ed;
+  box-shadow: 0 6px 0 #cbd5e1;
+  color: #94a3b8;
+  pointer-events: none;
+}
+
+/* ── Rótulo do nó ────────────────────────────────────────────────────────────── */
+.node-label {
+  font-size: 13px;
   font-weight: 700;
   color: #4b5563;
+  text-align: center;
   line-height: 1.3;
-}.node-circle.completed {
-  background-color: #4caf50; /* Green background for completed */
-  border-color: #388e3c;
-  color: white;
+  max-width: 120px;
+  word-break: break-word;
 }
-.node-circle.completed mat-icon {
-  color: white;
+
+.node-locked .node-label {
+  color: #94a3b8;
 }
-.node-circle.unlocked {
-  background-color: #ff9800; /* Orange background for active/unlocked */
-  border-color: #f57c00;
-  color: white;
+
+/* ── Animação de pulso ───────────────────────────────────────────────────────── */
+@keyframes pulse-node {
+  0%, 100% {
+    transform: translateY(0) scale(1);
+    box-shadow: 0 6px 0 #e65100;
+  }
+  50% {
+    transform: translateY(-4px) scale(1.06);
+    box-shadow: 0 10px 0 #e65100, 0 0 20px rgba(255, 152, 0, 0.35);
+  }
+}
+
+/* ── Responsividade ──────────────────────────────────────────────────────────── */
+@media (max-width: 700px) {
+  .learning-container {
+    padding: 20px 16px;
+  }
+  .path-header h2 {
+    font-size: 22px;
+  }
 }

@@ -16,7 +16,39 @@ export class RegisterComponent {
     email = '';
     password = '';
     confirmPassword = '';
+    city = '';
+    state = '';
     errorMessage = '';
+
+    readonly brazilianStates = [
+        { sigla: 'AC', nome: 'Acre' },
+        { sigla: 'AL', nome: 'Alagoas' },
+        { sigla: 'AP', nome: 'Amapá' },
+        { sigla: 'AM', nome: 'Amazonas' },
+        { sigla: 'BA', nome: 'Bahia' },
+        { sigla: 'CE', nome: 'Ceará' },
+        { sigla: 'DF', nome: 'Distrito Federal' },
+        { sigla: 'ES', nome: 'Espírito Santo' },
+        { sigla: 'GO', nome: 'Goiás' },
+        { sigla: 'MA', nome: 'Maranhão' },
+        { sigla: 'MT', nome: 'Mato Grosso' },
+        { sigla: 'MS', nome: 'Mato Grosso do Sul' },
+        { sigla: 'MG', nome: 'Minas Gerais' },
+        { sigla: 'PA', nome: 'Pará' },
+        { sigla: 'PB', nome: 'Paraíba' },
+        { sigla: 'PR', nome: 'Paraná' },
+        { sigla: 'PE', nome: 'Pernambuco' },
+        { sigla: 'PI', nome: 'Piauí' },
+        { sigla: 'RJ', nome: 'Rio de Janeiro' },
+        { sigla: 'RN', nome: 'Rio Grande do Norte' },
+        { sigla: 'RS', nome: 'Rio Grande do Sul' },
+        { sigla: 'RO', nome: 'Rondônia' },
+        { sigla: 'RR', nome: 'Roraima' },
+        { sigla: 'SC', nome: 'Santa Catarina' },
+        { sigla: 'SP', nome: 'São Paulo' },
+        { sigla: 'SE', nome: 'Sergipe' },
+        { sigla: 'TO', nome: 'Tocantins' },
+    ];
 
     constructor(private authService: AuthService, private router: Router) { }
 
@@ -24,28 +56,29 @@ export class RegisterComponent {
         this.errorMessage = '';
 
         if (!this.name || !this.email || !this.password || !this.confirmPassword) {
-            this.errorMessage = 'Please fill in all fields.';
+            this.errorMessage = 'Preencha todos os campos obrigatórios.';
             return;
         }
 
         if (this.password !== this.confirmPassword) {
-            this.errorMessage = 'Passwords do not match.';
+            this.errorMessage = 'As senhas não coincidem.';
             return;
         }
 
-        if (this.password.length < 3) {
-            this.errorMessage = 'Password must be at least 3 characters.';
+        if (this.password.length < 6) {
+            this.errorMessage = 'A senha deve ter no mínimo 6 caracteres.';
             return;
         }
 
-        this.authService.register(this.name, this.email, this.password).subscribe({
-            next: () => {
-                // After successful registration, route them back to login
-                this.router.navigate(['/login']);
-            },
+        this.authService.register(
+            this.name, this.email, this.password,
+            this.city || undefined,
+            this.state || undefined
+        ).subscribe({
+            next: () => this.router.navigate(['/login']),
             error: (err) => {
                 console.error(err);
-                this.errorMessage = 'Registration failed. Email might already be taken.';
+                this.errorMessage = 'Erro ao criar conta. O email pode já estar em uso.';
             }
         });
     }

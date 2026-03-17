@@ -1,10 +1,10 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
+import { Component, OnInit, OnDestroy, HostListener } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Location } from '@angular/common';
 import { Subject } from 'rxjs';
-import { debounceTime, takeUntil } from 'rxjs/operators';
+import { debounceTime, filter, take, takeUntil } from 'rxjs/operators';
 import { KanbanService, KanbanTask } from '../../services/kanban.service';
 import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
 
@@ -28,12 +28,26 @@ export class WorkspaceComponent implements OnInit, OnDestroy {
   isRunning: boolean = false;
 
   saveStatus: 'idle' | 'saving' | 'saved' | 'error' = 'idle';
+  lastSavedAt: Date | null = null;
 
   private codeChange$ = new Subject<string>();
   private destroy$ = new Subject<void>();
+  private codeInitialized = false;
 
   get htmlPreview(): SafeHtml {
     return this.sanitizer.bypassSecurityTrustHtml(this.code);
+  }
+
+  private get localStorageKey(): string {
+    return `workspace_code_${this.taskId}`;
+  }
+
+  // Avisa o browser antes de fechar/recarregar com save pendente
+  @HostListener('window:beforeunload', ['$event'])
+  onBeforeUnload(event: BeforeUnloadEvent): void {
+    if (this.saveStatus === 'saving') {
+      event.preventDefault();
+    }
   }
 
   constructor(
@@ -45,34 +59,108 @@ export class WorkspaceComponent implements OnInit, OnDestroy {
   ) {}
 
   ngOnInit() {
-    // Auto-save: waits 1.5s after user stops typing
+    // Salva no servidor após 1.5s sem digitação
     this.codeChange$.pipe(
       debounceTime(1500),
       takeUntil(this.destroy$)
-    ).subscribe(code => this.persistCode(code));
+    ).subscribe(code => this.persistCodeToServer(code));
 
     this.route.paramMap.subscribe(params => {
       const idParam = params.get('taskId');
-      if (idParam) {
-        this.taskId = parseInt(idParam, 10);
-        this.kanbanService.getTasks().subscribe(tasks => {
-          const found = tasks.find(t => t.id === this.taskId);
-          if (found) {
-            this.task = found;
-            this.isCompleted = found.status === 'done';
-            this.language = this.detectLanguage(found.starterCode || '');
-            // Load user's saved code if it exists, otherwise show starter code
-            this.code = found.userCode ?? found.starterCode ?? this.defaultCode();
-          }
-        });
-        this.kanbanService.loadTasks();
-      }
+      if (!idParam) return;
+
+      this.taskId = parseInt(idParam, 10);
+
+      // Carga inicial: inicializa o código UMA vez quando as tarefas chegam
+      this.kanbanService.getTasks().pipe(
+        filter(tasks => tasks.length > 0),
+        take(1)
+      ).subscribe(tasks => {
+        const found = tasks.find(t => t.id === this.taskId);
+        if (found) this.initializeTask(found);
+      });
+
+      // Mantém metadados (status, etc.) em sincronia SEM re-setar o código
+      this.kanbanService.getTasks().pipe(
+        takeUntil(this.destroy$)
+      ).subscribe(tasks => {
+        const found = tasks.find(t => t.id === this.taskId);
+        if (found && this.codeInitialized) {
+          this.task = found;
+          this.isCompleted = found.status === 'done';
+        }
+      });
+
+      this.kanbanService.loadTasks();
     });
+  }
+
+  private initializeTask(task: KanbanTask): void {
+    this.task = task;
+    this.isCompleted = task.status === 'done';
+    this.language = this.detectLanguage(task.starterCode || '');
+
+    // Prioridade: servidor > localStorage > starterCode > padrão
+    const serverCode = task.userCode?.trim() ? task.userCode : null;
+    const localBackup = this.loadFromLocalStorage();
+
+    if (serverCode) {
+      this.code = serverCode;
+      // Sincroniza localStorage com o que veio do servidor
+      this.saveToLocalStorage(serverCode);
+    } else if (localBackup) {
+      // Usuário tinha código local mas o servidor não tem — envia ao servidor
+      this.code = localBackup;
+      this.persistCodeToServer(localBackup);
+    } else {
+      this.code = task.starterCode ?? this.defaultCode();
+    }
+
+    this.codeInitialized = true;
   }
 
   ngOnDestroy() {
     this.destroy$.next();
     this.destroy$.complete();
+  }
+
+  onCodeChange(newCode: string) {
+    this.code = newCode;
+    this.saveStatus = 'saving';
+    // Salva no localStorage imediatamente (sem debounce) — proteção instantânea
+    this.saveToLocalStorage(newCode);
+    // Agenda save no servidor com debounce
+    this.codeChange$.next(newCode);
+  }
+
+  private persistCodeToServer(code: string) {
+    if (!this.taskId) return;
+    this.kanbanService.saveCode(this.taskId, code).subscribe({
+      next: () => {
+        this.saveStatus = 'saved';
+        this.lastSavedAt = new Date();
+      },
+      error: (err) => {
+        this.saveStatus = 'error';
+        console.error('Erro ao salvar código:', err);
+      }
+    });
+  }
+
+  private saveToLocalStorage(code: string): void {
+    try {
+      localStorage.setItem(this.localStorageKey, code);
+    } catch {
+      // Quota excedida — ignora silenciosamente
+    }
+  }
+
+  private loadFromLocalStorage(): string | null {
+    try {
+      return localStorage.getItem(this.localStorageKey);
+    } catch {
+      return null;
+    }
   }
 
   private defaultCode(): string {
@@ -84,23 +172,6 @@ export class WorkspaceComponent implements OnInit, OnDestroy {
   private detectLanguage(code: string): string {
     const trimmed = code.trimStart();
     return (trimmed.startsWith('<!DOCTYPE') || trimmed.startsWith('<html')) ? 'html' : 'python';
-  }
-
-  onCodeChange(newCode: string) {
-    this.code = newCode;
-    this.saveStatus = 'saving';
-    this.codeChange$.next(newCode);
-  }
-
-  private persistCode(code: string) {
-    if (!this.taskId) return;
-    this.kanbanService.saveCode(this.taskId, code).subscribe({
-      next: () => this.saveStatus = 'saved',
-      error: (err) => {
-        this.saveStatus = 'error';
-        console.error('Erro ao salvar código:', err.status, err.message, err.error);
-      }
-    });
   }
 
   onTabKey(event: Event) {
