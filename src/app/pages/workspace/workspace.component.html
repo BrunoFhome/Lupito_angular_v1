@@ -22,9 +22,6 @@
         </svg>
         {{ isRunning ? 'Executando...' : 'Executar' }}
       </button>
-      <button class="btn-submit" [disabled]="isCompleted" (click)="completeTask()">
-        {{ isCompleted ? '✓ Concluída' : 'Concluir Tarefa' }}
-      </button>
     </div>
   </header>
 

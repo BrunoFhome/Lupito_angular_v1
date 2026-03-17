@@ -403,3 +403,54 @@
     line-height: 1.5;
     color: #d4d4d4;
 }
+
+/* Empty state */
+.portfolio-empty {
+    background: #ffffff;
+    border: 1px dashed #cbd5e1;
+    border-radius: 10px;
+    padding: 48px 24px;
+    text-align: center;
+    color: #64748b;
+}
+
+.empty-icon {
+    font-size: 36px;
+    color: #cbd5e1;
+    margin-bottom: 16px;
+}
+
+.portfolio-empty h3 {
+    margin: 0 0 8px 0;
+    font-size: 16px;
+    color: #475569;
+}
+
+.portfolio-empty p {
+    margin: 0;
+    font-size: 14px;
+}
+
+/* Badge de concluído no card */
+.badge-done-small {
+    background: #dcfce7;
+    color: #16a34a;
+    padding: 4px 10px;
+    border-radius: 4px;
+    font-size: 12px;
+    font-weight: 500;
+}
+
+/* Mensagem sem código */
+.no-code {
+    color: #94a3b8;
+    font-size: 14px;
+    font-style: italic;
+    margin: 0;
+}
+
+/* Botão copiar desabilitado */
+.btn-copy:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
