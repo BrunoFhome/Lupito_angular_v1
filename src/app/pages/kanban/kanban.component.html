@@ -25,7 +25,7 @@
           </div>
           <p class="task-description">{{ task.description }}</p>
           <div class="card-actions">
-            <button class="action-btn workspace-btn" (click)="updateTaskStatus(task.id, 'in-progress')">
+            <button class="action-btn workspace-btn" (click)="requestMoveTask(task.id, 'in-progress')">
               Iniciar Tarefa
             </button>
           </div>
@@ -53,12 +53,12 @@
           </div>
           <p class="task-description">{{ task.description }}</p>
           <div class="card-actions">
-            <button class="action-btn eval-btn" (click)="updateTaskStatus(task.id, 'in-review')">
-              Enviar para Revisão
+            <button class="action-btn workspace-btn" (click)="openWorkspace(task.id)">
+              Espaço de Trabalho
             </button>
             <div class="secondary-actions">
-              <button class="action-btn secondary-btn" (click)="updateTaskStatus(task.id, 'todo')">Voltar</button>
-              <button class="action-btn secondary-btn" (click)="openWorkspace(task.id)">Espaço de Trabalho</button>
+              <button class="action-btn secondary-btn" (click)="requestMoveTask(task.id, 'todo')">Voltar</button>
+              <button class="action-btn secondary-btn" (click)="requestMoveTask(task.id, 'in-review')">Enviar para Revisão</button>
             </div>
           </div>
         </div>
@@ -82,11 +82,11 @@
           </div>
           <p class="task-description">{{ task.description }}</p>
           <div class="card-actions">
-            <button class="action-btn workspace-btn" style="background-color: #10b981;" (click)="openEvaluation(task)">
-              Aprovar
+            <button class="action-btn workspace-btn" style="background-color: #d97706;" (click)="openEvaluation(task)">
+              Revisar
             </button>
             <div class="secondary-actions">
-              <button class="action-btn secondary-btn" (click)="updateTaskStatus(task.id, 'in-progress')">Ajustar</button>
+              <button class="action-btn secondary-btn" (click)="requestMoveTask(task.id, 'in-progress')">Ajustar</button>
             </div>
           </div>
         </div>
@@ -109,15 +109,37 @@
           </div>
           <p class="task-description">{{ task.description }}</p>
           <div class="card-actions">
+            <button class="action-btn workspace-btn" style="background-color: #10b981;" (click)="openWorkspace(task.id)">
+              Analisar código
+            </button>
             <div class="secondary-actions">
-               <button class="action-btn secondary-btn" (click)="updateTaskStatus(task.id, 'in-review')">Reabrir</button>
-               <button class="action-btn secondary-btn" (click)="openWorkspace(task.id)">Revisitar</button>
+              <button class="action-btn secondary-btn" (click)="requestMoveTask(task.id, 'in-review')">Mandar para revisão</button>
             </div>
           </div>
         </div>
       </div>
     </div>
 
+  </div>
+</div>
+
+<!-- Modal de Confirmação de Movimentação -->
+<div class="modal-overlay" *ngIf="showMoveConfirm" (click)="cancelMove()">
+  <div class="modal-content" (click)="$event.stopPropagation()">
+    <div class="modal-header">
+      <h2>Mover tarefa</h2>
+      <button class="close-btn" (click)="cancelMove()">&times;</button>
+    </div>
+    <div class="modal-body">
+      <p class="modal-instructions">
+        Deseja mover <strong>{{ moveConfirmTask?.title }}</strong> para
+        <strong>{{ moveConfirmLabel }}</strong>?
+      </p>
+    </div>
+    <div class="modal-footer">
+      <button class="cancel-btn" (click)="cancelMove()">Cancelar</button>
+      <button class="confirm-btn" (click)="confirmMove()">Confirmar</button>
+    </div>
   </div>
 </div>
 
@@ -154,7 +176,7 @@
     <div class="modal-footer">
       <button class="cancel-btn" (click)="closeEvaluation()">Cancelar</button>
       <button class="confirm-btn" [disabled]="!allChecked()" (click)="confirmEvaluation()">
-        Concluir
+        Aprovar
       </button>
     </div>
   </div>

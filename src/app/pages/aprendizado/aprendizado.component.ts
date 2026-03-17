@@ -52,11 +52,11 @@ export interface PathLayout {
 
 // ── Layout constants ───────────────────────────────────────────────────────────
 
-const NODES_PER_ROW = 4;
-const SPACING_X     = 180;
-const SPACING_Y     = 160;
-const PAD_X         = 90;
-const PAD_Y         = 90;
+const NODES_PER_ROW = 5;
+const SPACING_X     = 220;
+const SPACING_Y     = 200;
+const PAD_X         = 120;
+const PAD_Y         = 110;
 
 // ── Component ─────────────────────────────────────────────────────────────────
 

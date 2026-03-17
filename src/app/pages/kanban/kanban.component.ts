@@ -21,6 +21,19 @@ export class KanbanComponent implements OnInit {
   evaluationTask: KanbanTask | null = null;
   evalChecks: boolean[] = [false, false, false, false];
 
+  // Confirmação de movimentação
+  showMoveConfirm: boolean = false;
+  moveConfirmTask: KanbanTask | null = null;
+  moveConfirmStatus: KanbanTask['status'] | null = null;
+  moveConfirmLabel: string = '';
+
+  private readonly statusLabels: Record<KanbanTask['status'], string> = {
+    'todo': 'A Fazer',
+    'in-progress': 'Em Andamento',
+    'in-review': 'Em Revisão',
+    'done': 'Concluído'
+  };
+
   constructor(private router: Router, private kanbanService: KanbanService) {}
 
   ngOnInit() {
@@ -36,6 +49,29 @@ export class KanbanComponent implements OnInit {
 
   updateTaskStatus(taskId: number, newStatus: KanbanTask['status']) {
     this.kanbanService.updateTaskStatus(taskId, newStatus);
+  }
+
+  requestMoveTask(taskId: number, newStatus: KanbanTask['status']) {
+    const task = this.tasks.find(t => t.id === taskId);
+    if (!task) return;
+    this.moveConfirmTask = task;
+    this.moveConfirmStatus = newStatus;
+    this.moveConfirmLabel = this.statusLabels[newStatus];
+    this.showMoveConfirm = true;
+  }
+
+  confirmMove() {
+    if (this.moveConfirmTask && this.moveConfirmStatus) {
+      this.updateTaskStatus(this.moveConfirmTask.id, this.moveConfirmStatus);
+    }
+    this.cancelMove();
+  }
+
+  cancelMove() {
+    this.showMoveConfirm = false;
+    this.moveConfirmTask = null;
+    this.moveConfirmStatus = null;
+    this.moveConfirmLabel = '';
   }
 
   openWorkspace(taskId: number) {
