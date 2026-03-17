@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ActivatedRoute, Router } from '@angular/router';
-import { HttpClient } from '@angular/common/http';
+import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
 import { LearningService, SectionDetails, Exercise } from '../../services/learning.service';
 import { AuthService, User } from '../../services/auth.service';
 
@@ -29,13 +29,22 @@ export class LessonComponent implements OnInit {
 
   user: User | null = null;
 
+  // Phases: theory → exercises → summary
+  showTheory: boolean = true;
+  showSummary: boolean = false;
+
   // Route params
   courseId: number | null = null;
   sectionOrder: number | null = null;
   lessonOrder: number | null = null;
+
   // Tracking & Summary
   exerciseResults: (ExerciseResult | undefined)[] = [];
-  showSummary: boolean = false;
+
+  get safeTheoryContent(): SafeHtml {
+    const content = this.sectionDetails?.theoryContent || '';
+    return this.sanitizer.bypassSecurityTrustHtml(content);
+  }
 
   get correctCount(): number {
     return this.exerciseResults.filter(r => r?.correct).length;
@@ -53,12 +62,18 @@ export class LessonComponent implements OnInit {
     return this.totalExercises > 0 ? Math.round((this.correctCount / this.totalExercises) * 100) : 0;
   }
 
+  get progressBarWidth(): number {
+    if (this.showTheory) return 0;
+    if (this.showSummary) return 100;
+    return (this.currentExerciseIndex / (this.totalExercises || 1)) * 100;
+  }
+
   constructor(
     private route: ActivatedRoute,
     private router: Router,
     private learningService: LearningService,
     private authService: AuthService,
-    private http: HttpClient
+    private sanitizer: DomSanitizer
   ) {}
 
   ngOnInit(): void {
@@ -82,6 +97,7 @@ export class LessonComponent implements OnInit {
     this.sectionDetails = null;
     this.currentExerciseIndex = 0;
     this.exerciseResults = [];
+    this.showTheory = true;
     this.showSummary = false;
     this.resetExerciseState();
 
@@ -94,6 +110,10 @@ export class LessonComponent implements OnInit {
         this.router.navigate(['/aprendizado']);
       }
     });
+  }
+
+  startExercises(): void {
+    this.showTheory = false;
   }
 
   get currentExercise(): Exercise | null {
@@ -133,10 +153,8 @@ export class LessonComponent implements OnInit {
   }
 
   completeSection(): void {
-    // Show summary immediately
     this.showSummary = true;
 
-    // Fire API in background
     if (this.courseId && this.sectionOrder && this.lessonOrder) {
       this.learningService.completeLesson(this.courseId, this.sectionOrder, this.lessonOrder).subscribe({
         next: () => {

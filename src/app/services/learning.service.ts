@@ -1,7 +1,8 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Observable, of, forkJoin } from 'rxjs';
-import { map, delay } from 'rxjs/operators';
+import { map } from 'rxjs/operators';
+import { environment } from '../../environments/environment';
 
 export interface Exercise {
   id: number;
@@ -14,6 +15,7 @@ export interface Exercise {
 export interface SectionDetails {
   id: string;
   title: string;
+  theoryContent: string;
   exercises: Exercise[];
 }
 
@@ -56,8 +58,8 @@ export interface UserProgressDTO {
   providedIn: 'root'
 })
 export class LearningService {
-  private apiUrl = 'http://localhost:8081/api/learning-path';
-  private progressUrl = 'http://localhost:8081/api/progress';
+  private apiUrl = `${environment.apiUrl}/api/learning-path`;
+  private progressUrl = `${environment.apiUrl}/api/progress`;
 
   constructor(private http: HttpClient) { }
 
@@ -102,23 +104,29 @@ export class LearningService {
     return this.http.get<ExerciseDTO[]>(this.apiUrl + '/lessons/' + lessonId + '/exercises', this.getAuthHeaders());
   }
 
+  getLessonById(lessonId: number): Observable<LessonDTO> {
+    return this.http.get<LessonDTO>(`${this.apiUrl}/lessons/${lessonId}`, this.getAuthHeaders());
+  }
+
   getSectionDetails(id: string): Observable<SectionDetails> {
     const lessonId = parseInt(id, 10);
-    return this.getExercisesByLesson(lessonId).pipe(
-      map(exercisesDto => {
-        const mappedExercises: Exercise[] = exercisesDto.map((ex, index) => {
-           return {
-             id: ex.id,
-             title: 'Questão ' + (index + 1),
-             theory: ex.question,
-             options: ex.options,
-             correctAnswerIndex: ex.correctAnswer
-           };
-        });
+    return forkJoin({
+      lesson: this.getLessonById(lessonId),
+      exercises: this.getExercisesByLesson(lessonId)
+    }).pipe(
+      map(({ lesson, exercises }) => {
+        const mappedExercises: Exercise[] = exercises.map((ex, index) => ({
+          id: ex.id,
+          title: 'Questão ' + (index + 1),
+          theory: ex.question,
+          options: ex.options,
+          correctAnswerIndex: ex.correctAnswer
+        }));
 
         return {
           id: id,
-          title: 'Aula ' + id,
+          title: lesson.title,
+          theoryContent: lesson.theoryContent || '',
           exercises: mappedExercises
         };
       })

@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { BehaviorSubject, Observable } from 'rxjs';
 import { tap } from 'rxjs/operators';
+import { environment } from '../../environments/environment';
 
 export interface KanbanTask {
   id: number;
@@ -19,7 +20,7 @@ export interface KanbanTask {
   providedIn: 'root'
 })
 export class KanbanService {
-  private apiUrl = 'http://localhost:8081/api/kanban';
+  private apiUrl = `${environment.apiUrl}/api/kanban`;
   private tasksSubject = new BehaviorSubject<KanbanTask[]>([]);  
 
   constructor(private http: HttpClient) { }

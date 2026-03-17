@@ -6,16 +6,18 @@ import { KanbanComponent } from './pages/kanban/kanban.component';
 import { AprendizadoComponent } from './pages/aprendizado/aprendizado.component';
 import { LessonComponent } from './pages/lesson/lesson.component';
 import { WorkspaceComponent } from './pages/workspace/workspace.component';
+import { DashboardComponent } from './pages/dashboard/dashboard.component';
 import { authGuard } from './guards/auth.guard';
 
 export const routes: Routes = [
-    { path: '', redirectTo: 'login', pathMatch: 'full' },
+    { path: '', redirectTo: 'dashboard', pathMatch: 'full' },
     { path: 'login', component: LoginComponent },
     { path: 'register', component: RegisterComponent },
+    { path: 'dashboard', component: DashboardComponent, canActivate: [authGuard] },
     { path: 'profile', component: ProfileComponent, canActivate: [authGuard] },
     { path: 'kanban', component: KanbanComponent, canActivate: [authGuard] },
     { path: 'aprendizado', component: AprendizadoComponent, canActivate: [authGuard] },
     { path: 'lesson/:id', component: LessonComponent, canActivate: [authGuard] },
     { path: 'workspace/:taskId', component: WorkspaceComponent, canActivate: [authGuard] },
-    { path: '**', redirectTo: 'login' }
+    { path: '**', redirectTo: 'dashboard' }
 ];

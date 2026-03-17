@@ -7,12 +7,28 @@
       Sair
     </button>
     <div class="progress-bar-container">
-      <div class="progress-bar" [style.width.%]="showSummary ? 100 : (currentExerciseIndex / sectionDetails.exercises.length) * 100"></div>
+      <div class="progress-bar" [style.width.%]="progressBarWidth"></div>
     </div>
   </div>
 
-  <!-- Tela de exercício -->
-  <ng-container *ngIf="!showSummary">
+  <!-- Tela de Teoria -->
+  <div class="theory-screen" *ngIf="showTheory && !showSummary">
+    <div class="theory-header">
+      <span class="theory-badge">Teoria</span>
+      <h1 class="theory-title">{{ sectionDetails.title }}</h1>
+    </div>
+
+    <div class="rich-text-content" [innerHTML]="safeTheoryContent"></div>
+
+    <div class="theory-footer">
+      <button class="action-btn start-btn" (click)="startExercises()">
+        Iniciar Exercícios →
+      </button>
+    </div>
+  </div>
+
+  <!-- Tela de Exercícios -->
+  <ng-container *ngIf="!showTheory && !showSummary">
     <div class="exercise-content" *ngIf="currentExercise">
       <h2 class="exercise-title">{{ currentExercise.title }}</h2>
 
@@ -47,7 +63,6 @@
     </div>
 
     <div class="footer-actions">
-      <!-- Submit Button -->
       <button
         class="action-btn submit-btn"
         *ngIf="!isSubmitted"
@@ -56,7 +71,6 @@
         Verificar Resposta
       </button>
 
-      <!-- Feedback -->
       <div class="feedback-area" *ngIf="isSubmitted" [ngClass]="{'success': isCorrect, 'error': !isCorrect}">
         <div class="feedback-message">
           <h3 *ngIf="isCorrect">Correto! Mandou bem!</h3>
@@ -87,10 +101,9 @@
     </div>
   </ng-container>
 
-  <!-- Tela de Resumo (Ponto 3, 4 e 5) -->
+  <!-- Tela de Resumo -->
   <div class="summary-container" *ngIf="showSummary">
 
-    <!-- Score -->
     <div class="summary-score">
       <div class="score-circle"
         [ngClass]="{
@@ -111,10 +124,9 @@
       </p>
     </div>
 
-    <!-- Revisão de erros (Ponto 5) -->
     <div class="wrong-answers-section" *ngIf="wrongAnswers.length > 0">
       <h3 class="review-title">Questões para revisar</h3>
-      <div class="wrong-answer-card" *ngFor="let item of wrongAnswers; let i = index">
+      <div class="wrong-answer-card" *ngFor="let item of wrongAnswers">
         <p class="wrong-question">{{ item.question }}</p>
         <div class="answer-row">
           <span class="answer-label chosen-label">Sua resposta:</span>
@@ -131,7 +143,6 @@
       Você acertou todas as questões sem errar nenhuma!
     </div>
 
-    <!-- Ações -->
     <div class="summary-actions">
       <button class="action-btn back-trails-btn" (click)="exitLesson()">
         Voltar às Trilhas

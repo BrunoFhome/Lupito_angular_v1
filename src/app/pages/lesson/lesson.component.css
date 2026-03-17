@@ -222,6 +222,132 @@
   100% { transform: rotate(360deg); }
 }
 
+/* ── Tela de Teoria ─────────────────────────────────────── */
+
+.theory-screen {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  animation: fadeIn 0.3s ease;
+}
+
+.theory-header {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.theory-badge {
+  display: inline-block;
+  background: #e3f2fd;
+  color: #1565c0;
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  padding: 4px 12px;
+  border-radius: 20px;
+  width: fit-content;
+}
+
+.theory-title {
+  margin: 0;
+  font-size: 1.8rem;
+  font-weight: 700;
+  color: #1a1a2e;
+}
+
+/* Rich text content */
+.rich-text-content {
+  background: #f8fafc;
+  border-radius: 10px;
+  padding: 1.75rem 2rem;
+  font-size: 1rem;
+  line-height: 1.8;
+  color: #334155;
+  border: 1px solid #e2e8f0;
+}
+
+.rich-text-content h1,
+.rich-text-content h2,
+.rich-text-content h3 {
+  color: #0f172a;
+  margin-top: 1.5rem;
+  margin-bottom: 0.5rem;
+}
+
+.rich-text-content h1 { font-size: 1.5rem; }
+.rich-text-content h2 { font-size: 1.25rem; }
+.rich-text-content h3 { font-size: 1.1rem; }
+
+.rich-text-content p {
+  margin: 0 0 1rem 0;
+}
+
+.rich-text-content ul,
+.rich-text-content ol {
+  padding-left: 1.5rem;
+  margin: 0 0 1rem 0;
+}
+
+.rich-text-content li {
+  margin-bottom: 0.4rem;
+}
+
+.rich-text-content code {
+  background: #1e1e2e;
+  color: #cdd6f4;
+  padding: 2px 8px;
+  border-radius: 4px;
+  font-family: 'Consolas', 'Monaco', monospace;
+  font-size: 0.9em;
+}
+
+.rich-text-content pre {
+  background: #1e1e2e;
+  color: #cdd6f4;
+  padding: 1.25rem;
+  border-radius: 8px;
+  overflow-x: auto;
+  font-family: 'Consolas', 'Monaco', monospace;
+  font-size: 0.9em;
+  line-height: 1.6;
+  margin: 1rem 0;
+}
+
+.rich-text-content pre code {
+  background: none;
+  padding: 0;
+}
+
+.rich-text-content blockquote {
+  border-left: 4px solid #2196F3;
+  margin: 1rem 0;
+  padding: 0.5rem 1rem;
+  background: #e3f2fd;
+  color: #1565c0;
+  border-radius: 0 6px 6px 0;
+}
+
+.rich-text-content strong { color: #0f172a; }
+.rich-text-content em { color: #475569; }
+
+.theory-footer {
+  display: flex;
+  justify-content: flex-end;
+}
+
+.start-btn {
+  background-color: #2196F3;
+  width: auto;
+  padding: 0.9rem 2.5rem;
+  font-size: 1rem;
+}
+
+.start-btn:hover {
+  background-color: #1976D2;
+}
+
 /* ── Tela de Resumo ─────────────────────────────────────── */
 
 .summary-container {

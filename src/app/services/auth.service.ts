@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Router } from '@angular/router';
 import { Observable, tap, BehaviorSubject } from 'rxjs';
+import { environment } from '../../environments/environment';
 
 export interface User {
   id: number;
@@ -18,7 +19,7 @@ export interface User {
   providedIn: 'root'
 })
 export class AuthService {
-  private apiUrl = 'http://localhost:8081/auth';
+  private apiUrl = `${environment.apiUrl}/auth`;
   private loggedIn = new BehaviorSubject<boolean>(this.hasToken());
 
   // Static mock user - temporary fallback if not using Spring user fetching yet
@@ -84,7 +85,7 @@ private getAuthHeaders(): { headers: HttpHeaders } {
         observer.complete();
       });
     }
-    return this.http.get<User>(`http://localhost:8081/users/${userId}`, this.getAuthHeaders());        
+    return this.http.get<User>(`${environment.apiUrl}/users/${userId}`, this.getAuthHeaders());
   }
 
   updateUserProfile(user: User): Observable<User> {
@@ -96,7 +97,7 @@ private getAuthHeaders(): { headers: HttpHeaders } {
         observer.complete();
       });
     }
-    return this.http.put<User>(`http://localhost:8081/users/${userId}`, user, this.getAuthHeaders());  
+    return this.http.put<User>(`${environment.apiUrl}/users/${userId}`, user, this.getAuthHeaders());
   }
 
   private getCurrentUserId(): number | null {
