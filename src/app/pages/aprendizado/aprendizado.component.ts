@@ -63,6 +63,13 @@ export class AprendizadoComponent implements OnInit {
         return of([]);
       })
     ).subscribe(paths => {
+      // Unlock the first lesson of course N if course N-1 is 100% completed
+      for (let i = 1; i < paths.length; i++) {
+        const prev = paths[i - 1];
+        if (prev.total > 0 && prev.progress === prev.total && paths[i].lessons.length > 0) {
+          paths[i].lessons[0].locked = false;
+        }
+      }
       this.paths = paths;
     });
   }
@@ -70,7 +77,7 @@ export class AprendizadoComponent implements OnInit {
   buildLearningPath(course: CourseDTO, isFirstCourse: boolean = false): Observable<LearningPath> {
     return forkJoin({
        sections: this.learningService.getSectionsByCourse(course.id),
-       progress: this.user ? this.learningService.getUserProgress(course.id, this.user.id).pipe(
+       progress: this.user ? this.learningService.getUserProgress(course.id).pipe(
           catchError(() => of(null)) // fallback safely if progress not found
        ) : of(null)
     }).pipe(
@@ -152,13 +159,13 @@ export class AprendizadoComponent implements OnInit {
 
   navigateToLesson(lesson: Lesson) {
     if (!lesson.locked && lesson.id) {
-       this.router.navigate(['/lesson', lesson.id], { 
-           queryParams: { 
-               courseId: lesson.courseId, 
-               sectionOrder: lesson.sectionOrder, 
-               lessonOrder: lesson.lessonOrder 
-           } 
-       });
+      this.router.navigate(['/lesson', lesson.id], {
+        queryParams: {
+          courseId: lesson.courseId,
+          sectionOrder: lesson.sectionOrder,
+          lessonOrder: lesson.lessonOrder
+        }
+      });
     }
   }
 }

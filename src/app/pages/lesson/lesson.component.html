@@ -7,84 +7,137 @@
       Sair
     </button>
     <div class="progress-bar-container">
-      <div class="progress-bar" [style.width.%]="(currentExerciseIndex / sectionDetails.exercises.length) * 100"></div>
+      <div class="progress-bar" [style.width.%]="showSummary ? 100 : (currentExerciseIndex / sectionDetails.exercises.length) * 100"></div>
     </div>
   </div>
 
-  <div class="exercise-content" *ngIf="currentExercise">
-    <h2 class="exercise-title">{{ currentExercise.title }}</h2>
-    
-    <div class="theory-box">
-      <p>{{ currentExercise.theory }}</p>
-    </div>
+  <!-- Tela de exercício -->
+  <ng-container *ngIf="!showSummary">
+    <div class="exercise-content" *ngIf="currentExercise">
+      <h2 class="exercise-title">{{ currentExercise.title }}</h2>
 
-    <div class="options-container">
-      <button 
-        *ngFor="let option of currentExercise.options; let i = index" 
-        class="option-btn"
-        [ngClass]="{
-          'selected': selectedOptionIndex === i && !isSubmitted,
-          'correct': isSubmitted && currentExercise.correctAnswerIndex === i,
-          'incorrect': isSubmitted && selectedOptionIndex === i && currentExercise.correctAnswerIndex !== i
-        }"
-        (click)="selectOption(i)"
-        [disabled]="isSubmitted"
-      >
-        <span class="option-text">{{ option }}</span>
-        
-        <svg *ngIf="isSubmitted && currentExercise.correctAnswerIndex === i" class="status-icon success-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-          <polyline points="20 6 9 17 4 12"></polyline>
-        </svg>
-
-        <svg *ngIf="isSubmitted && selectedOptionIndex === i && currentExercise.correctAnswerIndex !== i" class="status-icon error-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-          <line x1="18" y1="6" x2="6" y2="18"></line>
-          <line x1="6" y1="6" x2="18" y2="18"></line>
-        </svg>
-      </button>
-    </div>
-  </div>
-
-  <div class="footer-actions">
-    <!-- Submit Button (before answering) -->
-    <button 
-      class="action-btn submit-btn" 
-      *ngIf="!isSubmitted" 
-      [disabled]="selectedOptionIndex === null"
-      (click)="submitAnswer()">
-      Verificar Resposta
-    </button>
-
-    <!-- Feedback Area (after answering) -->
-    <div class="feedback-area" *ngIf="isSubmitted" [ngClass]="{'success': isCorrect, 'error': !isCorrect}">
-      <div class="feedback-message">
-        <h3 *ngIf="isCorrect">Correto! Mandou bem!</h3>
-        <h3 *ngIf="!isCorrect">Incorreto. Tente novamente!</h3>
+      <div class="theory-box">
+        <p>{{ currentExercise.theory }}</p>
       </div>
-      
-      <!-- Next Button (if not last exercise and correct) -->
-      <button 
-        class="action-btn next-btn" 
-        *ngIf="isCorrect && currentExerciseIndex < sectionDetails.exercises.length - 1"
-        (click)="nextExercise()">
-        Avançar
+
+      <div class="options-container">
+        <button
+          *ngFor="let option of currentExercise.options; let i = index"
+          class="option-btn"
+          [ngClass]="{
+            'selected': selectedOptionIndex === i && !isSubmitted,
+            'correct': isSubmitted && currentExercise.correctAnswerIndex === i,
+            'incorrect': isSubmitted && selectedOptionIndex === i && currentExercise.correctAnswerIndex !== i
+          }"
+          (click)="selectOption(i)"
+          [disabled]="isSubmitted"
+        >
+          <span class="option-text">{{ option }}</span>
+
+          <svg *ngIf="isSubmitted && currentExercise.correctAnswerIndex === i" class="status-icon success-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <polyline points="20 6 9 17 4 12"></polyline>
+          </svg>
+
+          <svg *ngIf="isSubmitted && selectedOptionIndex === i && currentExercise.correctAnswerIndex !== i" class="status-icon error-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <line x1="18" y1="6" x2="6" y2="18"></line>
+            <line x1="6" y1="6" x2="18" y2="18"></line>
+          </svg>
+        </button>
+      </div>
+    </div>
+
+    <div class="footer-actions">
+      <!-- Submit Button -->
+      <button
+        class="action-btn submit-btn"
+        *ngIf="!isSubmitted"
+        [disabled]="selectedOptionIndex === null"
+        (click)="submitAnswer()">
+        Verificar Resposta
       </button>
 
-      <!-- Retry Button (if incorrect) -->
-      <button 
-        class="action-btn retry-btn" 
-        *ngIf="!isCorrect"
-        (click)="isSubmitted = false; selectedOptionIndex = null;">
-        Tentar Novamente
-      </button>
+      <!-- Feedback -->
+      <div class="feedback-area" *ngIf="isSubmitted" [ngClass]="{'success': isCorrect, 'error': !isCorrect}">
+        <div class="feedback-message">
+          <h3 *ngIf="isCorrect">Correto! Mandou bem!</h3>
+          <h3 *ngIf="!isCorrect">Incorreto. Tente novamente!</h3>
+        </div>
 
-      <!-- Complete Section Button (if last exercise and correct) -->
-      <button 
-        class="action-btn complete-btn" 
-        *ngIf="isCorrect && currentExerciseIndex === sectionDetails.exercises.length - 1"
-        (click)="completeSection()">
-        Concluir Seção
+        <button
+          class="action-btn next-btn"
+          *ngIf="isCorrect && currentExerciseIndex < sectionDetails.exercises.length - 1"
+          (click)="nextExercise()">
+          Avançar
+        </button>
+
+        <button
+          class="action-btn retry-btn"
+          *ngIf="!isCorrect"
+          (click)="isSubmitted = false; selectedOptionIndex = null;">
+          Tentar Novamente
+        </button>
+
+        <button
+          class="action-btn complete-btn"
+          *ngIf="isCorrect && currentExerciseIndex === sectionDetails.exercises.length - 1"
+          (click)="completeSection()">
+          Concluir Lição
+        </button>
+      </div>
+    </div>
+  </ng-container>
+
+  <!-- Tela de Resumo (Ponto 3, 4 e 5) -->
+  <div class="summary-container" *ngIf="showSummary">
+
+    <!-- Score -->
+    <div class="summary-score">
+      <div class="score-circle"
+        [ngClass]="{
+          'score-perfect': scorePercent === 100,
+          'score-good': scorePercent >= 50 && scorePercent < 100,
+          'score-poor': scorePercent < 50
+        }">
+        <span class="score-fraction">{{ correctCount }}/{{ totalExercises }}</span>
+        <span class="score-label">acertos</span>
+      </div>
+
+      <h2 *ngIf="scorePercent === 100">Perfeito! Acertou tudo!</h2>
+      <h2 *ngIf="scorePercent >= 50 && scorePercent < 100">Bom trabalho!</h2>
+      <h2 *ngIf="scorePercent < 50">Continue praticando!</h2>
+
+      <p class="score-description">
+        Você acertou <strong>{{ correctCount }}</strong> de <strong>{{ totalExercises }}</strong> questões nesta lição.
+      </p>
+    </div>
+
+    <!-- Revisão de erros (Ponto 5) -->
+    <div class="wrong-answers-section" *ngIf="wrongAnswers.length > 0">
+      <h3 class="review-title">Questões para revisar</h3>
+      <div class="wrong-answer-card" *ngFor="let item of wrongAnswers; let i = index">
+        <p class="wrong-question">{{ item.question }}</p>
+        <div class="answer-row">
+          <span class="answer-label chosen-label">Sua resposta:</span>
+          <span class="answer-text answer-wrong">{{ item.chosen }}</span>
+        </div>
+        <div class="answer-row">
+          <span class="answer-label correct-label">Resposta correta:</span>
+          <span class="answer-text answer-right">{{ item.answer }}</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="all-correct-msg" *ngIf="wrongAnswers.length === 0">
+      Você acertou todas as questões sem errar nenhuma!
+    </div>
+
+    <!-- Ações -->
+    <div class="summary-actions">
+      <button class="action-btn back-trails-btn" (click)="exitLesson()">
+        Voltar às Trilhas
       </button>
     </div>
+
   </div>
 </div>
 

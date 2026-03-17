@@ -1,9 +1,16 @@
 import { Component, OnInit } from '@angular/core';
-import { CommonModule } from '@angular/common'; // Required for ngIf and ngFor ideally
+import { CommonModule } from '@angular/common';
 import { ActivatedRoute, Router } from '@angular/router';
 import { HttpClient } from '@angular/common/http';
 import { LearningService, SectionDetails, Exercise } from '../../services/learning.service';
 import { AuthService, User } from '../../services/auth.service';
+
+interface ExerciseResult {
+  correct: boolean;
+  question: string;
+  chosen: string;
+  answer: string;
+}
 
 @Component({
   selector: 'app-lesson',
@@ -21,11 +28,30 @@ export class LessonComponent implements OnInit {
   isCorrect: boolean = false;
 
   user: User | null = null;
-  
-  // Track parameters
+
+  // Route params
   courseId: number | null = null;
   sectionOrder: number | null = null;
   lessonOrder: number | null = null;
+  // Tracking & Summary
+  exerciseResults: (ExerciseResult | undefined)[] = [];
+  showSummary: boolean = false;
+
+  get correctCount(): number {
+    return this.exerciseResults.filter(r => r?.correct).length;
+  }
+
+  get wrongAnswers(): ExerciseResult[] {
+    return this.exerciseResults.filter((r): r is ExerciseResult => !!r && !r.correct);
+  }
+
+  get totalExercises(): number {
+    return this.sectionDetails?.exercises.length ?? 0;
+  }
+
+  get scorePercent(): number {
+    return this.totalExercises > 0 ? Math.round((this.correctCount / this.totalExercises) * 100) : 0;
+  }
 
   constructor(
     private route: ActivatedRoute,
@@ -38,7 +64,6 @@ export class LessonComponent implements OnInit {
   ngOnInit(): void {
     this.authService.getCurrentUser().subscribe(u => this.user = u);
 
-    // Listen to route changes to get the dynamic id
     this.route.paramMap.subscribe(params => {
       const sectionId = params.get('id');
       if (sectionId) {
@@ -47,16 +72,17 @@ export class LessonComponent implements OnInit {
     });
 
     this.route.queryParamMap.subscribe(params => {
-       if (params.has('courseId')) this.courseId = +params.get('courseId')!;
-       if (params.has('sectionOrder')) this.sectionOrder = +params.get('sectionOrder')!;
-       if (params.has('lessonOrder')) this.lessonOrder = +params.get('lessonOrder')!;
+      if (params.has('courseId')) this.courseId = +params.get('courseId')!;
+      if (params.has('sectionOrder')) this.sectionOrder = +params.get('sectionOrder')!;
+      if (params.has('lessonOrder')) this.lessonOrder = +params.get('lessonOrder')!;
     });
   }
 
   fetchLesson(sectionId: string): void {
-    // Reset state before fetching
     this.sectionDetails = null;
     this.currentExerciseIndex = 0;
+    this.exerciseResults = [];
+    this.showSummary = false;
     this.resetExerciseState();
 
     this.learningService.getSectionDetails(sectionId).subscribe({
@@ -65,7 +91,6 @@ export class LessonComponent implements OnInit {
       },
       error: (err) => {
         console.error('Failed to load lesson', err);
-        // Handle error, e.g. navigate back
         this.router.navigate(['/aprendizado']);
       }
     });
@@ -79,15 +104,25 @@ export class LessonComponent implements OnInit {
   }
 
   selectOption(index: number): void {
-    if (this.isSubmitted) return; // Prevent changing answer after submission
+    if (this.isSubmitted) return;
     this.selectedOptionIndex = index;
   }
 
   submitAnswer(): void {
     if (this.selectedOptionIndex === null || !this.currentExercise || this.isSubmitted) return;
-    
+
     this.isSubmitted = true;
     this.isCorrect = (this.selectedOptionIndex === this.currentExercise.correctAnswerIndex);
+
+    // Record first attempt only (retry doesn't overwrite)
+    if (this.exerciseResults[this.currentExerciseIndex] === undefined) {
+      this.exerciseResults[this.currentExerciseIndex] = {
+        correct: this.isCorrect,
+        question: this.currentExercise.theory,
+        chosen: this.currentExercise.options[this.selectedOptionIndex],
+        answer: this.currentExercise.options[this.currentExercise.correctAnswerIndex]
+      };
+    }
   }
 
   nextExercise(): void {
@@ -98,28 +133,23 @@ export class LessonComponent implements OnInit {
   }
 
   completeSection(): void {
-    if (this.user && this.courseId && this.sectionOrder && this.lessonOrder) {
-      this.learningService.completeLesson(this.user.id, this.courseId, this.sectionOrder, this.lessonOrder).subscribe({
+    // Show summary immediately
+    this.showSummary = true;
+
+    // Fire API in background
+    if (this.courseId && this.sectionOrder && this.lessonOrder) {
+      this.learningService.completeLesson(this.courseId, this.sectionOrder, this.lessonOrder).subscribe({
         next: () => {
           if (this.user && this.sectionDetails) {
             const globalIndex = this.learningService.getLessonGlobalIndex(this.sectionDetails.id);
             if (globalIndex >= (this.user.learningProgress || 0)) {
               this.user.learningProgress = globalIndex;
-              this.authService.updateUserProfile(this.user).subscribe(() => {
-                this.router.navigate(['/aprendizado']);
-              });
-              return;
+              this.authService.updateUserProfile(this.user).subscribe();
             }
           }
-          this.router.navigate(['/aprendizado']);
         },
-        error: (err) => {
-          console.error('Failed to complete lesson', err);
-          this.router.navigate(['/aprendizado']);
-        }
+        error: (err) => console.error('Failed to complete lesson', err)
       });
-    } else {
-      this.router.navigate(['/aprendizado']);
     }
   }
 
@@ -133,8 +163,3 @@ export class LessonComponent implements OnInit {
     this.isCorrect = false;
   }
 }
-
-
-
-
-

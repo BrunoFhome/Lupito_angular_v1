@@ -74,14 +74,14 @@ export class LearningService {
     return parseInt(lessonId, 10);
   }
 
-  getUserProgress(courseId: number, userId: number): Observable<UserProgressDTO> {
-    return this.http.get<UserProgressDTO>(`${this.progressUrl}/${courseId}?userId=${userId}`, this.getAuthHeaders());
+  getUserProgress(courseId: number): Observable<UserProgressDTO> {
+    return this.http.get<UserProgressDTO>(`${this.progressUrl}/${courseId}`, this.getAuthHeaders());
   }
 
-  completeLesson(userId: number, courseId: number, currentSectionOrder: number, currentLessonOrder: number): Observable<UserProgressDTO> {
+  completeLesson(courseId: number, currentSectionOrder: number, currentLessonOrder: number): Observable<UserProgressDTO> {
     return this.http.post<UserProgressDTO>(
-      `${this.progressUrl}/complete-lesson?userId=${userId}&courseId=${courseId}&currentSectionOrder=${currentSectionOrder}&currentLessonOrder=${currentLessonOrder}`, 
-      {}, 
+      `${this.progressUrl}/complete-lesson?courseId=${courseId}&currentSectionOrder=${currentSectionOrder}&currentLessonOrder=${currentLessonOrder}`,
+      {},
       this.getAuthHeaders()
     );
   }
