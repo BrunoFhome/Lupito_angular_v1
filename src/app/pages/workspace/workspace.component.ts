@@ -20,7 +20,7 @@ export class WorkspaceComponent implements OnInit, OnDestroy {
   taskId: number | null = null;
   isCompleted: boolean = false;
 
-  language: string = 'python';
+  language: string = 'javascript';
   code: string = '';
 
   output: string = '';
@@ -166,12 +166,12 @@ export class WorkspaceComponent implements OnInit, OnDestroy {
   private defaultCode(): string {
     return this.language === 'html'
       ? '<!DOCTYPE html>\n<html>\n<body>\n\n</body>\n</html>\n'
-      : '# Escreva seu código aqui.\n';
+      : '// Escreva seu código JavaScript aqui.\nconsole.log(\'Olá, Mundo!\');\n';
   }
 
   private detectLanguage(code: string): string {
     const trimmed = code.trimStart();
-    return (trimmed.startsWith('<!DOCTYPE') || trimmed.startsWith('<html')) ? 'html' : 'python';
+    return (trimmed.startsWith('<!DOCTYPE') || trimmed.startsWith('<html')) ? 'html' : 'javascript';
   }
 
   onTabKey(event: Event) {
@@ -196,30 +196,33 @@ export class WorkspaceComponent implements OnInit, OnDestroy {
     }
 
     this.isRunning = true;
-    const Sk = (window as any).Sk;
-    let outputBuffer = '';
+    const outputLines: string[] = [];
 
-    Sk.configure({
-      output: (text: string) => { outputBuffer += text; },
-      read: (x: string) => {
-        if (Sk.builtinFiles?.files?.[x] === undefined) {
-          throw "File not found: '" + x + "'";
-        }
-        return Sk.builtinFiles.files[x];
-      }
-    });
+    const origLog = console.log;
+    const origError = console.error;
+    const origWarn = console.warn;
 
-    Sk.misceval.asyncToPromise(() =>
-      Sk.importMainWithBody('<stdin>', false, this.code, true)
-    ).then(() => {
-      this.output = outputBuffer || '(sem saída)';
+    console.log = (...args: any[]) =>
+      outputLines.push(args.map(a => typeof a === 'object' ? JSON.stringify(a, null, 2) : String(a)).join(' '));
+    console.error = (...args: any[]) =>
+      outputLines.push('[Erro] ' + args.map(a => String(a)).join(' '));
+    console.warn = (...args: any[]) =>
+      outputLines.push('[Aviso] ' + args.map(a => String(a)).join(' '));
+
+    try {
+      // eslint-disable-next-line no-new-func
+      new Function(this.code)();
+      this.output = outputLines.join('\n') || '(sem saída)';
       this.outputType = 'text';
-      this.isRunning = false;
-    }).catch((err: any) => {
+    } catch (err: any) {
       this.output = err.toString();
       this.outputType = 'error';
+    } finally {
+      console.log = origLog;
+      console.error = origError;
+      console.warn = origWarn;
       this.isRunning = false;
-    });
+    }
   }
 
   clearOutput() {

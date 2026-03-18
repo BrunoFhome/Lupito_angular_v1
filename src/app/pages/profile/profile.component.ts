@@ -19,6 +19,9 @@ export class ProfileComponent implements OnInit, OnDestroy {
     isEditingLocation = false;
     errorMessage: string | null = null;
 
+    readonly DEFAULT_PHOTO = 'assets/images/loboIcon.jpg';
+    currentPhoto: string = localStorage.getItem('userPhoto') || this.DEFAULT_PHOTO;
+
     readonly brazilianStates = [
         { sigla: 'AC', nome: 'Acre' },
         { sigla: 'AL', nome: 'Alagoas' },
@@ -118,6 +121,26 @@ export class ProfileComponent implements OnInit, OnDestroy {
                 }
             });
         }
+    }
+
+    onPhotoChange(event: Event): void {
+        const input = event.target as HTMLInputElement;
+        const file = input.files?.[0];
+        if (!file) return;
+
+        const allowedTypes = ['image/png', 'image/jpeg'];
+        if (!allowedTypes.includes(file.type)) {
+            alert('Apenas arquivos PNG, JPG ou JPEG são permitidos.');
+            input.value = '';
+            return;
+        }
+
+        const reader = new FileReader();
+        reader.onload = () => {
+            this.currentPhoto = reader.result as string;
+            localStorage.setItem('userPhoto', this.currentPhoto);
+        };
+        reader.readAsDataURL(file);
     }
 
     onLogout(): void {

@@ -8,9 +8,11 @@
         <!-- Header / Perfil Pessoal -->
         <div class="profile-card">
             <div class="profile-header-section">
-                <div class="avatar">
-                    <img src="https://i.pravatar.cc/150?img=11" alt="Avatar User" *ngIf="user.name" />
-                    <span *ngIf="!user.name">{{ user.name ? user.name.charAt(0).toUpperCase() : 'U' }}</span>
+                <div class="avatar" (click)="photoInput.click()" title="Clique para alterar a foto">
+                    <img [src]="currentPhoto" alt="Avatar User" />
+                    <div class="avatar-edit-overlay">✎</div>
+                    <input #photoInput type="file" accept=".png,.jpg,.jpeg,image/png,image/jpeg"
+                        (change)="onPhotoChange($event)" style="display:none" />
                 </div>
 
                 <div class="profile-details">

@@ -47,6 +47,25 @@
     position: relative;
     border: 3px solid #fff;
     box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+    cursor: pointer;
+}
+
+.avatar-edit-overlay {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background: rgba(0, 0, 0, 0.5);
+    color: #fff;
+    font-size: 16px;
+    text-align: center;
+    padding: 5px 0;
+    opacity: 0;
+    transition: opacity 0.2s;
+}
+
+.avatar:hover .avatar-edit-overlay {
+    opacity: 1;
 }
 
 .avatar img {
