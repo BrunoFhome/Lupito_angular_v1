@@ -2,7 +2,7 @@
   padding: 1rem 2rem;
   background-color: #f1f5f9; /* fundo claro padrão da imagem */
   min-height: calc(100vh - 80px); /* Ajuste de altura */
-  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  font-family: 'JetBrains Mono', monospace;
 }
 
 .kanban-header {

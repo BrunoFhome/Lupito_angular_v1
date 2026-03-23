@@ -9,10 +9,11 @@ import { AprendizadoComponent } from './pages/aprendizado/aprendizado.component'
 import { LessonComponent } from './pages/lesson/lesson.component';
 import { WorkspaceComponent } from './pages/workspace/workspace.component';
 import { DashboardComponent } from './pages/dashboard/dashboard.component';
+import { LandingComponent } from './pages/landing/landing.component';
 import { authGuard } from './guards/auth.guard';
 
 export const routes: Routes = [
-    { path: '', redirectTo: 'dashboard', pathMatch: 'full' },
+    { path: '', component: LandingComponent },
     { path: 'login', component: LoginComponent },
     { path: 'register', component: RegisterComponent },
     { path: 'forgot-password', component: ForgotPasswordComponent },

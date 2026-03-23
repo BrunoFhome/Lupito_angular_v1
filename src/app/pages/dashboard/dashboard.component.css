@@ -2,7 +2,7 @@
   padding: 40px;
   max-width: 1000px;
   margin: 0 auto;
-  font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  font-family: 'JetBrains Mono', monospace;
   display: flex;
   flex-direction: column;
   gap: 32px;

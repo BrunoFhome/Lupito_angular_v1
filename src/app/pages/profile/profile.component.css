@@ -6,7 +6,7 @@
     background-color: #f4f6f8;
     padding: 40px 16px;
     box-sizing: border-box;
-    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+    font-family: 'JetBrains Mono', monospace;
 }
 
 .profile-layout {

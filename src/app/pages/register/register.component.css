@@ -22,6 +22,27 @@
   flex-shrink: 0;
 }
 
+.btn-back {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 13px;
+  font-weight: 600;
+  color: #666;
+  text-decoration: none;
+  margin-bottom: 16px;
+  transition: color 0.2s;
+}
+
+.btn-back svg {
+  width: 16px;
+  height: 16px;
+}
+
+.btn-back:hover {
+  color: #00b4cc;
+}
+
 .form-logo {
   display: block;
   width: 200px !important;

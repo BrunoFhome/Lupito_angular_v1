@@ -8,7 +8,7 @@
   overflow: hidden;
   background-color: #1e1e1e;
   color: #d4d4d4;
-  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  font-family: 'JetBrains Mono', monospace;
 }
 
 /* =============================================
@@ -164,7 +164,7 @@
   color: #ccc;
   white-space: pre-wrap;
   word-break: break-word;
-  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  font-family: 'JetBrains Mono', monospace;
   margin: 0;
 }
 
