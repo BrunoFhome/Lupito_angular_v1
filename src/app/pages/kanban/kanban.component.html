@@ -18,10 +18,20 @@
         <div class="task-card" *ngFor="let task of getTasksByStatus('todo')">
           <div class="card-header">
             <h3>{{ task.title }}</h3>
-            <span class="priority-badge" 
-                  [ngClass]="{'priority-high': task.priority === 'Alta', 'priority-medium': task.priority === 'Média', 'priority-low': task.priority === 'Baixa'}">
-              {{ task.priority || 'Normal' }}
-            </span>
+            <div class="priority-wrapper">
+              <span class="priority-badge priority-editable"
+                    [ngClass]="{'priority-high': task.priority === 'Alta', 'priority-medium': task.priority === 'Média', 'priority-low': task.priority === 'Baixa'}"
+                    (click)="openPriorityEdit(task.id, $event)"
+                    title="Alterar prioridade">
+                {{ task.priority || 'Normal' }} ▾
+              </span>
+              <div class="priority-dropdown" *ngIf="priorityEditTaskId === task.id" (click)="$event.stopPropagation()">
+                <button *ngFor="let opt of priorityOptions"
+                        class="priority-option"
+                        [ngClass]="{'active': task.priority === opt}"
+                        (click)="setPriority(task.id, opt, $event)">{{ opt }}</button>
+              </div>
+            </div>
           </div>
           <p class="task-description">{{ task.description }}</p>
           <div class="card-actions">
@@ -46,10 +56,20 @@
         <div class="task-card" *ngFor="let task of getTasksByStatus('in-progress')">
           <div class="card-header">
             <h3>{{ task.title }}</h3>
-            <span class="priority-badge" 
-                  [ngClass]="{'priority-high': task.priority === 'Alta', 'priority-medium': task.priority === 'Média', 'priority-low': task.priority === 'Baixa'}">
-              {{ task.priority || 'Normal' }}
-            </span>
+            <div class="priority-wrapper">
+              <span class="priority-badge priority-editable"
+                    [ngClass]="{'priority-high': task.priority === 'Alta', 'priority-medium': task.priority === 'Média', 'priority-low': task.priority === 'Baixa'}"
+                    (click)="openPriorityEdit(task.id, $event)"
+                    title="Alterar prioridade">
+                {{ task.priority || 'Normal' }} ▾
+              </span>
+              <div class="priority-dropdown" *ngIf="priorityEditTaskId === task.id" (click)="$event.stopPropagation()">
+                <button *ngFor="let opt of priorityOptions"
+                        class="priority-option"
+                        [ngClass]="{'active': task.priority === opt}"
+                        (click)="setPriority(task.id, opt, $event)">{{ opt }}</button>
+              </div>
+            </div>
           </div>
           <p class="task-description">{{ task.description }}</p>
           <div class="card-actions">
@@ -75,10 +95,20 @@
         <div class="task-card" *ngFor="let task of getTasksByStatus('in-review')">
           <div class="card-header">
             <h3>{{ task.title }}</h3>
-            <span class="priority-badge" 
-                  [ngClass]="{'priority-high': task.priority === 'Alta', 'priority-medium': task.priority === 'Média', 'priority-low': task.priority === 'Baixa'}">
-              {{ task.priority || 'Normal' }}
-            </span>
+            <div class="priority-wrapper">
+              <span class="priority-badge priority-editable"
+                    [ngClass]="{'priority-high': task.priority === 'Alta', 'priority-medium': task.priority === 'Média', 'priority-low': task.priority === 'Baixa'}"
+                    (click)="openPriorityEdit(task.id, $event)"
+                    title="Alterar prioridade">
+                {{ task.priority || 'Normal' }} ▾
+              </span>
+              <div class="priority-dropdown" *ngIf="priorityEditTaskId === task.id" (click)="$event.stopPropagation()">
+                <button *ngFor="let opt of priorityOptions"
+                        class="priority-option"
+                        [ngClass]="{'active': task.priority === opt}"
+                        (click)="setPriority(task.id, opt, $event)">{{ opt }}</button>
+              </div>
+            </div>
           </div>
           <p class="task-description">{{ task.description }}</p>
           <div class="card-actions">

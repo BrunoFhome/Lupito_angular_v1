@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ActivatedRoute, Router } from '@angular/router';
 import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
@@ -12,6 +12,8 @@ interface ExerciseResult {
   answer: string;
 }
 
+type MascotState = 'hidden' | 'entering' | 'visible' | 'leaving';
+
 @Component({
   selector: 'app-lesson',
   standalone: true,
@@ -19,7 +21,7 @@ interface ExerciseResult {
   templateUrl: './lesson.component.html',
   styleUrl: './lesson.component.css'
 })
-export class LessonComponent implements OnInit {
+export class LessonComponent implements OnInit, OnDestroy {
   sectionDetails: SectionDetails | null = null;
   currentExerciseIndex: number = 0;
 
@@ -40,6 +42,11 @@ export class LessonComponent implements OnInit {
 
   // Tracking & Summary
   exerciseResults: (ExerciseResult | undefined)[] = [];
+
+  // Mascote
+  mascotImage: string = '';
+  mascotState: MascotState = 'hidden';
+  private mascotTimer: ReturnType<typeof setTimeout> | null = null;
 
   get safeTheoryContent(): SafeHtml {
     const content = this.sectionDetails?.theoryContent || '';
@@ -143,6 +150,10 @@ export class LessonComponent implements OnInit {
         answer: this.currentExercise.options[this.currentExercise.correctAnswerIndex]
       };
     }
+
+    if (!this.isCorrect) {
+      this.showMascot('assets/images/duvida.png', 3000);
+    }
   }
 
   nextExercise(): void {
@@ -154,6 +165,12 @@ export class LessonComponent implements OnInit {
 
   completeSection(): void {
     this.showSummary = true;
+
+    const allCorrect = this.exerciseResults.length === this.totalExercises &&
+      this.exerciseResults.every(r => r?.correct);
+    if (allCorrect) {
+      this.showMascot('assets/images/comemorando.png', 4000);
+    }
 
     if (this.courseId && this.sectionOrder && this.lessonOrder) {
       this.learningService.completeLesson(this.courseId, this.sectionOrder, this.lessonOrder).subscribe({
@@ -179,5 +196,25 @@ export class LessonComponent implements OnInit {
     this.selectedOptionIndex = null;
     this.isSubmitted = false;
     this.isCorrect = false;
+  }
+
+  showMascot(image: string, duration: number): void {
+    if (this.mascotTimer) clearTimeout(this.mascotTimer);
+    this.mascotImage = image;
+    this.mascotState = 'entering';
+
+    // após o frame de entering, muda para visible
+    setTimeout(() => { this.mascotState = 'visible'; }, 50);
+
+    this.mascotTimer = setTimeout(() => this.hideMascot(), duration);
+  }
+
+  hideMascot(): void {
+    this.mascotState = 'leaving';
+    setTimeout(() => { this.mascotState = 'hidden'; }, 500);
+  }
+
+  ngOnDestroy(): void {
+    if (this.mascotTimer) clearTimeout(this.mascotTimer);
   }
 }

@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, HostListener } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { MatIconModule } from '@angular/material/icon';
@@ -20,6 +20,10 @@ export class KanbanComponent implements OnInit {
   showEvaluation: boolean = false;
   evaluationTask: KanbanTask | null = null;
   evalChecks: boolean[] = [false, false, false, false];
+
+  // Edição de prioridade
+  priorityEditTaskId: number | null = null;
+  readonly priorityOptions = ['Alta', 'Média', 'Baixa'];
 
   // Confirmação de movimentação
   showMoveConfirm: boolean = false;
@@ -72,6 +76,22 @@ export class KanbanComponent implements OnInit {
     this.moveConfirmTask = null;
     this.moveConfirmStatus = null;
     this.moveConfirmLabel = '';
+  }
+
+  @HostListener('document:click')
+  onDocumentClick(): void {
+    this.priorityEditTaskId = null;
+  }
+
+  openPriorityEdit(taskId: number, event: Event): void {
+    event.stopPropagation();
+    this.priorityEditTaskId = this.priorityEditTaskId === taskId ? null : taskId;
+  }
+
+  setPriority(taskId: number, priority: string, event: Event): void {
+    event.stopPropagation();
+    this.kanbanService.updateTaskPriority(taskId, priority);
+    this.priorityEditTaskId = null;
   }
 
   openWorkspace(taskId: number) {

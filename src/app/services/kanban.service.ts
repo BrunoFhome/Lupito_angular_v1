@@ -73,4 +73,18 @@ export class KanbanService {
          this.tasksSubject.next(tasks);
       }, err => console.error(err));
   }
+
+  updateTaskPriority(taskId: number, priority: string): void {
+    this.http.put<KanbanTask>(
+      `${this.apiUrl}/tasks/${taskId}/priority?priority=${encodeURIComponent(priority)}`,
+      {},
+      this.getAuthHeaders()
+    ).subscribe({
+      next: updated => {
+        const tasks = this.tasksSubject.value.map(t => t.id === taskId ? updated : t);
+        this.tasksSubject.next(tasks);
+      },
+      error: err => console.error(err)
+    });
+  }
 }

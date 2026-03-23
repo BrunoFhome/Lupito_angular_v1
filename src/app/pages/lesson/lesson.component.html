@@ -152,6 +152,16 @@
   </div>
 </div>
 
+<!-- Mascote animado -->
+<div
+  class="mascot-overlay"
+  [ngClass]="'mascot-' + mascotState"
+  *ngIf="mascotState !== 'hidden'"
+  (click)="hideMascot()"
+>
+  <img [src]="mascotImage" alt="mascote" class="mascot-img" />
+</div>
+
 <ng-template #loading>
   <div class="loading-state">
     <div class="spinner"></div>

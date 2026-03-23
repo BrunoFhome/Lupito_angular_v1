@@ -350,6 +350,66 @@
   cursor: not-allowed;
 }
 
+/* ── Edição de Prioridade ────────────────────────────────── */
+
+.priority-wrapper {
+  position: relative;
+  flex-shrink: 0;
+}
+
+.priority-editable {
+  cursor: pointer;
+  user-select: none;
+  transition: opacity 0.15s;
+}
+
+.priority-editable:hover {
+  opacity: 0.75;
+}
+
+.priority-dropdown {
+  position: absolute;
+  top: calc(100% + 4px);
+  right: 0;
+  background: #fff;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  box-shadow: 0 8px 24px rgba(0,0,0,0.12);
+  z-index: 100;
+  overflow: hidden;
+  min-width: 90px;
+  animation: dropdown-open 0.15s ease;
+}
+
+@keyframes dropdown-open {
+  from { opacity: 0; transform: translateY(-4px) scale(0.97); }
+  to   { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+.priority-option {
+  display: block;
+  width: 100%;
+  padding: 0.5rem 0.85rem;
+  background: none;
+  border: none;
+  text-align: left;
+  font-size: 0.78rem;
+  font-weight: 600;
+  cursor: pointer;
+  color: #334155;
+  transition: background 0.12s;
+  white-space: nowrap;
+}
+
+.priority-option:hover {
+  background: #f1f5f9;
+}
+
+.priority-option.active {
+  background: #f1f5f9;
+  color: #00b4cc;
+}
+
 .assignee-info, .date-info {
   display: flex;
   align-items: center;
