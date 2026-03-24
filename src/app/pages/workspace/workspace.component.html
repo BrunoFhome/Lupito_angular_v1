@@ -12,15 +12,36 @@
       <div class="task-info" *ngIf="task">
         <span class="task-title">{{ task.title }}</span>
         <span class="badge-priority">{{ task.priority }}</span>
+        <span class="badge-mode" [ngClass]="'badge-mode-' + mode">
+          {{ mode === 'web' ? 'HTML · CSS · JS' : 'JavaScript' }}
+        </span>
         <span class="badge-done" *ngIf="isCompleted">✓ Concluída</span>
       </div>
     </div>
     <div class="header-right">
+      <span class="save-status" [ngClass]="saveStatus">
+        <ng-container *ngIf="saveStatus === 'saving'">● Salvando...</ng-container>
+        <ng-container *ngIf="saveStatus === 'saved'">✓ Salvo às {{ lastSavedAt | date:'HH:mm:ss' }}</ng-container>
+        <ng-container *ngIf="saveStatus === 'error'">✕ Salvo localmente</ng-container>
+      </span>
+
+      <!-- Seletor de arquivo (apenas modo web) -->
+      <div class="lang-selector" *ngIf="mode === 'web'">
+        <button
+          *ngFor="let file of webFileList"
+          class="lang-btn"
+          [class.lang-btn-active]="activeFile === file"
+          [ngClass]="'lang-btn-' + file"
+          (click)="switchFile(file)">
+          {{ file.toUpperCase() }}
+        </button>
+      </div>
+
       <button class="btn-run" (click)="runCode()" [disabled]="isRunning">
         <svg viewBox="0 0 24 24" fill="currentColor" width="14" height="14">
           <polygon points="5 3 19 12 5 21 5 3"/>
         </svg>
-        {{ isRunning ? 'Executando...' : 'Executar' }}
+        {{ mode === 'web' ? 'Visualizar' : (isRunning ? 'Executando...' : 'Executar') }}
       </button>
     </div>
   </header>
@@ -34,9 +55,7 @@
       <div *ngIf="task" class="instructions-content">
         <p class="task-desc">{{ task.description }}</p>
         <pre *ngIf="task.challengeInstructions" class="instructions-text">{{ task.challengeInstructions }}</pre>
-        <div *ngIf="!task.challengeInstructions" class="instructions-text">
-          <p>Implemente a lógica conforme a descrição acima.</p>
-        </div>
+        <p *ngIf="!task.challengeInstructions" class="instructions-text">Implemente a lógica conforme a descrição acima.</p>
       </div>
       <p *ngIf="!task" class="loading">Carregando...</p>
     </aside>
@@ -44,29 +63,8 @@
     <!-- Right: Editor + Output -->
     <div class="panel-editor">
 
-      <!-- Editor toolbar -->
-      <div class="editor-toolbar">
-        <span class="lang-tag">{{ language | uppercase }}</span>
-        <span class="toolbar-label">Editor de Código</span>
-        <span class="save-status" [ngClass]="saveStatus">
-          <ng-container *ngIf="saveStatus === 'saving'">● Salvando...</ng-container>
-          <ng-container *ngIf="saveStatus === 'saved'">✓ Salvo às {{ lastSavedAt | date:'HH:mm:ss' }}</ng-container>
-          <ng-container *ngIf="saveStatus === 'error'">✕ Salvo localmente (sem conexão)</ng-container>
-        </span>
-      </div>
-
-      <!-- Code textarea -->
-      <textarea
-        class="code-area"
-        [ngModel]="code"
-        (ngModelChange)="onCodeChange($event)"
-        spellcheck="false"
-        autocorrect="off"
-        autocapitalize="off"
-        autocomplete="off"
-        (keydown.tab)="onTabKey($event)"
-        placeholder="Escreva seu código aqui...">
-      </textarea>
+      <!-- CodeMirror container -->
+      <div class="editor-container" #editorContainer></div>
 
       <!-- Output -->
       <div class="output-panel" *ngIf="output">
@@ -75,9 +73,9 @@
           <button class="btn-clear" (click)="clearOutput()">✕ Fechar</button>
         </div>
         <iframe
-          *ngIf="outputType === 'html'"
-          [srcdoc]="htmlPreview"
+          #previewFrame
           class="html-preview"
+          [class.hidden]="outputType !== 'html'"
           sandbox="allow-scripts">
         </iframe>
         <pre *ngIf="outputType !== 'html'"

@@ -1,53 +1,77 @@
-import { Component, OnInit, OnDestroy, HostListener } from '@angular/core';
+import { Component, OnInit, OnDestroy, AfterViewInit, ViewChild, ElementRef, HostListener, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Location } from '@angular/common';
 import { Subject } from 'rxjs';
 import { debounceTime, filter, take, takeUntil } from 'rxjs/operators';
 import { KanbanService, KanbanTask } from '../../services/kanban.service';
-import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
+import { DomSanitizer } from '@angular/platform-browser';
+import { ToastService } from '../../services/toast.service';
+
+import { EditorView, keymap, lineNumbers, highlightActiveLine, drawSelection } from '@codemirror/view';
+import { EditorState, Extension } from '@codemirror/state';
+import { defaultKeymap, history, historyKeymap, indentWithTab } from '@codemirror/commands';
+import { javascript } from '@codemirror/lang-javascript';
+import { html } from '@codemirror/lang-html';
+import { css } from '@codemirror/lang-css';
+import { oneDark } from '@codemirror/theme-one-dark';
+import { indentOnInput, bracketMatching, foldGutter } from '@codemirror/language';
+
+type TaskMode = 'javascript' | 'web';
+type WebFile  = 'html' | 'css' | 'js';
 
 @Component({
   selector: 'app-workspace',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule],
   templateUrl: './workspace.component.html',
   styleUrls: ['./workspace.component.css']
 })
-export class WorkspaceComponent implements OnInit, OnDestroy {
+export class WorkspaceComponent implements OnInit, AfterViewInit, OnDestroy {
+
+  @ViewChild('editorContainer') editorContainer!: ElementRef<HTMLDivElement>;
+  @ViewChild('previewFrame')    previewFrame!: ElementRef<HTMLIFrameElement>;
+
   task: KanbanTask | null = null;
   taskId: number | null = null;
-  isCompleted: boolean = false;
+  isCompleted = false;
 
-  language: string = 'javascript';
-  code: string = '';
+  // ── Modo da tarefa ──────────────────────────────────────────────────────
+  mode: TaskMode = 'javascript';
 
-  output: string = '';
+  // Modo JavaScript: código único
+  code = '';
+
+  // Modo Web: três arquivos independentes
+  webFiles: { html: string; css: string; js: string } = { html: '', css: '', js: '' };
+  activeFile: WebFile = 'html';
+  readonly webFileList: WebFile[] = ['html', 'css', 'js'];
+
+  // ── Output ──────────────────────────────────────────────────────────────
+  output = '';
   outputType: 'text' | 'html' | 'error' | '' = '';
-  isRunning: boolean = false;
+  isRunning = false;
 
+  // ── Save status ─────────────────────────────────────────────────────────
   saveStatus: 'idle' | 'saving' | 'saved' | 'error' = 'idle';
   lastSavedAt: Date | null = null;
 
+  private editorView: EditorView | null = null;
   private codeChange$ = new Subject<string>();
   private destroy$ = new Subject<void>();
   private codeInitialized = false;
 
-  get htmlPreview(): SafeHtml {
-    return this.sanitizer.bypassSecurityTrustHtml(this.code);
+  get currentCode(): string {
+    return this.editorView ? this.editorView.state.doc.toString() : this.code;
   }
 
   private get localStorageKey(): string {
     return `workspace_code_${this.taskId}`;
   }
 
-  // Avisa o browser antes de fechar/recarregar com save pendente
   @HostListener('window:beforeunload', ['$event'])
   onBeforeUnload(event: BeforeUnloadEvent): void {
-    if (this.saveStatus === 'saving') {
-      event.preventDefault();
-    }
+    if (this.saveStatus === 'saving') event.preventDefault();
   }
 
   constructor(
@@ -55,15 +79,16 @@ export class WorkspaceComponent implements OnInit, OnDestroy {
     private router: Router,
     private kanbanService: KanbanService,
     private location: Location,
-    private sanitizer: DomSanitizer
+    private sanitizer: DomSanitizer,
+    private toast: ToastService,
+    private cdr: ChangeDetectorRef
   ) {}
 
   ngOnInit() {
-    // Salva no servidor após 1.5s sem digitação
     this.codeChange$.pipe(
       debounceTime(1500),
       takeUntil(this.destroy$)
-    ).subscribe(code => this.persistCodeToServer(code));
+    ).subscribe(serialized => this.persistCodeToServer(serialized));
 
     this.route.paramMap.subscribe(params => {
       const idParam = params.get('taskId');
@@ -71,7 +96,6 @@ export class WorkspaceComponent implements OnInit, OnDestroy {
 
       this.taskId = parseInt(idParam, 10);
 
-      // Carga inicial: inicializa o código UMA vez quando as tarefas chegam
       this.kanbanService.getTasks().pipe(
         filter(tasks => tasks.length > 0),
         take(1)
@@ -80,7 +104,6 @@ export class WorkspaceComponent implements OnInit, OnDestroy {
         if (found) this.initializeTask(found);
       });
 
-      // Mantém metadados (status, etc.) em sincronia SEM re-setar o código
       this.kanbanService.getTasks().pipe(
         takeUntil(this.destroy$)
       ).subscribe(tasks => {
@@ -95,149 +118,286 @@ export class WorkspaceComponent implements OnInit, OnDestroy {
     });
   }
 
+  ngAfterViewInit() {
+    const initial = this.mode === 'web' ? this.webFiles[this.activeFile] : this.code;
+    this.createEditor(initial);
+  }
+
+  // ── Editor ───────────────────────────────────────────────────────────────
+
+  private getLangExtension(): Extension {
+    if (this.mode === 'javascript') return javascript();
+    switch (this.activeFile) {
+      case 'html': return html();
+      case 'css':  return css();
+      case 'js':   return javascript();
+    }
+  }
+
+  private createEditor(initialCode: string) {
+    this.editorView?.destroy();
+
+    const updateListener = EditorView.updateListener.of(update => {
+      if (update.docChanged) {
+        const value = update.state.doc.toString();
+        if (this.mode === 'web') {
+          this.webFiles[this.activeFile] = value;
+        } else {
+          this.code = value;
+        }
+        this.saveStatus = 'saving';
+        const serialized = this.getSerializedCode();
+        this.saveToLocalStorage(serialized);
+        this.codeChange$.next(serialized);
+      }
+    });
+
+    const state = EditorState.create({
+      doc: initialCode,
+      extensions: [
+        oneDark,
+        lineNumbers(),
+        highlightActiveLine(),
+        drawSelection(),
+        history(),
+        indentOnInput(),
+        bracketMatching(),
+        foldGutter(),
+        this.getLangExtension(),
+        keymap.of([...defaultKeymap, ...historyKeymap, indentWithTab]),
+        EditorView.theme({
+          '&':            { height: '100%', fontSize: '14px' },
+          '.cm-scroller': { overflow: 'auto', fontFamily: "'JetBrains Mono', monospace" },
+          '.cm-content':  { padding: '8px 0' },
+        }),
+        updateListener,
+      ],
+    });
+
+    this.editorView = new EditorView({
+      state,
+      parent: this.editorContainer.nativeElement,
+    });
+  }
+
+  // ── Inicialização da tarefa ──────────────────────────────────────────────
+
   private initializeTask(task: KanbanTask): void {
     this.task = task;
     this.isCompleted = task.status === 'done';
-    this.language = this.detectLanguage(task.starterCode || '');
+    this.mode = task.language === 'web' ? 'web' : 'javascript';
 
-    // Prioridade: servidor > localStorage > starterCode > padrão
-    const serverCode = task.userCode?.trim() ? task.userCode : null;
     const localBackup = this.loadFromLocalStorage();
 
-    if (serverCode) {
-      this.code = serverCode;
-      // Sincroniza localStorage com o que veio do servidor
-      this.saveToLocalStorage(serverCode);
-    } else if (localBackup) {
-      // Usuário tinha código local mas o servidor não tem — envia ao servidor
-      this.code = localBackup;
-      this.persistCodeToServer(localBackup);
+    if (this.mode === 'web') {
+      const serverWeb = this.parseWebCode(task.userCode);
+      const localWeb  = localBackup ? this.parseWebCode(localBackup) : null;
+      const defaultWeb = this.defaultWebCode(task.starterCode);
+
+      if (serverWeb) {
+        this.webFiles = serverWeb;
+        this.saveToLocalStorage(JSON.stringify(this.webFiles));
+      } else if (localWeb) {
+        this.webFiles = localWeb;
+        this.persistCodeToServer(JSON.stringify(this.webFiles));
+      } else {
+        this.webFiles = defaultWeb;
+      }
+      this.activeFile = 'html';
     } else {
-      this.code = task.starterCode ?? this.defaultCode();
+      const serverCode = task.userCode?.trim() ? task.userCode : null;
+      if (serverCode) {
+        this.code = serverCode;
+        this.saveToLocalStorage(serverCode);
+      } else if (localBackup) {
+        this.code = localBackup;
+        this.persistCodeToServer(localBackup);
+      } else {
+        this.code = task.starterCode ?? this.defaultJsCode();
+      }
+    }
+
+    if (this.editorView) {
+      const initial = this.mode === 'web' ? this.webFiles[this.activeFile] : this.code;
+      this.createEditor(initial);
     }
 
     this.codeInitialized = true;
   }
 
+  private parseWebCode(raw: string | undefined | null): { html: string; css: string; js: string } | null {
+    if (!raw?.trim()) return null;
+    try {
+      const parsed = JSON.parse(raw);
+      if (parsed && (parsed.html !== undefined || parsed.css !== undefined || parsed.js !== undefined)) {
+        return { html: parsed.html || '', css: parsed.css || '', js: parsed.js || '' };
+      }
+    } catch {}
+    return null;
+  }
+
+  private defaultWebCode(starterCode?: string | null): { html: string; css: string; js: string } {
+    return this.parseWebCode(starterCode) ?? {
+      html: '<!DOCTYPE html>\n<html lang="pt-BR">\n<head>\n  <meta charset="UTF-8">\n  <title>Minha Página</title>\n</head>\n<body>\n\n</body>\n</html>\n',
+      css:  '/* Escreva seu CSS aqui */\nbody {\n  font-family: sans-serif;\n  padding: 24px;\n}\n',
+      js:   '// Escreva seu JavaScript aqui\nconsole.log(\'Página carregada!\');\n',
+    };
+  }
+
+  // ── Troca de arquivo (modo web) ─────────────────────────────────────────
+
+  switchFile(file: WebFile) {
+    if (file === this.activeFile) return;
+    if (this.editorView) {
+      this.webFiles[this.activeFile] = this.editorView.state.doc.toString();
+    }
+    this.activeFile = file;
+    this.createEditor(this.webFiles[this.activeFile]);
+  }
+
   ngOnDestroy() {
+    this.editorView?.destroy();
     this.destroy$.next();
     this.destroy$.complete();
   }
 
-  onCodeChange(newCode: string) {
-    this.code = newCode;
-    this.saveStatus = 'saving';
-    // Salva no localStorage imediatamente (sem debounce) — proteção instantânea
-    this.saveToLocalStorage(newCode);
-    // Agenda save no servidor com debounce
-    this.codeChange$.next(newCode);
-  }
-
-  private persistCodeToServer(code: string) {
-    if (!this.taskId) return;
-    this.kanbanService.saveCode(this.taskId, code).subscribe({
-      next: () => {
-        this.saveStatus = 'saved';
-        this.lastSavedAt = new Date();
-      },
-      error: (err) => {
-        this.saveStatus = 'error';
-        console.error('Erro ao salvar código:', err);
-      }
-    });
-  }
-
-  private saveToLocalStorage(code: string): void {
-    try {
-      localStorage.setItem(this.localStorageKey, code);
-    } catch {
-      // Quota excedida — ignora silenciosamente
-    }
-  }
-
-  private loadFromLocalStorage(): string | null {
-    try {
-      return localStorage.getItem(this.localStorageKey);
-    } catch {
-      return null;
-    }
-  }
-
-  private defaultCode(): string {
-    return this.language === 'html'
-      ? '<!DOCTYPE html>\n<html>\n<body>\n\n</body>\n</html>\n'
-      : '// Escreva seu código JavaScript aqui.\nconsole.log(\'Olá, Mundo!\');\n';
-  }
-
-  private detectLanguage(code: string): string {
-    const trimmed = code.trimStart();
-    return (trimmed.startsWith('<!DOCTYPE') || trimmed.startsWith('<html')) ? 'html' : 'javascript';
-  }
-
-  onTabKey(event: Event) {
-    event.preventDefault();
-    const textarea = event.target as HTMLTextAreaElement;
-    const start = textarea.selectionStart;
-    const end = textarea.selectionEnd;
-    this.code = this.code.substring(0, start) + '    ' + this.code.substring(end);
-    setTimeout(() => {
-      textarea.selectionStart = textarea.selectionEnd = start + 4;
-    });
-  }
+  // ── Executar / Visualizar ───────────────────────────────────────────────
 
   runCode() {
     this.output = '';
     this.outputType = '';
 
-    if (this.language === 'html') {
+    // Garante que o conteúdo atual do editor está salvo no estado
+    if (this.editorView) {
+      if (this.mode === 'web') {
+        this.webFiles[this.activeFile] = this.editorView.state.doc.toString();
+      } else {
+        this.code = this.editorView.state.doc.toString();
+      }
+    }
+
+    if (this.mode === 'web') {
       this.outputType = 'html';
-      this.output = this.code;
+      this.output = ' '; // valor truthy para exibir o painel
+      this.cdr.detectChanges();
+      this.writeToPreview(this.buildWebPreview());
       return;
     }
 
+    // Modo JavaScript: captura console e executa
     this.isRunning = true;
     const outputLines: string[] = [];
 
-    const origLog = console.log;
+    const origLog   = console.log;
     const origError = console.error;
-    const origWarn = console.warn;
+    const origWarn  = console.warn;
 
-    console.log = (...args: any[]) =>
-      outputLines.push(args.map(a => typeof a === 'object' ? JSON.stringify(a, null, 2) : String(a)).join(' '));
-    console.error = (...args: any[]) =>
-      outputLines.push('[Erro] ' + args.map(a => String(a)).join(' '));
-    console.warn = (...args: any[]) =>
-      outputLines.push('[Aviso] ' + args.map(a => String(a)).join(' '));
+    console.log   = (...args: any[]) => outputLines.push(args.map(a => typeof a === 'object' ? JSON.stringify(a, null, 2) : String(a)).join(' '));
+    console.error = (...args: any[]) => outputLines.push('[Erro] '   + args.map(a => String(a)).join(' '));
+    console.warn  = (...args: any[]) => outputLines.push('[Aviso] '  + args.map(a => String(a)).join(' '));
 
     try {
       // eslint-disable-next-line no-new-func
       new Function(this.code)();
-      this.output = outputLines.join('\n') || '(sem saída)';
+      this.output     = outputLines.join('\n') || '(sem saída)';
       this.outputType = 'text';
     } catch (err: any) {
-      this.output = err.toString();
+      this.output     = err.toString();
       this.outputType = 'error';
     } finally {
-      console.log = origLog;
+      console.log   = origLog;
       console.error = origError;
-      console.warn = origWarn;
+      console.warn  = origWarn;
       this.isRunning = false;
     }
   }
 
+  private buildWebPreview(): string {
+    let doc = this.webFiles.html.trim();
+    if (!doc) doc = '<!DOCTYPE html><html><head></head><body></body></html>';
+
+    const css = this.webFiles.css;
+    const js  = this.webFiles.js;
+
+    if (css.trim()) {
+      if (doc.includes('</head>')) {
+        doc = doc.replace('</head>', `<style>\n${css}\n</style>\n</head>`);
+      } else {
+        doc = `<style>\n${css}\n</style>\n` + doc;
+      }
+    }
+
+    if (js.trim()) {
+      if (doc.includes('</body>')) {
+        doc = doc.replace('</body>', `<script>\n${js}\n<\/script>\n</body>`);
+      } else {
+        doc += `\n<script>\n${js}\n<\/script>`;
+      }
+    }
+
+    return doc;
+  }
+
+  private writeToPreview(htmlContent: string): void {
+    const iframe = this.previewFrame?.nativeElement;
+    if (!iframe) return;
+    const doc = iframe.contentDocument || iframe.contentWindow?.document;
+    if (!doc) return;
+    doc.open();
+    doc.write(htmlContent);
+    doc.close();
+  }
+
   clearOutput() {
-    this.output = '';
+    this.output     = '';
     this.outputType = '';
+    this.writeToPreview('');
   }
 
   completeTask() {
     if (this.taskId) {
       this.kanbanService.updateTaskStatus(this.taskId, 'done');
       this.isCompleted = true;
+      this.toast.success('Tarefa marcada como concluída!');
     }
   }
 
   goBack() {
     this.location.back();
+  }
+
+  // ── Persistência ────────────────────────────────────────────────────────
+
+  private getSerializedCode(): string {
+    return this.mode === 'web' ? JSON.stringify(this.webFiles) : this.code;
+  }
+
+  private persistCodeToServer(serialized: string) {
+    if (!this.taskId) return;
+    this.kanbanService.saveCode(this.taskId, serialized).subscribe({
+      next: () => {
+        const wasError = this.saveStatus === 'error';
+        this.saveStatus = 'saved';
+        this.lastSavedAt = new Date();
+        if (wasError) this.toast.success('Código salvo com sucesso!');
+      },
+      error: (err) => {
+        this.saveStatus = 'error';
+        this.toast.error('Não foi possível salvar. Código mantido localmente.');
+        console.error('Erro ao salvar:', err);
+      }
+    });
+  }
+
+  private saveToLocalStorage(data: string): void {
+    try { localStorage.setItem(this.localStorageKey, data); } catch {}
+  }
+
+  private loadFromLocalStorage(): string | null {
+    try { return localStorage.getItem(this.localStorageKey); } catch { return null; }
+  }
+
+  private defaultJsCode(): string {
+    return '// Escreva seu código aqui.\nconsole.log(\'Olá, Mundo!\');\n';
   }
 }

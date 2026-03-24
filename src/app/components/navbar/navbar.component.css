@@ -37,26 +37,44 @@
 }
 
 .nav-links a {
-  display: block;
+  display: flex;
+  align-items: center;
+  gap: 12px;
   padding: 12px 15px;
   color: #bdc3c7;
   text-decoration: none;
   border-radius: 6px;
-  transition: all 0.3s ease;
-  font-size: 16px;
+  transition: all 0.2s ease;
+  font-size: 15px;
+}
+
+.nav-links a svg {
+  width: 18px;
+  height: 18px;
+  flex-shrink: 0;
+  opacity: 0.7;
+  transition: opacity 0.2s;
 }
 
 .nav-links a:hover {
   background-color: #3d4242;
   color: #ecf0f1;
-  transform: translateX(5px);
+  transform: translateX(4px);
+}
+
+.nav-links a:hover svg {
+  opacity: 1;
 }
 
 .nav-links a.active {
   background-color: #00b4cc;
   color: white;
-  font-weight: 500;
-  box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+  font-weight: 600;
+  box-shadow: 0 2px 8px rgba(0, 180, 204, 0.35);
+}
+
+.nav-links a.active svg {
+  opacity: 1;
 }
 
 .spacer {
@@ -70,17 +88,30 @@
 
 .logout-btn {
   width: 100%;
-  padding: 12px;
-  background-color: #e74c3c;
-  color: white;
-  border: none;
+  padding: 11px 15px;
+  background-color: transparent;
+  color: #bdc3c7;
+  border: 1px solid #4a5050;
   border-radius: 6px;
   cursor: pointer;
-  font-weight: bold;
-  font-size: 15px;
-  transition: background-color 0.3s ease;
+  font-weight: 600;
+  font-size: 14px;
+  font-family: 'JetBrains Mono', monospace;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+}
+
+.logout-btn svg {
+  width: 16px;
+  height: 16px;
+  flex-shrink: 0;
 }
 
 .logout-btn:hover {
-  background-color: #c0392b;
+  background-color: #e74c3c;
+  border-color: #e74c3c;
+  color: white;
 }

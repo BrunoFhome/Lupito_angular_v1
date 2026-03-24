@@ -5,13 +5,12 @@ import { provideHttpClient } from '@angular/common/http';
 
 import { routes } from './app.routes';
 import { FormsModule } from '@angular/forms';
-import { MonacoEditorModule } from 'ngx-monaco-editor-v2';
 
 export const appConfig: ApplicationConfig = {
   providers: [
     provideRouter(routes),
     provideAnimationsAsync(),
     provideHttpClient(),
-    importProvidersFrom(FormsModule, MonacoEditorModule.forRoot())
+    importProvidersFrom(FormsModule)
   ]
 };

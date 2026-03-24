@@ -14,6 +14,7 @@ export interface KanbanTask {
   challengeInstructions?: string;
   starterCode?: string;
   userCode?: string;
+  language?: string;
 }
 
 @Injectable({

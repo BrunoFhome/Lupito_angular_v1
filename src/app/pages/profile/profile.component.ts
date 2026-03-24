@@ -5,6 +5,7 @@ import { FormsModule } from '@angular/forms';
 import { Subscription } from 'rxjs';
 import { AuthService, User } from '../../services/auth.service';
 import { KanbanService, KanbanTask } from '../../services/kanban.service';
+import { ToastService } from '../../services/toast.service';
 
 @Component({
     selector: 'app-profile',
@@ -60,7 +61,8 @@ export class ProfileComponent implements OnInit, OnDestroy {
     constructor(
         private authService: AuthService,
         private router: Router,
-        private kanbanService: KanbanService
+        private kanbanService: KanbanService,
+        private toast: ToastService
     ) { }
 
     ngOnInit(): void {
@@ -103,8 +105,12 @@ export class ProfileComponent implements OnInit, OnDestroy {
                 next: (updatedUser) => {
                     this.user = updatedUser;
                     this.isEditingLocation = false;
+                    this.toast.success('Localização atualizada!');
                 },
-                error: (err) => console.error('Failed to update location.', err)
+                error: (err) => {
+                    console.error('Failed to update location.', err);
+                    this.toast.error('Não foi possível salvar a localização.');
+                }
             });
         }
     }
@@ -115,9 +121,11 @@ export class ProfileComponent implements OnInit, OnDestroy {
                 next: (updatedUser) => {
                     this.user = updatedUser;
                     this.isEditingBio = false;
+                    this.toast.success('Bio atualizada!');
                 },
                 error: (err) => {
                     console.error('Failed to update bio.', err);
+                    this.toast.error('Não foi possível salvar a bio.');
                 }
             });
         }

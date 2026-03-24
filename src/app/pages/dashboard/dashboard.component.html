@@ -1,9 +1,30 @@
 <div class="dashboard-container">
 
-  <!-- Loading -->
-  <div class="loading-state" *ngIf="loading">
-    <div class="spinner"></div>
-    <p>Carregando seu dashboard...</p>
+  <!-- Skeleton loader -->
+  <div class="skeleton-layout" *ngIf="loading">
+
+    <!-- Banner -->
+    <div class="skeleton-banner">
+      <div class="skeleton-block" style="width: 220px; height: 28px; border-radius: 6px;"></div>
+      <div class="skeleton-block" style="width: 160px; height: 18px; border-radius: 6px; margin-top: 10px;"></div>
+    </div>
+
+    <!-- Cards de progresso -->
+    <div class="skeleton-section-title skeleton-block" style="width: 140px; height: 20px; border-radius: 6px;"></div>
+    <div class="skeleton-cards">
+      <div class="skeleton-card" *ngFor="let i of [1,2,3]">
+        <div class="skeleton-block" style="width: 60%; height: 18px; border-radius: 4px;"></div>
+        <div class="skeleton-block" style="width: 90%; height: 10px; border-radius: 20px; margin-top: 16px;"></div>
+        <div class="skeleton-block" style="width: 40%; height: 14px; border-radius: 4px; margin-top: 20px;"></div>
+      </div>
+    </div>
+
+    <!-- Grid inferior -->
+    <div class="skeleton-grid">
+      <div class="skeleton-card" style="height: 110px;"></div>
+      <div class="skeleton-card" style="height: 110px;"></div>
+    </div>
+
   </div>
 
   <ng-container *ngIf="!loading">

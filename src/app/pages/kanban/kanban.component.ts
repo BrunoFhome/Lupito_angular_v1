@@ -5,6 +5,7 @@ import { MatIconModule } from '@angular/material/icon';
 import { Router } from '@angular/router';
 import { NavbarComponent } from '../../components/navbar/navbar.component';
 import { KanbanService, KanbanTask } from '../../services/kanban.service';
+import { ToastService } from '../../services/toast.service';
 
 @Component({
   selector: 'app-kanban',
@@ -38,7 +39,7 @@ export class KanbanComponent implements OnInit {
     'done': 'Concluído'
   };
 
-  constructor(private router: Router, private kanbanService: KanbanService) {}
+  constructor(private router: Router, private kanbanService: KanbanService, private toast: ToastService) {}
 
   ngOnInit() {
     this.kanbanService.getTasks().subscribe(tasks => {
@@ -67,6 +68,7 @@ export class KanbanComponent implements OnInit {
   confirmMove() {
     if (this.moveConfirmTask && this.moveConfirmStatus) {
       this.updateTaskStatus(this.moveConfirmTask.id, this.moveConfirmStatus);
+      this.toast.info(`Tarefa movida para "${this.moveConfirmLabel}"`);
     }
     this.cancelMove();
   }
@@ -116,6 +118,7 @@ export class KanbanComponent implements OnInit {
   confirmEvaluation() {
     if (this.evaluationTask && this.allChecked()) {
       this.updateTaskStatus(this.evaluationTask.id, 'done');
+      this.toast.success('Tarefa concluída!');
       this.closeEvaluation();
     }
   }
