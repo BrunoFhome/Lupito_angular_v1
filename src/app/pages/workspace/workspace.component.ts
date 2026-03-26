@@ -302,7 +302,7 @@ export class WorkspaceComponent implements OnInit, AfterViewInit, OnDestroy {
       this.output     = outputLines.join('\n') || '(sem saída)';
       this.outputType = 'text';
     } catch (err: any) {
-      this.output     = err.toString();
+      this.output     = this.parseError(err);
       this.outputType = 'error';
     } finally {
       console.log   = origLog;
@@ -310,6 +310,31 @@ export class WorkspaceComponent implements OnInit, AfterViewInit, OnDestroy {
       console.warn  = origWarn;
       this.isRunning = false;
     }
+  }
+
+  private parseError(err: any): string {
+    const type    = err.name    || 'Erro';
+    const message = err.message || String(err);
+
+    // Extrai linha:coluna do stack trace do V8 (erros de runtime)
+    const stackMatch = err.stack?.match(/<anonymous>:(\d+):(\d+)/);
+    if (stackMatch) {
+      const userLine = parseInt(stackMatch[1]) - 1;  // ajusta offset do wrapper new Function()
+      const col      = parseInt(stackMatch[2]);
+      const lines    = this.code.split('\n');
+      const codeLine = lines[userLine - 1] ?? '';
+      const pointer  = ' '.repeat(Math.max(0, col - 1)) + '^';
+
+      return (
+        `${type}: ${message}\n` +
+        `  → Linha ${userLine}, Coluna ${col}\n\n` +
+        `  ${codeLine}\n` +
+        `  ${pointer}`
+      );
+    }
+
+    // SyntaxError ou erro sem posição no stack
+    return `${type}: ${message}`;
   }
 
   private buildWebPreview(): string {
@@ -381,10 +406,8 @@ export class WorkspaceComponent implements OnInit, AfterViewInit, OnDestroy {
         this.lastSavedAt = new Date();
         if (wasError) this.toast.success('Código salvo com sucesso!');
       },
-      error: (err) => {
+      error: () => {
         this.saveStatus = 'error';
-        this.toast.error('Não foi possível salvar. Código mantido localmente.');
-        console.error('Erro ao salvar:', err);
       }
     });
   }

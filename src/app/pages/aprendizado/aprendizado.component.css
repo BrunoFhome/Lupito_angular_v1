@@ -229,6 +229,29 @@
   color: #94a3b8;
 }
 
+/* ── Dots de progresso interno do módulo ────────────────────────────────────── */
+.node-lessons {
+  display: flex;
+  gap: 5px;
+  margin-top: 6px;
+  justify-content: center;
+}
+
+.lesson-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  display: inline-block;
+}
+
+.dot-done {
+  background-color: #00b4cc;
+}
+
+.dot-pending {
+  background-color: #d1d5db;
+}
+
 /* ── Animação de pulso ───────────────────────────────────────────────────────── */
 @keyframes pulse-node {
   0%, 100% {

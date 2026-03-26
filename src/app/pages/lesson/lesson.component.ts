@@ -1,18 +1,27 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
+import { Component, OnInit, OnDestroy, AfterViewChecked, ViewChild, ElementRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ActivatedRoute, Router } from '@angular/router';
 import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
 import { LearningService, SectionDetails, Exercise } from '../../services/learning.service';
 import { AuthService, User } from '../../services/auth.service';
 
-interface ExerciseResult {
-  correct: boolean;
-  question: string;
-  chosen: string;
-  answer: string;
-}
+import { EditorView } from '@codemirror/view';
+import { EditorState } from '@codemirror/state';
+import { lineNumbers } from '@codemirror/view';
+import { javascript } from '@codemirror/lang-javascript';
+import { html } from '@codemirror/lang-html';
+import { css } from '@codemirror/lang-css';
+import { oneDark } from '@codemirror/theme-one-dark';
 
+type Phase = 'theory' | 'exercise' | 'completion';
 type MascotState = 'hidden' | 'entering' | 'visible' | 'leaving';
+
+interface LessonResult {
+  lessonTitle: string;
+  question: string;
+  gotItRight: boolean;
+  correctAnswer: string;
+}
 
 @Component({
   selector: 'app-lesson',
@@ -21,58 +30,58 @@ type MascotState = 'hidden' | 'entering' | 'visible' | 'leaving';
   templateUrl: './lesson.component.html',
   styleUrl: './lesson.component.css'
 })
-export class LessonComponent implements OnInit, OnDestroy {
+export class LessonComponent implements OnInit, OnDestroy, AfterViewChecked {
+  @ViewChild('codeExampleContainer') codeExampleContainer?: ElementRef<HTMLDivElement>;
+
   sectionDetails: SectionDetails | null = null;
-  currentExerciseIndex: number = 0;
 
   selectedOptionIndex: number | null = null;
   isSubmitted: boolean = false;
   isCorrect: boolean = false;
 
   user: User | null = null;
-
-  // Phases: theory → exercises → summary
-  showTheory: boolean = true;
-  showSummary: boolean = false;
+  phase: Phase = 'theory';
 
   // Route params
   courseId: number | null = null;
   sectionOrder: number | null = null;
   lessonOrder: number | null = null;
 
-  // Tracking & Summary
-  exerciseResults: (ExerciseResult | undefined)[] = [];
+  // Rastreamento de resultado do exercício
+  firstAttemptWrong: boolean = false;
+  moduleResults: LessonResult[] = [];
 
   // Mascote
   mascotImage: string = '';
   mascotState: MascotState = 'hidden';
   private mascotTimer: ReturnType<typeof setTimeout> | null = null;
 
+  private editorView: EditorView | null = null;
+  private editorInitialized: boolean = false;
+
   get safeTheoryContent(): SafeHtml {
     const content = this.sectionDetails?.theoryContent || '';
     return this.sanitizer.bypassSecurityTrustHtml(content);
   }
 
-  get correctCount(): number {
-    return this.exerciseResults.filter(r => r?.correct).length;
-  }
-
-  get wrongAnswers(): ExerciseResult[] {
-    return this.exerciseResults.filter((r): r is ExerciseResult => !!r && !r.correct);
-  }
-
-  get totalExercises(): number {
-    return this.sectionDetails?.exercises.length ?? 0;
-  }
-
-  get scorePercent(): number {
-    return this.totalExercises > 0 ? Math.round((this.correctCount / this.totalExercises) * 100) : 0;
+  get currentExercise(): Exercise | null {
+    return this.sectionDetails?.exercises[0] ?? null;
   }
 
   get progressBarWidth(): number {
-    if (this.showTheory) return 0;
-    if (this.showSummary) return 100;
-    return (this.currentExerciseIndex / (this.totalExercises || 1)) * 100;
+    switch (this.phase) {
+      case 'theory':     return 0;
+      case 'exercise':   return 50;
+      case 'completion': return 100;
+    }
+  }
+
+  get isLastLessonInModule(): boolean {
+    return this.lessonOrder === 3;
+  }
+
+  get correctCount(): number {
+    return this.moduleResults.filter(r => r.gotItRight).length;
   }
 
   constructor(
@@ -100,34 +109,65 @@ export class LessonComponent implements OnInit, OnDestroy {
     });
   }
 
+  ngAfterViewChecked(): void {
+    if (this.phase === 'theory' && !this.editorInitialized && this.codeExampleContainer?.nativeElement) {
+      this.initCodeViewer();
+    }
+  }
+
   fetchLesson(sectionId: string): void {
     this.sectionDetails = null;
-    this.currentExerciseIndex = 0;
-    this.exerciseResults = [];
-    this.showTheory = true;
-    this.showSummary = false;
+    this.phase = 'theory';
+    this.editorInitialized = false;
+    this.editorView?.destroy();
+    this.editorView = null;
     this.resetExerciseState();
 
     this.learningService.getSectionDetails(sectionId).subscribe({
       next: (data) => {
         this.sectionDetails = data;
       },
-      error: (err) => {
-        console.error('Failed to load lesson', err);
+      error: () => {
         this.router.navigate(['/aprendizado']);
       }
     });
   }
 
-  startExercises(): void {
-    this.showTheory = false;
+  goToExercise(): void {
+    this.phase = 'exercise';
   }
 
-  get currentExercise(): Exercise | null {
-    if (this.sectionDetails && this.sectionDetails.exercises.length > this.currentExerciseIndex) {
-      return this.sectionDetails.exercises[this.currentExerciseIndex];
-    }
-    return null;
+  private initCodeViewer(): void {
+    if (!this.codeExampleContainer?.nativeElement || !this.sectionDetails) return;
+
+    this.editorView?.destroy();
+
+    const lang = this.sectionDetails.codeLanguage === 'html' ? html()
+               : this.sectionDetails.codeLanguage === 'css'  ? css()
+               : javascript();
+
+    const state = EditorState.create({
+      doc: this.sectionDetails.codeExample || '',
+      extensions: [
+        oneDark,
+        lineNumbers(),
+        lang,
+        EditorView.editable.of(false),
+        EditorState.readOnly.of(true),
+        EditorView.theme({
+          '&':            { fontSize: '14px' },
+          '.cm-scroller': { fontFamily: "'JetBrains Mono', 'Fira Code', monospace" },
+          '.cm-content':  { padding: '8px 0' },
+        }),
+      ],
+    });
+
+    this.editorView = new EditorView({
+      state,
+      parent: this.codeExampleContainer.nativeElement,
+    });
+
+    this.editorInitialized = true;
   }
 
   selectOption(index: number): void {
@@ -141,35 +181,32 @@ export class LessonComponent implements OnInit, OnDestroy {
     this.isSubmitted = true;
     this.isCorrect = (this.selectedOptionIndex === this.currentExercise.correctAnswerIndex);
 
-    // Record first attempt only (retry doesn't overwrite)
-    if (this.exerciseResults[this.currentExerciseIndex] === undefined) {
-      this.exerciseResults[this.currentExerciseIndex] = {
-        correct: this.isCorrect,
-        question: this.currentExercise.theory,
-        chosen: this.currentExercise.options[this.selectedOptionIndex],
-        answer: this.currentExercise.options[this.currentExercise.correctAnswerIndex]
-      };
-    }
-
     if (!this.isCorrect) {
+      this.firstAttemptWrong = true;
       this.showMascot('assets/images/duvida.png', 3000);
     }
   }
 
-  nextExercise(): void {
-    if (this.sectionDetails && this.currentExerciseIndex < this.sectionDetails.exercises.length - 1) {
-      this.currentExerciseIndex++;
-      this.resetExerciseState();
-    }
-  }
-
   completeSection(): void {
-    this.showSummary = true;
+    this.phase = 'completion';
+    this.showMascot('assets/images/comemorando.png', 4000);
 
-    const allCorrect = this.exerciseResults.length === this.totalExercises &&
-      this.exerciseResults.every(r => r?.correct);
-    if (allCorrect) {
-      this.showMascot('assets/images/comemorando.png', 4000);
+    if (this.courseId && this.sectionOrder && this.lessonOrder && this.sectionDetails && this.currentExercise) {
+      const result: LessonResult = {
+        lessonTitle: this.sectionDetails.title,
+        question: this.currentExercise.theory,
+        gotItRight: !this.firstAttemptWrong,
+        correctAnswer: this.currentExercise.options[this.currentExercise.correctAnswerIndex]
+      };
+      const key = `lesson-result-${this.courseId}-${this.sectionOrder}-${this.lessonOrder}`;
+      sessionStorage.setItem(key, JSON.stringify(result));
+
+      if (this.isLastLessonInModule) {
+        this.moduleResults = [1, 2, 3].map(order => {
+          const stored = sessionStorage.getItem(`lesson-result-${this.courseId}-${this.sectionOrder}-${order}`);
+          return stored ? JSON.parse(stored) as LessonResult : null;
+        }).filter((r): r is LessonResult => r !== null);
+      }
     }
 
     if (this.courseId && this.sectionOrder && this.lessonOrder) {
@@ -183,9 +220,21 @@ export class LessonComponent implements OnInit, OnDestroy {
             }
           }
         },
-        error: (err) => console.error('Failed to complete lesson', err)
+        error: () => {}
       });
     }
+  }
+
+  goToNextLesson(): void {
+    if (!this.sectionDetails || !this.courseId || !this.sectionOrder || !this.lessonOrder) return;
+    const nextLessonId = String(parseInt(this.sectionDetails.id, 10) + 1);
+    this.router.navigate(['/lesson', nextLessonId], {
+      queryParams: {
+        courseId: this.courseId,
+        sectionOrder: this.sectionOrder,
+        lessonOrder: this.lessonOrder + 1
+      }
+    });
   }
 
   exitLesson(): void {
@@ -196,16 +245,15 @@ export class LessonComponent implements OnInit, OnDestroy {
     this.selectedOptionIndex = null;
     this.isSubmitted = false;
     this.isCorrect = false;
+    this.firstAttemptWrong = false;
+    this.moduleResults = [];
   }
 
   showMascot(image: string, duration: number): void {
     if (this.mascotTimer) clearTimeout(this.mascotTimer);
     this.mascotImage = image;
     this.mascotState = 'entering';
-
-    // após o frame de entering, muda para visible
     setTimeout(() => { this.mascotState = 'visible'; }, 50);
-
     this.mascotTimer = setTimeout(() => this.hideMascot(), duration);
   }
 
@@ -215,6 +263,7 @@ export class LessonComponent implements OnInit, OnDestroy {
   }
 
   ngOnDestroy(): void {
+    this.editorView?.destroy();
     if (this.mascotTimer) clearTimeout(this.mascotTimer);
   }
 }

@@ -1,4 +1,6 @@
 <div class="lesson-container" *ngIf="sectionDetails; else loading">
+
+  <!-- Header -->
   <div class="lesson-header">
     <button class="back-btn" (click)="exitLesson()">
       <svg viewBox="0 0 24 24" fill="none" class="w-6 h-6">
@@ -11,50 +13,58 @@
     </div>
   </div>
 
-  <!-- Tela de Teoria -->
-  <div class="theory-screen" *ngIf="showTheory && !showSummary">
+  <!-- ── Fase 1: Teoria + Exemplo de Código ── -->
+  <div class="theory-screen" *ngIf="phase === 'theory'">
     <div class="theory-header">
-      <span class="theory-badge">Teoria</span>
+      <span class="phase-badge">Aula</span>
       <h1 class="theory-title">{{ sectionDetails.title }}</h1>
     </div>
 
     <div class="rich-text-content" [innerHTML]="safeTheoryContent"></div>
 
-    <div class="theory-footer">
-      <button class="action-btn start-btn" (click)="startExercises()">
-        Iniciar Exercícios →
+    <div class="code-viewer-wrapper">
+      <div class="code-viewer-label">
+        <span class="lang-tag">{{ sectionDetails.codeLanguage }}</span>
+      </div>
+      <div #codeExampleContainer class="code-viewer"></div>
+    </div>
+
+    <div class="phase-footer">
+      <button class="action-btn primary-btn" (click)="goToExercise()">
+        Fazer Exercício →
       </button>
     </div>
   </div>
 
-  <!-- Tela de Exercícios -->
-  <ng-container *ngIf="!showTheory && !showSummary">
+  <!-- ── Fase 3: Exercício ── -->
+  <ng-container *ngIf="phase === 'exercise'">
     <div class="exercise-content" *ngIf="currentExercise">
-      <h2 class="exercise-title">{{ currentExercise.title }}</h2>
-
-      <div class="theory-box">
-        <p>{{ currentExercise.theory }}</p>
-      </div>
+      <span class="phase-badge">Exercício</span>
+      <h2 class="exercise-question">{{ currentExercise.theory }}</h2>
 
       <div class="options-container">
         <button
           *ngFor="let option of currentExercise.options; let i = index"
           class="option-btn"
           [ngClass]="{
-            'selected': selectedOptionIndex === i && !isSubmitted,
-            'correct': isSubmitted && currentExercise.correctAnswerIndex === i,
-            'incorrect': isSubmitted && selectedOptionIndex === i && currentExercise.correctAnswerIndex !== i
+            'selected':   selectedOptionIndex === i && !isSubmitted,
+            'correct':    isSubmitted && isCorrect && currentExercise.correctAnswerIndex === i,
+            'incorrect':  isSubmitted && selectedOptionIndex === i && currentExercise.correctAnswerIndex !== i
           }"
           (click)="selectOption(i)"
           [disabled]="isSubmitted"
         >
           <span class="option-text">{{ option }}</span>
 
-          <svg *ngIf="isSubmitted && currentExercise.correctAnswerIndex === i" class="status-icon success-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <svg *ngIf="isSubmitted && isCorrect && currentExercise.correctAnswerIndex === i"
+               class="status-icon success-icon" viewBox="0 0 24 24" fill="none"
+               stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
             <polyline points="20 6 9 17 4 12"></polyline>
           </svg>
 
-          <svg *ngIf="isSubmitted && selectedOptionIndex === i && currentExercise.correctAnswerIndex !== i" class="status-icon error-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <svg *ngIf="isSubmitted && selectedOptionIndex === i && currentExercise.correctAnswerIndex !== i"
+               class="status-icon error-icon" viewBox="0 0 24 24" fill="none"
+               stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
             <line x1="18" y1="6" x2="6" y2="18"></line>
             <line x1="6" y1="6" x2="18" y2="18"></line>
           </svg>
@@ -78,13 +88,6 @@
         </div>
 
         <button
-          class="action-btn next-btn"
-          *ngIf="isCorrect && currentExerciseIndex < sectionDetails.exercises.length - 1"
-          (click)="nextExercise()">
-          Avançar
-        </button>
-
-        <button
           class="action-btn retry-btn"
           *ngIf="!isCorrect"
           (click)="isSubmitted = false; selectedOptionIndex = null;">
@@ -93,7 +96,7 @@
 
         <button
           class="action-btn complete-btn"
-          *ngIf="isCorrect && currentExerciseIndex === sectionDetails.exercises.length - 1"
+          *ngIf="isCorrect"
           (click)="completeSection()">
           Concluir Lição
         </button>
@@ -101,55 +104,58 @@
     </div>
   </ng-container>
 
-  <!-- Tela de Resumo -->
-  <div class="summary-container" *ngIf="showSummary">
+  <!-- ── Fase 4: Conclusão ── -->
+  <div class="completion-screen" *ngIf="phase === 'completion'">
+    <div class="completion-icon" [ngClass]="isLastLessonInModule ? 'icon-module' : ''">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+           stroke-linecap="round" stroke-linejoin="round">
+        <circle cx="12" cy="12" r="10"/>
+        <polyline points="20 6 9 17 4 12"/>
+      </svg>
+    </div>
 
-    <div class="summary-score">
-      <div class="score-circle"
-        [ngClass]="{
-          'score-perfect': scorePercent === 100,
-          'score-good': scorePercent >= 50 && scorePercent < 100,
-          'score-poor': scorePercent < 50
-        }">
-        <span class="score-fraction">{{ correctCount }}/{{ totalExercises }}</span>
-        <span class="score-label">acertos</span>
+    <h2 class="completion-title">
+      {{ isLastLessonInModule ? 'Módulo concluído!' : 'Lição concluída!' }}
+    </h2>
+    <p class="completion-subtitle">
+      Você completou <strong>{{ sectionDetails.title }}</strong> com sucesso.
+    </p>
+
+    <!-- Resumo do módulo — aparece só ao finalizar a aula 3 -->
+    <div class="module-summary" *ngIf="isLastLessonInModule && moduleResults.length > 0">
+      <div class="module-score-header">
+        <span class="module-score-badge"
+              [ngClass]="correctCount === moduleResults.length ? 'badge-perfect' : correctCount > 0 ? 'badge-partial' : 'badge-none'">
+          {{ correctCount }}/{{ moduleResults.length }}
+        </span>
+        <span class="module-score-label">acertos de primeira</span>
       </div>
 
-      <h2 *ngIf="scorePercent === 100">Perfeito! Acertou tudo!</h2>
-      <h2 *ngIf="scorePercent >= 50 && scorePercent < 100">Bom trabalho!</h2>
-      <h2 *ngIf="scorePercent < 50">Continue praticando!</h2>
-
-      <p class="score-description">
-        Você acertou <strong>{{ correctCount }}</strong> de <strong>{{ totalExercises }}</strong> questões nesta lição.
-      </p>
-    </div>
-
-    <div class="wrong-answers-section" *ngIf="wrongAnswers.length > 0">
-      <h3 class="review-title">Questões para revisar</h3>
-      <div class="wrong-answer-card" *ngFor="let item of wrongAnswers">
-        <p class="wrong-question">{{ item.question }}</p>
-        <div class="answer-row">
-          <span class="answer-label chosen-label">Sua resposta:</span>
-          <span class="answer-text answer-wrong">{{ item.chosen }}</span>
+      <div class="result-card" *ngFor="let r of moduleResults"
+           [ngClass]="r.gotItRight ? 'result-ok' : 'result-fail'">
+        <div class="result-card-header">
+          <span class="result-lesson-name">{{ r.lessonTitle }}</span>
+          <span class="result-tag" [ngClass]="r.gotItRight ? 'tag-ok' : 'tag-fail'">
+            {{ r.gotItRight ? '✓ Acertou' : '✗ Errou' }}
+          </span>
         </div>
-        <div class="answer-row">
-          <span class="answer-label correct-label">Resposta correta:</span>
-          <span class="answer-text answer-right">{{ item.answer }}</span>
-        </div>
+        <p class="result-question">{{ r.question }}</p>
+        <p class="result-correct-answer" *ngIf="!r.gotItRight">
+          Resposta correta: <strong>{{ r.correctAnswer }}</strong>
+        </p>
       </div>
     </div>
 
-    <div class="all-correct-msg" *ngIf="wrongAnswers.length === 0">
-      Você acertou todas as questões sem errar nenhuma!
-    </div>
-
-    <div class="summary-actions">
-      <button class="action-btn back-trails-btn" (click)="exitLesson()">
+    <div class="completion-actions">
+      <button class="action-btn primary-btn" *ngIf="!isLastLessonInModule" (click)="goToNextLesson()">
+        Próxima Aula →
+      </button>
+      <button class="action-btn secondary-btn" (click)="exitLesson()">
         Voltar às Trilhas
       </button>
     </div>
-
   </div>
+
 </div>
 
 <!-- Mascote animado -->

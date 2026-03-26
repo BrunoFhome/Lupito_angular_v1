@@ -77,8 +77,7 @@ export class RegisterComponent {
         ).subscribe({
             next: () => this.router.navigate(['/login']),
             error: (err) => {
-                console.error(err);
-                this.errorMessage = 'Erro ao criar conta. O email pode já estar em uso.';
+                this.errorMessage = err.message;
             }
         });
     }

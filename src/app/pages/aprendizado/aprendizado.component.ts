@@ -8,22 +8,25 @@ import { catchError, map, switchMap } from 'rxjs/operators';
 
 // ── Domain models ──────────────────────────────────────────────────────────────
 
-interface Lesson {
+interface Module {
   title: string;
   locked: boolean;
   completed: boolean;
-  id?: string;
-  courseId?: number;
-  sectionOrder?: number;
-  lessonOrder?: number;
+  lessonsCompleted: number;
+  totalLessons: number;
+  // navigation: first uncompleted lesson (or first lesson for review)
+  nextLessonId?: string;
+  nextCourseId?: number;
+  nextSectionOrder?: number;
+  nextLessonOrder?: number;
 }
 
 interface LearningPath {
   title: string;
   subtitle: string;
-  progress: number;
-  total: number;
-  lessons: Lesson[];
+  progress: number;   // modules fully completed
+  total: number;      // total modules
+  modules: Module[];
 }
 
 // ── Map layout models ──────────────────────────────────────────────────────────
@@ -31,7 +34,7 @@ interface LearningPath {
 interface NodePos {
   x: number;
   y: number;
-  lesson: Lesson;
+  module: Module;
 }
 
 interface Segment {
@@ -92,16 +95,13 @@ export class AprendizadoComponent implements OnInit {
         const obs = courses.map((course, i) => this.buildLearningPath(course, i === 0));
         return forkJoin(obs);
       }),
-      catchError(err => {
-        console.error('Error fetching courses', err);
-        return of([]);
-      })
+      catchError(() => of([]))
     ).subscribe(paths => {
-      // Unlock first lesson of course N when course N-1 is fully completed
+      // Unlock first module of course N when course N-1 is fully completed
       for (let i = 1; i < paths.length; i++) {
         const prev = paths[i - 1];
-        if (prev.total > 0 && prev.progress === prev.total && paths[i].lessons.length > 0) {
-          paths[i].lessons[0].locked = false;
+        if (prev.total > 0 && prev.progress === prev.total && paths[i].modules.length > 0) {
+          paths[i].modules[0].locked = false;
         }
       }
       this.layouts = paths.map(p => this.buildLayout(p));
@@ -111,8 +111,7 @@ export class AprendizadoComponent implements OnInit {
   // ── Layout computation ───────────────────────────────────────────────────────
 
   private buildLayout(path: LearningPath): PathLayout {
-    // Snake/zigzag positions: row 0 L→R, row 1 R→L, row 2 L→R …
-    const nodes: NodePos[] = path.lessons.map((lesson, i) => {
+    const nodes: NodePos[] = path.modules.map((module, i) => {
       const row      = Math.floor(i / NODES_PER_ROW);
       const col      = i % NODES_PER_ROW;
       const reversed = row % 2 === 1;
@@ -120,18 +119,17 @@ export class AprendizadoComponent implements OnInit {
         ? PAD_X + (NODES_PER_ROW - 1 - col) * SPACING_X
         : PAD_X + col * SPACING_X;
       const y = PAD_Y + row * SPACING_Y;
-      return { x, y, lesson };
+      return { x, y, module };
     });
 
-    // Connector segments between consecutive nodes
     const segments: Segment[] = [];
     for (let i = 0; i < nodes.length - 1; i++) {
       const from = nodes[i];
       const to   = nodes[i + 1];
       let cssClass: string;
-      if (from.lesson.completed && to.lesson.completed) {
+      if (from.module.completed && to.module.completed) {
         cssClass = 'seg-done';
-      } else if (from.lesson.completed && !to.lesson.locked) {
+      } else if (from.module.completed && !to.module.locked) {
         cssClass = 'seg-current';
       } else {
         cssClass = 'seg-locked';
@@ -139,14 +137,14 @@ export class AprendizadoComponent implements OnInit {
       segments.push({ x1: from.x, y1: from.y, x2: to.x, y2: to.y, cssClass });
     }
 
-    const rows      = Math.ceil(path.lessons.length / NODES_PER_ROW);
+    const rows      = Math.ceil(path.modules.length / NODES_PER_ROW);
     const svgWidth  = PAD_X * 2 + (NODES_PER_ROW - 1) * SPACING_X;
     const svgHeight = PAD_Y * 2 + Math.max(rows - 1, 0) * SPACING_Y;
 
     return { path, nodes, segments, svgWidth, svgHeight };
   }
 
-  // ── Data loading (unchanged logic) ──────────────────────────────────────────
+  // ── Data loading ─────────────────────────────────────────────────────────────
 
   private buildLearningPath(course: CourseDTO, isFirstCourse: boolean): Observable<LearningPath> {
     return forkJoin({
@@ -155,7 +153,7 @@ export class AprendizadoComponent implements OnInit {
     }).pipe(
       switchMap(({ sections, progress }) => {
         if (!sections || sections.length === 0) {
-          return of({ title: course.title, subtitle: course.description, progress: 0, total: 0, lessons: [] });
+          return of({ title: course.title, subtitle: course.description, progress: 0, total: 0, modules: [] });
         }
 
         sections.sort((a, b) => a.listOrder - b.listOrder);
@@ -163,59 +161,70 @@ export class AprendizadoComponent implements OnInit {
 
         return forkJoin(lessonsObs).pipe(
           map(nestedLessons => {
-            const allLessons: Lesson[] = [];
-            let completedCount = 0;
+            const allModules: Module[] = [];
+            let completedModules = 0;
 
             nestedLessons.forEach((sectionLessons, idx) => {
               const section = sections[idx];
               sectionLessons.sort((a, b) => a.listOrder - b.listOrder);
 
-              sectionLessons.forEach(lesson => {
-                let isCompleted = false;
-                let isLocked    = true;
+              // ── Determine module state ────────────────────────────────────
+              let moduleCompleted: boolean;
+              let moduleLocked: boolean;
+              let lessonsCompleted: number;
 
-                if (progress) {
-                  if (section.listOrder < progress.currentSectionOrder) {
-                    isCompleted = true;
-                  } else if (
-                    section.listOrder === progress.currentSectionOrder &&
-                    lesson.listOrder < progress.currentLessonOrder
-                  ) {
-                    isCompleted = true;
-                  }
+              if (progress) {
+                moduleCompleted = section.listOrder < progress.currentSectionOrder;
+                moduleLocked    = section.listOrder > progress.currentSectionOrder;
 
-                  if (isCompleted) {
-                    isLocked = false;
-                  } else if (
-                    section.listOrder === progress.currentSectionOrder &&
-                    lesson.listOrder === progress.currentLessonOrder
-                  ) {
-                    isLocked = false;
-                  }
-                } else if (isFirstCourse && section.listOrder === 1 && lesson.listOrder === 1) {
-                  isLocked = false;
+                if (moduleCompleted) {
+                  lessonsCompleted = sectionLessons.length;
+                } else if (!moduleLocked) {
+                  // current section: count lessons already past
+                  lessonsCompleted = sectionLessons.filter(
+                    l => l.listOrder < progress.currentLessonOrder
+                  ).length;
+                } else {
+                  lessonsCompleted = 0;
                 }
+              } else {
+                moduleCompleted  = false;
+                moduleLocked     = !(isFirstCourse && section.listOrder === 1);
+                lessonsCompleted = 0;
+              }
 
-                if (isCompleted) completedCount++;
+              if (moduleCompleted) completedModules++;
 
-                allLessons.push({
-                  title: lesson.title,
-                  locked: isLocked,
-                  completed: isCompleted,
-                  id: lesson.id.toString(),
-                  courseId: course.id,
-                  sectionOrder: section.listOrder,
-                  lessonOrder: lesson.listOrder
-                });
+              // ── Determine navigation target ───────────────────────────────
+              // Always compute so that cross-course unlock works immediately.
+              let targetLesson = sectionLessons[0];
+
+              if (!moduleCompleted && progress && !moduleLocked) {
+                // in-progress: go to the current lesson
+                targetLesson = sectionLessons.find(
+                  l => l.listOrder === progress.currentLessonOrder
+                ) ?? sectionLessons[0];
+              }
+
+              allModules.push({
+                title:            section.title,
+                locked:           moduleLocked,
+                completed:        moduleCompleted,
+                lessonsCompleted,
+                totalLessons:     sectionLessons.length,
+                nextLessonId:     targetLesson?.id.toString(),
+                nextCourseId:     course.id,
+                nextSectionOrder: section.listOrder,
+                nextLessonOrder:  targetLesson?.listOrder
               });
             });
 
             return {
-              title: course.title,
+              title:    course.title,
               subtitle: course.description,
-              progress: completedCount,
-              total: allLessons.length,
-              lessons: allLessons
+              progress: completedModules,
+              total:    allModules.length,
+              modules:  allModules
             };
           })
         );
@@ -223,13 +232,13 @@ export class AprendizadoComponent implements OnInit {
     );
   }
 
-  navigateToLesson(lesson: Lesson): void {
-    if (!lesson.locked && lesson.id) {
-      this.router.navigate(['/lesson', lesson.id], {
+  navigateToModule(module: Module): void {
+    if (!module.locked && module.nextLessonId) {
+      this.router.navigate(['/lesson', module.nextLessonId], {
         queryParams: {
-          courseId:     lesson.courseId,
-          sectionOrder: lesson.sectionOrder,
-          lessonOrder:  lesson.lessonOrder
+          courseId:     module.nextCourseId,
+          sectionOrder: module.nextSectionOrder,
+          lessonOrder:  module.nextLessonOrder
         }
       });
     }

@@ -47,28 +47,28 @@
                 stroke-linecap="round"/>
         </svg>
 
-        <!-- Camada HTML: nós -->
+        <!-- Camada HTML: nós (módulos) -->
         <div class="trail-node"
              *ngFor="let node of layout.nodes"
              [style.left.px]="node.x"
              [style.top.px]="node.y"
              [ngClass]="{
-               'node-completed': node.lesson.completed,
-               'node-unlocked':  !node.lesson.locked && !node.lesson.completed,
-               'node-locked':    node.lesson.locked
+               'node-completed': node.module.completed,
+               'node-unlocked':  !node.module.locked && !node.module.completed,
+               'node-locked':    node.module.locked
              }"
-             (click)="navigateToLesson(node.lesson)">
+             (click)="navigateToModule(node.module)">
 
-          <!-- Nó completo -->
-          <div class="node-circle" *ngIf="node.lesson.completed">
+          <!-- Módulo completo -->
+          <div class="node-circle" *ngIf="node.module.completed">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"
                  stroke-linecap="round" stroke-linejoin="round">
               <polyline points="20 6 9 17 4 12"/>
             </svg>
           </div>
 
-          <!-- Nó desbloqueado (atual) -->
-          <div class="node-circle" *ngIf="!node.lesson.locked && !node.lesson.completed">
+          <!-- Módulo desbloqueado (em progresso ou não iniciado) -->
+          <div class="node-circle" *ngIf="!node.module.locked && !node.module.completed">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
                  stroke-linecap="round" stroke-linejoin="round">
               <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/>
@@ -76,8 +76,8 @@
             </svg>
           </div>
 
-          <!-- Nó bloqueado -->
-          <div class="node-circle" *ngIf="node.lesson.locked">
+          <!-- Módulo bloqueado -->
+          <div class="node-circle" *ngIf="node.module.locked">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
                  stroke-linecap="round" stroke-linejoin="round">
               <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/>
@@ -85,7 +85,17 @@
             </svg>
           </div>
 
-          <span class="node-label">{{ node.lesson.title }}</span>
+          <span class="node-label">{{ node.module.title }}</span>
+
+          <!-- Indicador de progresso interno do módulo -->
+          <div class="node-lessons"
+               *ngIf="!node.module.locked && !node.module.completed && node.module.totalLessons > 0">
+            <span class="lesson-dot"
+                  *ngFor="let dot of [].constructor(node.module.totalLessons); let i = index"
+                  [ngClass]="i < node.module.lessonsCompleted ? 'dot-done' : 'dot-pending'">
+            </span>
+          </div>
+
         </div>
 
       </div><!-- .trail-map -->

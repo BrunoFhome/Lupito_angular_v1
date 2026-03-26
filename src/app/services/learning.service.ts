@@ -16,6 +16,8 @@ export interface SectionDetails {
   id: string;
   title: string;
   theoryContent: string;
+  codeExample: string;
+  codeLanguage: string;
   exercises: Exercise[];
 }
 
@@ -35,6 +37,8 @@ export interface LessonDTO {
   id: number;
   title: string;
   theoryContent: string;
+  codeExample: string;
+  codeLanguage: string;
   listOrder: number;
 }
 
@@ -115,7 +119,7 @@ export class LearningService {
       exercises: this.getExercisesByLesson(lessonId)
     }).pipe(
       map(({ lesson, exercises }) => {
-        const mappedExercises: Exercise[] = exercises.map((ex, index) => ({
+        const mappedExercises: Exercise[] = exercises.slice(0, 1).map((ex, index) => ({
           id: ex.id,
           title: 'Questão ' + (index + 1),
           theory: ex.question,
@@ -127,6 +131,8 @@ export class LearningService {
           id: id,
           title: lesson.title,
           theoryContent: lesson.theoryContent || '',
+          codeExample: lesson.codeExample || '',
+          codeLanguage: lesson.codeLanguage || 'javascript',
           exercises: mappedExercises
         };
       })

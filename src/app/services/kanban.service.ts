@@ -47,9 +47,7 @@ export class KanbanService {
 
   loadTasks(): void {
     this.http.get<KanbanTask[]>(this.apiUrl + '/tasks', this.getAuthHeaders())
-      .subscribe(tasks => {
-        this.tasksSubject.next(tasks || []);
-      }, err => console.error(err));
+      .subscribe({ next: tasks => this.tasksSubject.next(tasks || []) });
   }
 
   getTasks(): Observable<KanbanTask[]> {
@@ -72,7 +70,7 @@ export class KanbanService {
             task.id === numericId ? updated : task
          );
          this.tasksSubject.next(tasks);
-      }, err => console.error(err));
+      });
   }
 
   updateTaskPriority(taskId: number, priority: string): void {
@@ -85,7 +83,6 @@ export class KanbanService {
         const tasks = this.tasksSubject.value.map(t => t.id === taskId ? updated : t);
         this.tasksSubject.next(tasks);
       },
-      error: err => console.error(err)
     });
   }
 }

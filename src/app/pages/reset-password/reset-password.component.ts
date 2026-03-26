@@ -51,8 +51,8 @@ export class ResetPasswordComponent implements OnInit {
         this.success = true;
         this.loading = false;
       },
-      error: () => {
-        this.errorMessage = 'Link inválido ou expirado. Solicite um novo.';
+      error: (err) => {
+        this.errorMessage = err.message;
         this.loading = false;
       }
     });

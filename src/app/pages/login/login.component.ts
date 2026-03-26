@@ -21,7 +21,7 @@ export class LoginComponent {
     onLogin(): void {
         this.errorMessage = '';
         if (!this.email || !this.password) {
-            this.errorMessage = 'Please fill in all fields.';
+            this.errorMessage = 'Preencha todos os campos.';
             return;
         }
 
@@ -30,8 +30,7 @@ export class LoginComponent {
                 this.router.navigate(['/dashboard']);
             },
             error: (err) => {
-                console.error(err);
-                this.errorMessage = 'Invalid credentials. Please try again.';
+                this.errorMessage = err.message;
             }
         });
     }

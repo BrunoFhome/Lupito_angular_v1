@@ -96,10 +96,7 @@ export class DashboardComponent implements OnInit {
         );
         return forkJoin(cardObservables);
       }),
-      catchError(err => {
-        console.error('Dashboard load error', err);
-        return of([]);
-      })
+      catchError(() => of([]))
     ).subscribe(cards => {
       // Unlock first lesson of course N if course N-1 is fully completed
       for (let i = 1; i < cards.length; i++) {
@@ -134,8 +131,8 @@ export class DashboardComponent implements OnInit {
 
         return forkJoin(lessonObservables).pipe(
           switchMap(nestedLessons => {
+            const totalLessons = sections.length; // conta módulos (seções)
             let completedLessons = 0;
-            let totalLessons = 0;
             let nextLessonId: string | undefined;
             let nextLessonTitle: string | undefined;
             let nextSectionOrder: number | undefined;
@@ -145,45 +142,53 @@ export class DashboardComponent implements OnInit {
               const section = sections[idx];
               sectionLessons.sort((a, b) => a.listOrder - b.listOrder);
 
-              sectionLessons.forEach(lesson => {
-                totalLessons++;
+              // Módulo concluído = seção inteira foi ultrapassada no progresso
+              const moduleCompleted = progress
+                ? section.listOrder < progress.currentSectionOrder
+                : false;
 
-                let isCompleted = false;
-                let isLocked = true;
+              if (moduleCompleted) completedLessons++;
 
-                if (progress) {
-                  if (section.listOrder < progress.currentSectionOrder) {
-                    isCompleted = true;
-                  } else if (
-                    section.listOrder === progress.currentSectionOrder &&
-                    lesson.listOrder < progress.currentLessonOrder
-                  ) {
-                    isCompleted = true;
+              // Encontra a próxima lição para navegação
+              if (!nextLessonId) {
+                sectionLessons.forEach(lesson => {
+                  if (nextLessonId) return;
+
+                  let isCompleted = false;
+                  let isLocked = true;
+
+                  if (progress) {
+                    if (section.listOrder < progress.currentSectionOrder) {
+                      isCompleted = true;
+                    } else if (
+                      section.listOrder === progress.currentSectionOrder &&
+                      lesson.listOrder < progress.currentLessonOrder
+                    ) {
+                      isCompleted = true;
+                    }
+
+                    if (isCompleted) {
+                      isLocked = false;
+                    } else if (
+                      section.listOrder === progress.currentSectionOrder &&
+                      lesson.listOrder === progress.currentLessonOrder
+                    ) {
+                      isLocked = false;
+                    }
+                  } else if (isFirstCourse) {
+                    if (section.listOrder === 1 && lesson.listOrder === 1) {
+                      isLocked = false;
+                    }
                   }
 
-                  if (isCompleted) {
-                    isLocked = false;
-                  } else if (
-                    section.listOrder === progress.currentSectionOrder &&
-                    lesson.listOrder === progress.currentLessonOrder
-                  ) {
-                    isLocked = false;
+                  if (!isCompleted && !isLocked) {
+                    nextLessonId = lesson.id.toString();
+                    nextLessonTitle = lesson.title;
+                    nextSectionOrder = section.listOrder;
+                    nextLessonOrder = lesson.listOrder;
                   }
-                } else if (isFirstCourse) {
-                  if (section.listOrder === 1 && lesson.listOrder === 1) {
-                    isLocked = false;
-                  }
-                }
-
-                if (isCompleted) completedLessons++;
-
-                if (!isCompleted && !isLocked && !nextLessonId) {
-                  nextLessonId = lesson.id.toString();
-                  nextLessonTitle = lesson.title;
-                  nextSectionOrder = section.listOrder;
-                  nextLessonOrder = lesson.listOrder;
-                }
-              });
+                });
+              }
             });
 
             const percent = totalLessons > 0

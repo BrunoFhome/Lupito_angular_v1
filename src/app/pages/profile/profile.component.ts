@@ -71,12 +71,7 @@ export class ProfileComponent implements OnInit, OnDestroy {
                 this.user = data;
             },
             error: (err) => {
-                this.errorMessage = err.message || JSON.stringify(err);
-                console.error('Failed to load user profile.', err);
-
-                if (err.status === 401 || err.status === 403 || err.status === 404 || err.status === 500) {
-                    setTimeout(() => this.authService.logout(), 3000);
-                }
+                this.errorMessage = err.message;
             }
         });
 
@@ -107,9 +102,8 @@ export class ProfileComponent implements OnInit, OnDestroy {
                     this.isEditingLocation = false;
                     this.toast.success('Localização atualizada!');
                 },
-                error: (err) => {
-                    console.error('Failed to update location.', err);
-                    this.toast.error('Não foi possível salvar a localização.');
+                error: () => {
+                    this.isEditingLocation = false;
                 }
             });
         }
@@ -123,9 +117,8 @@ export class ProfileComponent implements OnInit, OnDestroy {
                     this.isEditingBio = false;
                     this.toast.success('Bio atualizada!');
                 },
-                error: (err) => {
-                    console.error('Failed to update bio.', err);
-                    this.toast.error('Não foi possível salvar a bio.');
+                error: () => {
+                    this.isEditingBio = false;
                 }
             });
         }
