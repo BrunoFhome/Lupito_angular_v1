@@ -37,6 +37,17 @@
         </button>
       </div>
 
+      <button class="btn-verify"
+        *ngIf="task?.expectedOutput && mode === 'javascript'"
+        (click)="verifyOutput()"
+        [disabled]="isRunning">
+        ✓ Conferir
+      </button>
+
+      <button class="btn-ai" (click)="evaluateWithAI()" [disabled]="aiLoading">
+        🤖 Avaliar com IA
+      </button>
+
       <button class="btn-run" (click)="runCode()" [disabled]="isRunning">
         <svg viewBox="0 0 24 24" fill="currentColor" width="14" height="14">
           <polygon points="5 3 19 12 5 21 5 3"/>
@@ -70,6 +81,8 @@
       <div class="output-panel" *ngIf="output">
         <div class="output-toolbar">
           <span class="output-label">▶ Saída</span>
+          <span class="verify-badge verify-ok"  *ngIf="verifyResult === 'correct'">✓ Saída correta!</span>
+          <span class="verify-badge verify-err" *ngIf="verifyResult === 'incorrect'">✗ Saída incorreta</span>
           <button class="btn-clear" (click)="clearOutput()">✕ Fechar</button>
         </div>
         <iframe
@@ -84,5 +97,21 @@
       </div>
 
     </div>
+
+    <!-- Painel IA -->
+    <div class="panel-ai" *ngIf="aiPanelOpen">
+      <div class="ai-panel-header">
+        <span class="ai-panel-title">🤖 Avaliação IA</span>
+        <button class="btn-close-ai" (click)="aiPanelOpen = false">✕</button>
+      </div>
+      <div class="ai-panel-body">
+        <div class="ai-loading" *ngIf="aiLoading">
+          <div class="spinner"></div>
+          <span>Analisando código...</span>
+        </div>
+        <pre class="ai-feedback" *ngIf="!aiLoading && aiFeedback">{{ aiFeedback }}</pre>
+      </div>
+    </div>
+
   </div>
 </div>

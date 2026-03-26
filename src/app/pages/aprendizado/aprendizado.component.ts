@@ -1,10 +1,10 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
 import { AuthService, User } from '../../services/auth.service';
 import { LearningService, CourseDTO } from '../../services/learning.service';
-import { forkJoin, Observable, of } from 'rxjs';
-import { catchError, map, switchMap } from 'rxjs/operators';
+import { forkJoin, Observable, of, Subject } from 'rxjs';
+import { catchError, map, switchMap, takeUntil } from 'rxjs/operators';
 
 // ── Domain models ──────────────────────────────────────────────────────────────
 
@@ -70,9 +70,11 @@ const PAD_Y         = 110;
   templateUrl: './aprendizado.component.html',
   styleUrl: './aprendizado.component.css'
 })
-export class AprendizadoComponent implements OnInit {
+export class AprendizadoComponent implements OnInit, OnDestroy {
   user: User | null = null;
   layouts: PathLayout[] = [];
+
+  private destroy$ = new Subject<void>();
 
   constructor(
     private router: Router,
@@ -81,10 +83,17 @@ export class AprendizadoComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
-    this.authService.getCurrentUser().subscribe(u => {
-      this.user = u;
-      this.loadCourses();
-    });
+    this.authService.getCurrentUser()
+      .pipe(takeUntil(this.destroy$))
+      .subscribe(u => {
+        this.user = u;
+        this.loadCourses();
+      });
+  }
+
+  ngOnDestroy(): void {
+    this.destroy$.next();
+    this.destroy$.complete();
   }
 
   loadCourses(): void {
@@ -95,13 +104,18 @@ export class AprendizadoComponent implements OnInit {
         const obs = courses.map((course, i) => this.buildLearningPath(course, i === 0));
         return forkJoin(obs);
       }),
-      catchError(() => of([]))
+      catchError(() => of([])),
+      takeUntil(this.destroy$)
     ).subscribe(paths => {
-      // Unlock first module of course N when course N-1 is fully completed
+      // Cursos são sequenciais: curso N só é acessível quando curso N-1 estiver 100% concluído
       for (let i = 1; i < paths.length; i++) {
         const prev = paths[i - 1];
-        if (prev.total > 0 && prev.progress === prev.total && paths[i].modules.length > 0) {
-          paths[i].modules[0].locked = false;
+        const prevComplete = prev.total > 0 && prev.progress === prev.total;
+        if (!prevComplete) {
+          paths[i].modules.forEach(m => {
+            m.locked      = true;
+            m.nextLessonId = undefined;
+          });
         }
       }
       this.layouts = paths.map(p => this.buildLayout(p));

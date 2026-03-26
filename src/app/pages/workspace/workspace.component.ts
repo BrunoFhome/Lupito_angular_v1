@@ -5,6 +5,7 @@ import { Location } from '@angular/common';
 import { Subject } from 'rxjs';
 import { debounceTime, filter, take, takeUntil } from 'rxjs/operators';
 import { KanbanService, KanbanTask } from '../../services/kanban.service';
+import { AIService } from '../../services/ai.service';
 import { DomSanitizer } from '@angular/platform-browser';
 import { ToastService } from '../../services/toast.service';
 
@@ -56,6 +57,12 @@ export class WorkspaceComponent implements OnInit, AfterViewInit, OnDestroy {
   saveStatus: 'idle' | 'saving' | 'saved' | 'error' = 'idle';
   lastSavedAt: Date | null = null;
 
+  // ── IA e Verificação ─────────────────────────────────────────────────────
+  aiPanelOpen  = false;
+  aiLoading    = false;
+  aiFeedback   = '';
+  verifyResult: 'correct' | 'incorrect' | null = null;
+
   private editorView: EditorView | null = null;
   private codeChange$ = new Subject<string>();
   private destroy$ = new Subject<void>();
@@ -78,6 +85,7 @@ export class WorkspaceComponent implements OnInit, AfterViewInit, OnDestroy {
     private route: ActivatedRoute,
     private router: Router,
     private kanbanService: KanbanService,
+    private aiService: AIService,
     private location: Location,
     private sanitizer: DomSanitizer,
     private toast: ToastService,
@@ -373,9 +381,46 @@ export class WorkspaceComponent implements OnInit, AfterViewInit, OnDestroy {
     doc.close();
   }
 
+  // ── Verificação de saída ─────────────────────────────────────────────────
+
+  verifyOutput(): void {
+    if (this.mode !== 'javascript' || !this.task?.expectedOutput) return;
+    this.verifyResult = null;
+    this.runCode();
+    if (this.outputType === 'error') {
+      this.verifyResult = 'incorrect';
+      return;
+    }
+    const expected = this.task.expectedOutput.trim();
+    const actual   = this.output.trim();
+    if (actual === expected) {
+      this.verifyResult = 'correct';
+    } else {
+      this.verifyResult = 'incorrect';
+      this.output     = `Esperado:\n  ${expected}\n\nObtido:\n  ${actual}`;
+      this.outputType = 'error';
+    }
+  }
+
+  // ── Avaliação por IA ─────────────────────────────────────────────────────
+
+  evaluateWithAI(): void {
+    const code         = this.mode === 'javascript' ? this.code : this.webFiles.js;
+    const instructions = this.task?.challengeInstructions ?? '';
+    const language     = this.task?.language ?? 'javascript';
+    this.aiPanelOpen = true;
+    this.aiLoading   = true;
+    this.aiFeedback  = '';
+    this.aiService.evaluate(code, language, instructions).subscribe({
+      next:  res => { this.aiFeedback = res.feedback; this.aiLoading = false; },
+      error: ()  => { this.aiFeedback = 'Erro ao conectar com a IA. Tente novamente.'; this.aiLoading = false; }
+    });
+  }
+
   clearOutput() {
-    this.output     = '';
-    this.outputType = '';
+    this.output      = '';
+    this.outputType  = '';
+    this.verifyResult = null;
     this.writeToPreview('');
   }
 

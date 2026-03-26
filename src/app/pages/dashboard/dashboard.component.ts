@@ -1,8 +1,8 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
-import { forkJoin, of } from 'rxjs';
-import { catchError, switchMap } from 'rxjs/operators';
+import { forkJoin, of, Subject } from 'rxjs';
+import { catchError, switchMap, takeUntil } from 'rxjs/operators';
 import { AuthService, User } from '../../services/auth.service';
 import { LearningService, CourseDTO, SectionDTO, LessonDTO } from '../../services/learning.service';
 import { KanbanService, KanbanTask } from '../../services/kanban.service';
@@ -34,11 +34,13 @@ interface KanbanStats {
   templateUrl: './dashboard.component.html',
   styleUrl: './dashboard.component.css'
 })
-export class DashboardComponent implements OnInit {
+export class DashboardComponent implements OnInit, OnDestroy {
   user: User | null = null;
   courseCards: CourseCard[] = [];
   kanbanStats: KanbanStats = { todo: 0, inProgress: 0, inReview: 0, done: 0 };
   loading = true;
+
+  private destroy$ = new Subject<void>();
 
   get totalCompletedLessons(): number {
     return this.courseCards.reduce((sum, c) => sum + c.completedLessons, 0);
@@ -70,20 +72,29 @@ export class DashboardComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
-    this.authService.getCurrentUser().subscribe(u => {
-      this.user = u;
-      this.loadDashboard();
-    });
+    this.authService.getCurrentUser()
+      .pipe(takeUntil(this.destroy$))
+      .subscribe(u => {
+        this.user = u;
+        this.loadDashboard();
+      });
 
-    this.kanbanService.getTasks().subscribe(tasks => {
-      this.kanbanStats = {
-        todo: tasks.filter(t => t.status === 'todo').length,
-        inProgress: tasks.filter(t => t.status === 'in-progress').length,
-        inReview: tasks.filter(t => t.status === 'in-review').length,
-        done: tasks.filter(t => t.status === 'done').length
-      };
-    });
+    this.kanbanService.getTasks()
+      .pipe(takeUntil(this.destroy$))
+      .subscribe(tasks => {
+        this.kanbanStats = {
+          todo: tasks.filter(t => t.status === 'todo').length,
+          inProgress: tasks.filter(t => t.status === 'in-progress').length,
+          inReview: tasks.filter(t => t.status === 'in-review').length,
+          done: tasks.filter(t => t.status === 'done').length
+        };
+      });
     this.kanbanService.loadTasks();
+  }
+
+  ngOnDestroy(): void {
+    this.destroy$.next();
+    this.destroy$.complete();
   }
 
   private loadDashboard(): void {
@@ -96,12 +107,15 @@ export class DashboardComponent implements OnInit {
         );
         return forkJoin(cardObservables);
       }),
-      catchError(() => of([]))
+      catchError(() => of([])),
+      takeUntil(this.destroy$)
     ).subscribe(cards => {
-      // Unlock first lesson of course N if course N-1 is fully completed
+      // Cursos são sequenciais: curso N só é acessível quando curso N-1 estiver 100% concluído
       for (let i = 1; i < cards.length; i++) {
-        if (cards[i - 1].percent === 100 && !cards[i].nextLessonId) {
-          // Mark first lesson of next course as suggested if we have the data
+        const prevComplete = cards[i - 1].percent === 100;
+        if (!prevComplete) {
+          cards[i].nextLessonId    = undefined;
+          cards[i].nextLessonTitle = undefined;
         }
       }
       this.courseCards = cards;
