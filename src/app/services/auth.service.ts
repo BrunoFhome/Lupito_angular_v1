@@ -103,7 +103,7 @@ private getAuthHeaders(): { headers: HttpHeaders } {
     return this.http.put<User>(`${environment.apiUrl}/users/${userId}`, user, this.getAuthHeaders());
   }
 
-  private getCurrentUserId(): number | null {
+  getCurrentUserId(): number | null {
     const token = localStorage.getItem('token');
     if (token) {
       try {

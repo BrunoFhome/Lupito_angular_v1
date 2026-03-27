@@ -6,6 +6,7 @@ import { Subject } from 'rxjs';
 import { debounceTime, filter, take, takeUntil } from 'rxjs/operators';
 import { KanbanService, KanbanTask } from '../../services/kanban.service';
 import { AIService } from '../../services/ai.service';
+import { AuthService } from '../../services/auth.service';
 import { DomSanitizer } from '@angular/platform-browser';
 import { ToastService } from '../../services/toast.service';
 
@@ -61,6 +62,8 @@ export class WorkspaceComponent implements OnInit, AfterViewInit, OnDestroy {
   aiPanelOpen  = false;
   aiLoading    = false;
   aiFeedback   = '';
+  aiUseCount   = 0;
+  codeChangedSinceLastEval = true;
   verifyResult: 'correct' | 'incorrect' | null = null;
 
   private editorView: EditorView | null = null;
@@ -73,7 +76,13 @@ export class WorkspaceComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   private get localStorageKey(): string {
-    return `workspace_code_${this.taskId}`;
+    const uid = this.authService.getCurrentUserId() ?? 'guest';
+    return `workspace_code_${uid}_${this.taskId}`;
+  }
+
+  private get aiCountKey(): string {
+    const uid = this.authService.getCurrentUserId() ?? 'guest';
+    return `ai_count_${uid}_${this.taskId}`;
   }
 
   @HostListener('window:beforeunload', ['$event'])
@@ -86,6 +95,7 @@ export class WorkspaceComponent implements OnInit, AfterViewInit, OnDestroy {
     private router: Router,
     private kanbanService: KanbanService,
     private aiService: AIService,
+    private authService: AuthService,
     private location: Location,
     private sanitizer: DomSanitizer,
     private toast: ToastService,
@@ -157,6 +167,7 @@ export class WorkspaceComponent implements OnInit, AfterViewInit, OnDestroy {
         const serialized = this.getSerializedCode();
         this.saveToLocalStorage(serialized);
         this.codeChange$.next(serialized);
+        this.codeChangedSinceLastEval = true;
       }
     });
 
@@ -229,6 +240,12 @@ export class WorkspaceComponent implements OnInit, AfterViewInit, OnDestroy {
       const initial = this.mode === 'web' ? this.webFiles[this.activeFile] : this.code;
       this.createEditor(initial);
     }
+
+    // Restaura contador de usos da IA para esta tarefa (máx. 3)
+    const savedCount = localStorage.getItem(this.aiCountKey);
+    this.aiUseCount = savedCount ? (parseInt(savedCount, 10) || 0) : 0;
+    this.codeChangedSinceLastEval = this.aiUseCount === 0;
+    this.aiFeedback = '';
 
     this.codeInitialized = true;
   }
@@ -405,6 +422,8 @@ export class WorkspaceComponent implements OnInit, AfterViewInit, OnDestroy {
   // ── Avaliação por IA ─────────────────────────────────────────────────────
 
   evaluateWithAI(): void {
+    if (this.aiUseCount >= 3 || !this.codeChangedSinceLastEval) return;
+
     const code         = this.mode === 'javascript' ? this.code : this.webFiles.js;
     const instructions = this.task?.challengeInstructions ?? '';
     const language     = this.task?.language ?? 'javascript';
@@ -412,8 +431,17 @@ export class WorkspaceComponent implements OnInit, AfterViewInit, OnDestroy {
     this.aiLoading   = true;
     this.aiFeedback  = '';
     this.aiService.evaluate(code, language, instructions).subscribe({
-      next:  res => { this.aiFeedback = res.feedback; this.aiLoading = false; },
-      error: ()  => { this.aiFeedback = 'Erro ao conectar com a IA. Tente novamente.'; this.aiLoading = false; }
+      next: res => {
+        this.aiFeedback  = res.feedback;
+        this.aiLoading   = false;
+        this.aiUseCount++;
+        this.codeChangedSinceLastEval = false;
+        try { localStorage.setItem(this.aiCountKey, String(this.aiUseCount)); } catch {}
+      },
+      error: () => {
+        this.aiFeedback = 'Erro ao conectar com a IA. Tente novamente.';
+        this.aiLoading  = false;
+      }
     });
   }
 

@@ -44,8 +44,12 @@
         ✓ Conferir
       </button>
 
-      <button class="btn-ai" (click)="evaluateWithAI()" [disabled]="aiLoading">
-        🤖 Avaliar com IA
+      <button class="btn-ai"
+        (click)="evaluateWithAI()"
+        [disabled]="aiLoading || aiUseCount >= 3 || !codeChangedSinceLastEval"
+        [class.btn-ai-used]="aiUseCount > 0"
+        [title]="aiUseCount >= 3 ? 'Limite de avaliações atingido' : (!codeChangedSinceLastEval ? 'Altere o código para avaliar novamente' : '')">
+        {{ aiUseCount >= 3 ? '🤖 IA esgotada' : '🤖 Avaliar com IA (' + aiUseCount + '/3)' }}
       </button>
 
       <button class="btn-run" (click)="runCode()" [disabled]="isRunning">
