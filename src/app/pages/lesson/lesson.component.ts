@@ -2,6 +2,8 @@ import { Component, OnInit, OnDestroy, AfterViewChecked, ViewChild, ElementRef }
 import { CommonModule } from '@angular/common';
 import { ActivatedRoute, Router } from '@angular/router';
 import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
+import { Subject } from 'rxjs';
+import { takeUntil } from 'rxjs/operators';
 import { LearningService, SectionDetails, Exercise } from '../../services/learning.service';
 import { AuthService, User } from '../../services/auth.service';
 
@@ -58,6 +60,7 @@ export class LessonComponent implements OnInit, OnDestroy, AfterViewChecked {
 
   private editorView: EditorView | null = null;
   private editorInitialized: boolean = false;
+  private destroy$ = new Subject<void>();
 
   get safeTheoryContent(): SafeHtml {
     const content = this.sectionDetails?.theoryContent || '';
@@ -93,20 +96,24 @@ export class LessonComponent implements OnInit, OnDestroy, AfterViewChecked {
   ) {}
 
   ngOnInit(): void {
-    this.authService.getCurrentUser().subscribe(u => this.user = u);
+    this.authService.getCurrentUser()
+      .pipe(takeUntil(this.destroy$))
+      .subscribe(u => this.user = u);
 
-    this.route.paramMap.subscribe(params => {
-      const sectionId = params.get('id');
-      if (sectionId) {
-        this.fetchLesson(sectionId);
-      }
-    });
+    this.route.paramMap
+      .pipe(takeUntil(this.destroy$))
+      .subscribe(params => {
+        const sectionId = params.get('id');
+        if (sectionId) this.fetchLesson(sectionId);
+      });
 
-    this.route.queryParamMap.subscribe(params => {
-      if (params.has('courseId')) this.courseId = +params.get('courseId')!;
-      if (params.has('sectionOrder')) this.sectionOrder = +params.get('sectionOrder')!;
-      if (params.has('lessonOrder')) this.lessonOrder = +params.get('lessonOrder')!;
-    });
+    this.route.queryParamMap
+      .pipe(takeUntil(this.destroy$))
+      .subscribe(params => {
+        if (params.has('courseId')) this.courseId = +params.get('courseId')!;
+        if (params.has('sectionOrder')) this.sectionOrder = +params.get('sectionOrder')!;
+        if (params.has('lessonOrder')) this.lessonOrder = +params.get('lessonOrder')!;
+      });
   }
 
   ngAfterViewChecked(): void {
@@ -263,6 +270,8 @@ export class LessonComponent implements OnInit, OnDestroy, AfterViewChecked {
   }
 
   ngOnDestroy(): void {
+    this.destroy$.next();
+    this.destroy$.complete();
     this.editorView?.destroy();
     if (this.mascotTimer) clearTimeout(this.mascotTimer);
   }

@@ -5,13 +5,13 @@ import { provideHttpClient, withInterceptors } from '@angular/common/http';
 
 import { routes } from './app.routes';
 import { FormsModule } from '@angular/forms';
-import { httpErrorInterceptor } from './errors';
+import { authInterceptor, httpErrorInterceptor } from './errors';
 
 export const appConfig: ApplicationConfig = {
   providers: [
     provideRouter(routes),
     provideAnimationsAsync(),
-    provideHttpClient(withInterceptors([httpErrorInterceptor])),
+    provideHttpClient(withInterceptors([authInterceptor, httpErrorInterceptor])),
     importProvidersFrom(FormsModule)
   ]
 };

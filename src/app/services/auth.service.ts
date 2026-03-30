@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { HttpClient, HttpHeaders } from '@angular/common/http';
+import { HttpClient } from '@angular/common/http';
 import { Router } from '@angular/router';
 import { Observable, tap, BehaviorSubject } from 'rxjs';
 import { environment } from '../../environments/environment';
@@ -71,16 +71,7 @@ export class AuthService {
     return this.loggedIn.asObservable();
   }
 
-private getAuthHeaders(): { headers: HttpHeaders } {
-    const token = localStorage.getItem('token');
-    return {
-      headers: new HttpHeaders({
-        'Authorization': `Bearer ${token}`
-      })
-    };
-  }
-
-  getCurrentUser(): Observable<User> {
+getCurrentUser(): Observable<User> {
     const userId = this.getCurrentUserId();
     if (!userId) {
       return new Observable<User>(observer => {
@@ -88,7 +79,7 @@ private getAuthHeaders(): { headers: HttpHeaders } {
         observer.complete();
       });
     }
-    return this.http.get<User>(`${environment.apiUrl}/users/${userId}`, this.getAuthHeaders());
+    return this.http.get<User>(`${environment.apiUrl}/users/${userId}`);
   }
 
   updateUserProfile(user: User): Observable<User> {
@@ -100,7 +91,7 @@ private getAuthHeaders(): { headers: HttpHeaders } {
         observer.complete();
       });
     }
-    return this.http.put<User>(`${environment.apiUrl}/users/${userId}`, user, this.getAuthHeaders());
+    return this.http.put<User>(`${environment.apiUrl}/users/${userId}`, user);
   }
 
   verifyEmail(token: string): Observable<any> {

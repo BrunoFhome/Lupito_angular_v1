@@ -2,7 +2,8 @@ import { Component, OnInit, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
 import { FormsModule } from '@angular/forms';
-import { Subscription } from 'rxjs';
+import { Subject } from 'rxjs';
+import { takeUntil } from 'rxjs/operators';
 import { AuthService, User } from '../../services/auth.service';
 import { KanbanService, KanbanTask } from '../../services/kanban.service';
 import { ToastService } from '../../services/toast.service';
@@ -56,7 +57,7 @@ export class ProfileComponent implements OnInit, OnDestroy {
     completedProjects: KanbanTask[] = [];
     loadingProjects = true;
 
-    private tasksSub: Subscription | null = null;
+    private destroy$ = new Subject<void>();
 
     constructor(
         private authService: AuthService,
@@ -66,24 +67,25 @@ export class ProfileComponent implements OnInit, OnDestroy {
     ) { }
 
     ngOnInit(): void {
-        this.authService.getCurrentUser().subscribe({
-            next: (data) => {
-                this.user = data;
-            },
-            error: (err) => {
-                this.errorMessage = err.message;
-            }
-        });
+        this.authService.getCurrentUser()
+            .pipe(takeUntil(this.destroy$))
+            .subscribe({
+                next: (data) => { this.user = data; },
+                error: (err) => { this.errorMessage = err.message; }
+            });
 
-        this.tasksSub = this.kanbanService.getTasks().subscribe(tasks => {
-            this.completedProjects = tasks.filter(t => t.status === 'done');
-            this.loadingProjects = false;
-        });
+        this.kanbanService.getTasks()
+            .pipe(takeUntil(this.destroy$))
+            .subscribe(tasks => {
+                this.completedProjects = tasks.filter(t => t.status === 'done');
+                this.loadingProjects = false;
+            });
         this.kanbanService.loadTasks();
     }
 
     ngOnDestroy(): void {
-        this.tasksSub?.unsubscribe();
+        this.destroy$.next();
+        this.destroy$.complete();
     }
 
     toggleEditBio(): void {

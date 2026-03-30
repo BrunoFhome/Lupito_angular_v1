@@ -1,8 +1,10 @@
-import { Component, OnInit, HostListener } from '@angular/core';
+import { Component, OnInit, OnDestroy, HostListener } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { MatIconModule } from '@angular/material/icon';
 import { Router } from '@angular/router';
+import { Subject } from 'rxjs';
+import { takeUntil } from 'rxjs/operators';
 import { NavbarComponent } from '../../components/navbar/navbar.component';
 import { KanbanService, KanbanTask } from '../../services/kanban.service';
 import { ToastService } from '../../services/toast.service';
@@ -14,7 +16,7 @@ import { ToastService } from '../../services/toast.service';
   templateUrl: './kanban.component.html',
   styleUrls: ['./kanban.component.css']
 })
-export class KanbanComponent implements OnInit {
+export class KanbanComponent implements OnInit, OnDestroy {
   tasks: KanbanTask[] = [];
 
   // Auto avaliação modal
@@ -32,6 +34,8 @@ export class KanbanComponent implements OnInit {
   moveConfirmStatus: KanbanTask['status'] | null = null;
   moveConfirmLabel: string = '';
 
+  private destroy$ = new Subject<void>();
+
   private readonly statusLabels: Record<KanbanTask['status'], string> = {
     'todo': 'A Fazer',
     'in-progress': 'Em Andamento',
@@ -41,11 +45,16 @@ export class KanbanComponent implements OnInit {
 
   constructor(private router: Router, private kanbanService: KanbanService, private toast: ToastService) {}
 
-  ngOnInit() {
-    this.kanbanService.getTasks().subscribe(tasks => {
-       this.tasks = tasks;
-    });
+  ngOnInit(): void {
+    this.kanbanService.getTasks()
+      .pipe(takeUntil(this.destroy$))
+      .subscribe(tasks => { this.tasks = tasks; });
     this.kanbanService.loadTasks();
+  }
+
+  ngOnDestroy(): void {
+    this.destroy$.next();
+    this.destroy$.complete();
   }
 
   getTasksByStatus(status: KanbanTask['status']) {

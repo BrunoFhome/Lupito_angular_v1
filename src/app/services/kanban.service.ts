@@ -1,7 +1,6 @@
 import { Injectable } from '@angular/core';
-import { HttpClient, HttpHeaders } from '@angular/common/http';
+import { HttpClient } from '@angular/common/http';
 import { BehaviorSubject, Observable } from 'rxjs';
-import { tap } from 'rxjs/operators';
 import { environment } from '../../environments/environment';
 
 export interface KanbanTask {
@@ -27,27 +26,8 @@ export class KanbanService {
 
   constructor(private http: HttpClient) { }
 
-  private getAuthHeaders(): { headers: HttpHeaders } {
-    const token = localStorage.getItem('token');
-    return {
-      headers: new HttpHeaders({
-        'Authorization': 'Bearer ' + token
-      })
-    };
-  }
-
-  private getJsonHeaders(): { headers: HttpHeaders } {
-    const token = localStorage.getItem('token');
-    return {
-      headers: new HttpHeaders({
-        'Authorization': 'Bearer ' + token,
-        'Content-Type': 'application/json'
-      })
-    };
-  }
-
   loadTasks(): void {
-    this.http.get<KanbanTask[]>(this.apiUrl + '/tasks', this.getAuthHeaders())
+    this.http.get<KanbanTask[]>(this.apiUrl + '/tasks')
       .subscribe({ next: tasks => this.tasksSubject.next(tasks || []) });
   }
 
@@ -56,34 +36,29 @@ export class KanbanService {
   }
 
   saveCode(taskId: number, code: string): Observable<void> {
-    return this.http.put<void>(
-      `${this.apiUrl}/tasks/${taskId}/code`,
-      JSON.stringify({ code }),
-      this.getJsonHeaders()
-    );
+    return this.http.put<void>(`${this.apiUrl}/tasks/${taskId}/code`, { code });
   }
 
-  updateTaskStatus(taskId: any, newStatus: KanbanTask['status']) {
+  updateTaskStatus(taskId: any, newStatus: KanbanTask['status']): void {
     const numericId = parseInt(taskId.toString(), 10);
-    this.http.put<KanbanTask>(this.apiUrl + '/tasks/' + numericId + '/status?status=' + newStatus, {}, this.getAuthHeaders())
+    this.http.put<KanbanTask>(`${this.apiUrl}/tasks/${numericId}/status?status=${newStatus}`, {})
       .subscribe(updated => {
-         const tasks = this.tasksSubject.value.map(task =>
-            task.id === numericId ? updated : task
-         );
-         this.tasksSubject.next(tasks);
+        const tasks = this.tasksSubject.value.map(task =>
+          task.id === numericId ? updated : task
+        );
+        this.tasksSubject.next(tasks);
       });
   }
 
   updateTaskPriority(taskId: number, priority: string): void {
     this.http.put<KanbanTask>(
       `${this.apiUrl}/tasks/${taskId}/priority?priority=${encodeURIComponent(priority)}`,
-      {},
-      this.getAuthHeaders()
+      {}
     ).subscribe({
       next: updated => {
         const tasks = this.tasksSubject.value.map(t => t.id === taskId ? updated : t);
         this.tasksSubject.next(tasks);
-      },
+      }
     });
   }
 }

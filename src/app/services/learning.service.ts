@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { HttpClient, HttpHeaders } from '@angular/common/http';
+import { HttpClient } from '@angular/common/http';
 import { Observable, of, forkJoin } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { environment } from '../../environments/environment';
@@ -67,49 +67,39 @@ export class LearningService {
 
   constructor(private http: HttpClient) { }
 
-  private getAuthHeaders(): { headers: HttpHeaders } {
-    const token = localStorage.getItem('token');
-    return {
-      headers: new HttpHeaders({
-        'Authorization': 'Bearer ' + token
-      })
-    };
-  }
-
   getLessonGlobalIndex(lessonId: string): number {
     return parseInt(lessonId, 10);
   }
 
   getUserProgress(courseId: number): Observable<UserProgressDTO> {
-    return this.http.get<UserProgressDTO>(`${this.progressUrl}/${courseId}`, this.getAuthHeaders());
+    return this.http.get<UserProgressDTO>(`${this.progressUrl}/${courseId}`);
   }
 
   completeLesson(courseId: number, currentSectionOrder: number, currentLessonOrder: number): Observable<UserProgressDTO> {
     return this.http.post<UserProgressDTO>(
       `${this.progressUrl}/complete-lesson?courseId=${courseId}&currentSectionOrder=${currentSectionOrder}&currentLessonOrder=${currentLessonOrder}`,
-      {},
-      this.getAuthHeaders()
+      {}
     );
   }
 
   getCourses(): Observable<CourseDTO[]> {
-    return this.http.get<CourseDTO[]>(this.apiUrl + '/courses', this.getAuthHeaders());
+    return this.http.get<CourseDTO[]>(this.apiUrl + '/courses');
   }
 
   getSectionsByCourse(courseId: number): Observable<SectionDTO[]> {
-    return this.http.get<SectionDTO[]>(this.apiUrl + '/courses/' + courseId + '/sections', this.getAuthHeaders());
+    return this.http.get<SectionDTO[]>(this.apiUrl + '/courses/' + courseId + '/sections');
   }
 
   getLessonsBySection(sectionId: number): Observable<LessonDTO[]> {
-    return this.http.get<LessonDTO[]>(this.apiUrl + '/sections/' + sectionId + '/lessons', this.getAuthHeaders());
+    return this.http.get<LessonDTO[]>(this.apiUrl + '/sections/' + sectionId + '/lessons');
   }
 
   getExercisesByLesson(lessonId: number): Observable<ExerciseDTO[]> {
-    return this.http.get<ExerciseDTO[]>(this.apiUrl + '/lessons/' + lessonId + '/exercises', this.getAuthHeaders());
+    return this.http.get<ExerciseDTO[]>(this.apiUrl + '/lessons/' + lessonId + '/exercises');
   }
 
   getLessonById(lessonId: number): Observable<LessonDTO> {
-    return this.http.get<LessonDTO>(`${this.apiUrl}/lessons/${lessonId}`, this.getAuthHeaders());
+    return this.http.get<LessonDTO>(`${this.apiUrl}/lessons/${lessonId}`);
   }
 
   getSectionDetails(id: string): Observable<SectionDetails> {

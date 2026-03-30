@@ -33,6 +33,7 @@ export class WorkspaceComponent implements OnInit, AfterViewInit, OnDestroy {
 
   @ViewChild('editorContainer') editorContainer!: ElementRef<HTMLDivElement>;
   @ViewChild('previewFrame')    previewFrame!: ElementRef<HTMLIFrameElement>;
+  @ViewChild('sandboxFrame')    sandboxFrame!: ElementRef<HTMLIFrameElement>;
 
   task: KanbanTask | null = null;
   taskId: number | null = null;
@@ -288,7 +289,7 @@ export class WorkspaceComponent implements OnInit, AfterViewInit, OnDestroy {
 
   // ── Executar / Visualizar ───────────────────────────────────────────────
 
-  runCode() {
+  runCode(afterRun?: () => void): void {
     this.output = '';
     this.outputType = '';
 
@@ -306,60 +307,92 @@ export class WorkspaceComponent implements OnInit, AfterViewInit, OnDestroy {
       this.output = ' '; // valor truthy para exibir o painel
       this.cdr.detectChanges();
       this.writeToPreview(this.buildWebPreview());
+      afterRun?.();
       return;
     }
 
-    // Modo JavaScript: captura console e executa
+    // Modo JavaScript: executa em iframe sandbox isolado
     this.isRunning = true;
-    const outputLines: string[] = [];
-
-    const origLog   = console.log;
-    const origError = console.error;
-    const origWarn  = console.warn;
-
-    console.log   = (...args: any[]) => outputLines.push(args.map(a => typeof a === 'object' ? JSON.stringify(a, null, 2) : String(a)).join(' '));
-    console.error = (...args: any[]) => outputLines.push('[Erro] '   + args.map(a => String(a)).join(' '));
-    console.warn  = (...args: any[]) => outputLines.push('[Aviso] '  + args.map(a => String(a)).join(' '));
-
-    try {
-      // eslint-disable-next-line no-new-func
-      new Function(this.code)();
-      this.output     = outputLines.join('\n') || '(sem saída)';
-      this.outputType = 'text';
-    } catch (err: any) {
-      this.output     = this.parseError(err);
-      this.outputType = 'error';
-    } finally {
-      console.log   = origLog;
-      console.error = origError;
-      console.warn  = origWarn;
-      this.isRunning = false;
-    }
+    this.runInSandbox(this.code, afterRun);
   }
 
-  private parseError(err: any): string {
-    const type    = err.name    || 'Erro';
-    const message = err.message || String(err);
+  private runInSandbox(code: string, afterRun?: () => void): void {
+    const execId = Date.now().toString();
+    const outputLines: string[] = [];
 
-    // Extrai linha:coluna do stack trace do V8 (erros de runtime)
-    const stackMatch = err.stack?.match(/<anonymous>:(\d+):(\d+)/);
-    if (stackMatch) {
-      const userLine = parseInt(stackMatch[1]) - 1;  // ajusta offset do wrapper new Function()
-      const col      = parseInt(stackMatch[2]);
-      const lines    = this.code.split('\n');
-      const codeLine = lines[userLine - 1] ?? '';
-      const pointer  = ' '.repeat(Math.max(0, col - 1)) + '^';
+    // O código do usuário começa na linha 9 do srcdoc (após 8 linhas de setup).
+    // window.onerror recebe a linha absoluta do srcdoc; subtraímos 8 para obter a linha do usuário.
+    const USER_CODE_LINE_OFFSET = 8;
 
-      return (
-        `${type}: ${message}\n` +
-        `  → Linha ${userLine}, Coluna ${col}\n\n` +
-        `  ${codeLine}\n` +
-        `  ${pointer}`
-      );
+    const sandboxDoc = [
+      '<!DOCTYPE html><html><body><script>',
+      `var __id="${execId}";`,
+      `console.log=function(){var a=[].slice.call(arguments);parent.postMessage({id:__id,t:'log',text:a.map(function(x){return typeof x==='object'?JSON.stringify(x,null,2):String(x)}).join(' ')},'*');};`,
+      `console.error=function(){var a=[].slice.call(arguments);parent.postMessage({id:__id,t:'log',text:'[Erro] '+a.map(String).join(' ')},'*');};`,
+      `console.warn=function(){var a=[].slice.call(arguments);parent.postMessage({id:__id,t:'log',text:'[Aviso] '+a.map(String).join(' ')},'*');};`,
+      `window.onerror=function(msg,src,line,col,err){parent.postMessage({id:__id,t:'err',name:(err&&err.name)||'Erro',msg:(err&&err.message)||String(msg),line:line-${USER_CODE_LINE_OFFSET},col:col},'*');return true;};`,
+      'try{',
+      '(function(){',
+      code,
+      '})();',
+      `parent.postMessage({id:__id,t:'done'},'*');`,
+      `}catch(e){parent.postMessage({id:__id,t:'err',name:e.name||'Erro',msg:e.message||String(e),line:null,col:null},'*');}`,
+      '<\/script></body></html>',
+    ].join('\n');
+
+    const finish = (fn: () => void) => {
+      clearTimeout(timeoutId);
+      window.removeEventListener('message', handler);
+      fn();
+      afterRun?.();
+      this.cdr.detectChanges();
+    };
+
+    const timeoutId = setTimeout(() => {
+      if (this.sandboxFrame?.nativeElement) {
+        this.sandboxFrame.nativeElement.srcdoc = '';
+      }
+      finish(() => {
+        this.output = 'Tempo limite excedido (5s). Verifique se há loops infinitos no código.';
+        this.outputType = 'error';
+        this.isRunning = false;
+      });
+    }, 5000);
+
+    const handler = (event: MessageEvent) => {
+      if (!event.data || event.data.id !== execId) return;
+      const { t, text, name, msg, line, col } = event.data;
+
+      if (t === 'log') {
+        outputLines.push(text);
+      } else if (t === 'err') {
+        finish(() => {
+          this.output = this.formatSandboxError(name, msg, line, col);
+          this.outputType = 'error';
+          this.isRunning = false;
+        });
+      } else if (t === 'done') {
+        finish(() => {
+          this.output = outputLines.join('\n') || '(sem saída)';
+          this.outputType = 'text';
+          this.isRunning = false;
+        });
+      }
+    };
+
+    window.addEventListener('message', handler);
+    this.sandboxFrame.nativeElement.srcdoc = sandboxDoc;
+  }
+
+  private formatSandboxError(name: string, msg: string, line: number | null, col: number | null): string {
+    let result = `${name}: ${msg}`;
+    if (line !== null && line > 0) {
+      const codeLine = this.code.split('\n')[line - 1] ?? '';
+      const pointer  = col ? ' '.repeat(Math.max(0, col - 1)) + '^' : '';
+      result += `\n  → Linha ${line}, Coluna ${col ?? '?'}\n\n  ${codeLine}`;
+      if (pointer) result += `\n  ${pointer}`;
     }
-
-    // SyntaxError ou erro sem posição no stack
-    return `${type}: ${message}`;
+    return result;
   }
 
   private buildWebPreview(): string {
@@ -403,20 +436,21 @@ export class WorkspaceComponent implements OnInit, AfterViewInit, OnDestroy {
   verifyOutput(): void {
     if (this.mode !== 'javascript' || !this.task?.expectedOutput) return;
     this.verifyResult = null;
-    this.runCode();
-    if (this.outputType === 'error') {
-      this.verifyResult = 'incorrect';
-      return;
-    }
-    const expected = this.task.expectedOutput.trim();
-    const actual   = this.output.trim();
-    if (actual === expected) {
-      this.verifyResult = 'correct';
-    } else {
-      this.verifyResult = 'incorrect';
-      this.output     = `Esperado:\n  ${expected}\n\nObtido:\n  ${actual}`;
-      this.outputType = 'error';
-    }
+    this.runCode(() => {
+      if (this.outputType === 'error') {
+        this.verifyResult = 'incorrect';
+        return;
+      }
+      const expected = this.task!.expectedOutput!.trim();
+      const actual   = this.output.trim();
+      if (actual === expected) {
+        this.verifyResult = 'correct';
+      } else {
+        this.verifyResult = 'incorrect';
+        this.output     = `Esperado:\n  ${expected}\n\nObtido:\n  ${actual}`;
+        this.outputType = 'error';
+      }
+    });
   }
 
   // ── Avaliação por IA ─────────────────────────────────────────────────────
