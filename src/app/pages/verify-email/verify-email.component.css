@@ -1,0 +1,165 @@
+.page-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  background-color: #f4f6f8;
+}
+
+.form-card {
+  background: #ffffff;
+  border: 1px solid #dce1e7;
+  border-radius: 8px;
+  padding: 40px;
+  width: 100%;
+  max-width: 420px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+}
+
+.status-state {
+  text-align: center;
+  padding: 8px 0;
+}
+
+.status-icon {
+  width: 64px;
+  height: 64px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 28px;
+  font-weight: 700;
+  margin: 0 auto 20px auto;
+}
+
+.success-icon {
+  background-color: #e8f8f0;
+  color: #27ae60;
+}
+
+.error-icon {
+  background-color: #fdecea;
+  color: #c0392b;
+}
+
+.loading-icon {
+  background-color: #e8f4fd;
+  color: #2980b9;
+}
+
+.status-state h2 {
+  margin: 0 0 12px 0;
+  font-size: 22px;
+  color: #343838;
+}
+
+.status-state > p {
+  color: #555;
+  font-size: 14px;
+  line-height: 1.6;
+  margin-bottom: 24px;
+}
+
+.btn-primary {
+  display: block;
+  width: 100%;
+  padding: 11px;
+  background-color: #00b4cc;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+  text-align: center;
+  text-decoration: none;
+  transition: background-color 0.2s;
+  box-sizing: border-box;
+}
+
+.btn-primary:hover {
+  background-color: #008c9e;
+}
+
+.resend-section {
+  margin-top: 8px;
+}
+
+.resend-label {
+  font-size: 13px;
+  color: #555;
+  margin-bottom: 8px;
+  text-align: left;
+}
+
+.resend-row {
+  display: flex;
+  gap: 8px;
+}
+
+.resend-input {
+  flex: 1;
+  padding: 9px 12px;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  font-size: 14px;
+  box-sizing: border-box;
+}
+
+.resend-input:focus {
+  outline: none;
+  border-color: #00b4cc;
+}
+
+.btn-resend {
+  padding: 9px 16px;
+  background-color: #00b4cc;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: background-color 0.2s;
+}
+
+.btn-resend:hover:not(:disabled) {
+  background-color: #008c9e;
+}
+
+.btn-resend:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.resend-error {
+  color: #c0392b;
+  font-size: 13px;
+  margin-top: 8px;
+  text-align: left;
+}
+
+.resend-sent {
+  background-color: #e8f8f0;
+  border: 1px solid #a8e6c0;
+  border-radius: 6px;
+  padding: 12px;
+  color: #27ae60;
+  font-size: 14px;
+  margin-top: 8px;
+}
+
+.link-back {
+  display: block;
+  text-align: center;
+  margin-top: 20px;
+  font-size: 13px;
+  color: #00b4cc;
+  text-decoration: none;
+}
+
+.link-back:hover {
+  text-decoration: underline;
+}

@@ -2,6 +2,17 @@
 
   <!-- Formulário -->
   <div class="form-card">
+
+    <!-- Sucesso: aguardando verificação de e-mail -->
+    <div *ngIf="registrationSuccess" class="success-state">
+      <div class="success-icon">&#10003;</div>
+      <h2>Conta criada!</h2>
+      <p>Enviamos um e-mail de verificação para <strong>{{ email }}</strong>.<br/>
+         Clique no link para ativar sua conta.</p>
+      <a routerLink="/login" class="btn-primary">Ir para o login</a>
+    </div>
+
+    <ng-container *ngIf="!registrationSuccess">
     <a routerLink="/" class="btn-back">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"
            stroke-linecap="round" stroke-linejoin="round">
@@ -71,6 +82,7 @@
     <p class="form-footer">
       Já tem uma conta? <a routerLink="/login">Fazer login</a>
     </p>
+    </ng-container>
   </div>
 
   <!-- Imagem com background circular -->

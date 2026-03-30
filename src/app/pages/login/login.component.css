@@ -199,3 +199,60 @@ h1 {
     display: none;
   }
 }
+
+/* ── E-mail não verificado ───────────────────────────── */
+.verify-warning {
+  background-color: #fff8e1;
+  border: 1px solid #ffe082;
+  border-radius: 6px;
+  padding: 12px 14px;
+  font-size: 13px;
+  color: #7a5c00;
+  margin-bottom: 16px;
+}
+
+.verify-warning p {
+  margin: 0 0 10px 0;
+  line-height: 1.5;
+}
+
+.verify-warning p:last-child {
+  margin-bottom: 0;
+}
+
+.btn-resend {
+  display: block;
+  width: 100%;
+  padding: 9px;
+  background-color: #00b4cc;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  text-align: center;
+  transition: background-color 0.2s;
+}
+
+.btn-resend:hover:not(:disabled) {
+  background-color: #008c9e;
+}
+
+.btn-resend:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.resend-error {
+  color: #c0392b;
+  font-size: 12px;
+  margin-top: 8px !important;
+  margin-bottom: 0 !important;
+}
+
+.resend-sent {
+  color: #27ae60;
+  font-size: 12px;
+  margin: 0 !important;
+}

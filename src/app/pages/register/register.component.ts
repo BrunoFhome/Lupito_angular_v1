@@ -19,6 +19,7 @@ export class RegisterComponent {
     city = '';
     state = '';
     errorMessage = '';
+    registrationSuccess = false;
 
     readonly brazilianStates = [
         { sigla: 'AC', nome: 'Acre' },
@@ -75,7 +76,7 @@ export class RegisterComponent {
             this.city || undefined,
             this.state || undefined
         ).subscribe({
-            next: () => this.router.navigate(['/login']),
+            next: () => { this.registrationSuccess = true; },
             error: (err) => {
                 this.errorMessage = err.message;
             }

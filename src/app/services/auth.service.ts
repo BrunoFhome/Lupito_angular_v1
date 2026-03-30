@@ -103,6 +103,14 @@ private getAuthHeaders(): { headers: HttpHeaders } {
     return this.http.put<User>(`${environment.apiUrl}/users/${userId}`, user, this.getAuthHeaders());
   }
 
+  verifyEmail(token: string): Observable<any> {
+    return this.http.get<any>(`${this.apiUrl}/verify-email?token=${token}`);
+  }
+
+  resendVerification(email: string): Observable<any> {
+    return this.http.post<any>(`${this.apiUrl}/resend-verification`, { email });
+  }
+
   getCurrentUserId(): number | null {
     const token = localStorage.getItem('token');
     if (token) {

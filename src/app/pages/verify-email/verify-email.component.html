@@ -1,0 +1,64 @@
+<div class="page-container">
+  <div class="form-card">
+
+    <!-- Carregando -->
+    <div *ngIf="state === 'loading'" class="status-state">
+      <div class="status-icon loading-icon">&#8987;</div>
+      <h2>Verificando...</h2>
+      <p>Aguarde enquanto confirmamos seu e-mail.</p>
+    </div>
+
+    <!-- Sucesso -->
+    <div *ngIf="state === 'success'" class="status-state">
+      <div class="status-icon success-icon">&#10003;</div>
+      <h2>E-mail verificado!</h2>
+      <p>Sua conta foi ativada com sucesso. Você já pode fazer login.</p>
+      <a routerLink="/login" class="btn-primary">Ir para o login</a>
+    </div>
+
+    <!-- Token ausente -->
+    <div *ngIf="state === 'no-token'" class="status-state">
+      <div class="status-icon error-icon">!</div>
+      <h2>Link inválido</h2>
+      <p>Este link de verificação é inválido. Solicite um novo abaixo.</p>
+      <ng-container *ngTemplateOutlet="resendForm"></ng-container>
+    </div>
+
+    <!-- Erro (expirado / já usado / inválido) -->
+    <div *ngIf="state === 'error'" class="status-state">
+      <div class="status-icon error-icon">!</div>
+      <h2>Não foi possível verificar</h2>
+      <p>{{ errorMessage }}</p>
+      <ng-container *ngTemplateOutlet="resendForm"></ng-container>
+    </div>
+
+  </div>
+</div>
+
+<ng-template #resendForm>
+  <div class="resend-section" *ngIf="resendState !== 'sent'">
+    <p class="resend-label">Reenviar link de verificação:</p>
+    <div class="resend-row">
+      <input
+        type="email"
+        [(ngModel)]="resendEmail"
+        placeholder="seu@email.com"
+        class="resend-input"
+      />
+      <button
+        class="btn-resend"
+        (click)="onResend()"
+        [disabled]="!resendEmail || resendState === 'loading'"
+      >
+        {{ resendState === 'loading' ? 'Enviando...' : 'Reenviar' }}
+      </button>
+    </div>
+    <p class="resend-error" *ngIf="resendState === 'error'">{{ resendError }}</p>
+  </div>
+
+  <div class="resend-sent" *ngIf="resendState === 'sent'">
+    <p>Novo link enviado! Verifique sua caixa de entrada.</p>
+  </div>
+
+  <a routerLink="/login" class="link-back">Voltar ao login</a>
+</ng-template>

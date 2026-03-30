@@ -43,6 +43,20 @@
         {{ errorMessage }}
       </div>
 
+      <!-- E-mail não verificado -->
+      <div class="verify-warning" *ngIf="emailNotVerified">
+        <p>Seu e-mail ainda não foi verificado. Verifique sua caixa de entrada ou reenvie o link.</p>
+        <ng-container *ngIf="resendState !== 'sent'">
+          <button type="button" class="btn-resend"
+            (click)="onResendVerification()"
+            [disabled]="resendState === 'loading'">
+            {{ resendState === 'loading' ? 'Enviando...' : 'Reenviar e-mail de verificação' }}
+          </button>
+          <p class="resend-error" *ngIf="resendState === 'error'">{{ resendError }}</p>
+        </ng-container>
+        <p class="resend-sent" *ngIf="resendState === 'sent'">Link reenviado! Verifique sua caixa de entrada.</p>
+      </div>
+
       <div class="forgot-link">
         <a routerLink="/forgot-password">Esqueci minha senha</a>
       </div>

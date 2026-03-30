@@ -15,11 +15,15 @@ export class LoginComponent {
     email = '';
     password = '';
     errorMessage = '';
+    emailNotVerified = false;
+    resendState: 'idle' | 'loading' | 'sent' | 'error' = 'idle';
+    resendError = '';
 
     constructor(private authService: AuthService, private router: Router) { }
 
     onLogin(): void {
         this.errorMessage = '';
+        this.emailNotVerified = false;
         if (!this.email || !this.password) {
             this.errorMessage = 'Preencha todos os campos.';
             return;
@@ -30,7 +34,23 @@ export class LoginComponent {
                 this.router.navigate(['/dashboard']);
             },
             error: (err) => {
-                this.errorMessage = err.message;
+                if (err.status === 403) {
+                    this.emailNotVerified = true;
+                } else {
+                    this.errorMessage = err?.error?.mensagem || 'E-mail ou senha incorretos.';
+                }
+            }
+        });
+    }
+
+    onResendVerification(): void {
+        this.resendState = 'loading';
+        this.resendError = '';
+        this.authService.resendVerification(this.email).subscribe({
+            next: () => { this.resendState = 'sent'; },
+            error: (err) => {
+                this.resendState = 'error';
+                this.resendError = err?.error?.mensagem || 'Erro ao reenviar o e-mail.';
             }
         });
     }

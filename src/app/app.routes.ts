@@ -10,6 +10,7 @@ import { LessonComponent } from './pages/lesson/lesson.component';
 import { WorkspaceComponent } from './pages/workspace/workspace.component';
 import { DashboardComponent } from './pages/dashboard/dashboard.component';
 import { LandingComponent } from './pages/landing/landing.component';
+import { VerifyEmailComponent } from './pages/verify-email/verify-email.component';
 import { authGuard } from './guards/auth.guard';
 
 export const routes: Routes = [
@@ -18,6 +19,7 @@ export const routes: Routes = [
     { path: 'register', component: RegisterComponent },
     { path: 'forgot-password', component: ForgotPasswordComponent },
     { path: 'reset-password', component: ResetPasswordComponent },
+    { path: 'verify-email', component: VerifyEmailComponent },
     { path: 'dashboard', component: DashboardComponent, canActivate: [authGuard] },
     { path: 'profile', component: ProfileComponent, canActivate: [authGuard] },
     { path: 'kanban', component: KanbanComponent, canActivate: [authGuard] },
