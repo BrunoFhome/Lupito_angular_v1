@@ -10,6 +10,7 @@ export interface Exercise {
   theory: string;
   options: string[];
   correctAnswerIndex: number;
+  type: string;
 }
 
 export interface SectionDetails {
@@ -48,6 +49,7 @@ export interface ExerciseDTO {
   options: string[];
   correctAnswer: number;
   lessonId: number;
+  type: string;
 }
 
 export interface UserProgressDTO {
@@ -114,7 +116,8 @@ export class LearningService {
           title: 'Questão ' + (index + 1),
           theory: ex.question,
           options: ex.options,
-          correctAnswerIndex: ex.correctAnswer
+          correctAnswerIndex: ex.correctAnswer,
+          type: ex.type ?? 'multiple-choice'
         }));
 
         return {

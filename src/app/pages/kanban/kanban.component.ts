@@ -109,6 +109,10 @@ export class KanbanComponent implements OnInit, OnDestroy {
     this.priorityEditTaskId = null;
   }
 
+  goToTrilhas(): void {
+    this.router.navigate(['/aprendizado']);
+  }
+
   openWorkspace(taskId: number) {
     this.router.navigate(['/workspace', taskId]);
   }

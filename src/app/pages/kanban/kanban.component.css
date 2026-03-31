@@ -147,6 +147,62 @@
   min-height: 100px;
 }
 
+/* ── Empty state instrucional ─────────────────────────── */
+
+.empty-state-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  padding: 1.75rem 1.25rem;
+  gap: 0.75rem;
+}
+
+.empty-state-icon {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  background: rgba(0, 180, 204, 0.1);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.empty-state-icon svg {
+  width: 24px;
+  height: 24px;
+  stroke: #00b4cc;
+}
+
+.empty-state-title {
+  margin: 0;
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: #1e293b;
+}
+
+.empty-state-desc {
+  margin: 0;
+  font-size: 0.82rem;
+  color: #64748b;
+  line-height: 1.55;
+}
+
+.empty-state-btn {
+  background-color: #00b4cc;
+  color: #fff;
+  border: none;
+  border-radius: 6px;
+  padding: 0.5rem 1.1rem;
+  font-size: 0.83rem;
+  font-weight: 600;
+  font-family: 'JetBrains Mono', monospace;
+  cursor: pointer;
+  transition: background-color 0.15s;
+  margin-top: 0.25rem;
+}
+.empty-state-btn:hover { background-color: #008c9e; }
+
 .task-card {
   background-color: #fff;
   border-radius: 6px;

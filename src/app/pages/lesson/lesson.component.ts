@@ -42,6 +42,12 @@ export class LessonComponent implements OnInit, OnDestroy, AfterViewChecked {
   isSubmitted: boolean = false;
   isCorrect: boolean = false;
 
+  // Drag-fill state
+  draggedToken: string = '';
+  dragAnswer: string | null = null;
+  isDragSubmitted: boolean = false;
+  isDragCorrect: boolean = false;
+
   user: User | null = null;
   phase: Phase = 'theory';
 
@@ -70,6 +76,14 @@ export class LessonComponent implements OnInit, OnDestroy, AfterViewChecked {
 
   get currentExercise(): Exercise | null {
     return this.sectionDetails?.exercises[0] ?? null;
+  }
+
+  get codeBeforeBlank(): string {
+    return this.currentExercise?.theory.split('___')[0] ?? '';
+  }
+
+  get codeAfterBlank(): string {
+    return this.currentExercise?.theory.split('___')[1] ?? '';
   }
 
   get progressBarWidth(): number {
@@ -254,12 +268,44 @@ export class LessonComponent implements OnInit, OnDestroy, AfterViewChecked {
     this.router.navigate(['/aprendizado']);
   }
 
+  onTokenDrop(token: string): void {
+    if (this.isDragSubmitted) return;
+    this.dragAnswer = token;
+  }
+
+  clearDragAnswer(): void {
+    if (this.isDragSubmitted) return;
+    this.dragAnswer = null;
+  }
+
+  submitDragAnswer(): void {
+    if (!this.dragAnswer || !this.currentExercise || this.isDragSubmitted) return;
+    const correctToken = this.currentExercise.options[this.currentExercise.correctAnswerIndex];
+    this.isDragCorrect = this.dragAnswer === correctToken;
+    this.isDragSubmitted = true;
+    this.isSubmitted = true;
+    this.isCorrect = this.isDragCorrect;
+    if (!this.isDragCorrect) this.firstAttemptWrong = true;
+  }
+
+  retryDragAnswer(): void {
+    this.dragAnswer = null;
+    this.isDragSubmitted = false;
+    this.isDragCorrect = false;
+    this.isSubmitted = false;
+    this.isCorrect = false;
+  }
+
   private resetExerciseState(): void {
     this.selectedOptionIndex = null;
     this.isSubmitted = false;
     this.isCorrect = false;
     this.firstAttemptWrong = false;
     this.moduleResults = [];
+    this.dragAnswer = null;
+    this.isDragSubmitted = false;
+    this.isDragCorrect = false;
+    this.draggedToken = '';
   }
 
   showMascot(image: string, duration: number): void {

@@ -40,59 +40,125 @@
   <ng-container *ngIf="phase === 'exercise'">
     <div class="exercise-content" *ngIf="currentExercise">
       <span class="phase-badge">Exercício</span>
-      <h2 class="exercise-question">{{ currentExercise.theory }}</h2>
 
-      <div class="options-container">
-        <button
-          *ngFor="let option of currentExercise.options; let i = index"
-          class="option-btn"
-          [ngClass]="{
-            'selected':   selectedOptionIndex === i && !isSubmitted,
-            'correct':    isSubmitted && isCorrect && currentExercise.correctAnswerIndex === i,
-            'incorrect':  isSubmitted && selectedOptionIndex === i && currentExercise.correctAnswerIndex !== i
-          }"
-          (click)="selectOption(i)"
-          [disabled]="isSubmitted"
-        >
-          <span class="option-text">{{ option }}</span>
+      <!-- Switch por tipo de exercício -->
+      <ng-container [ngSwitch]="currentExercise.type">
 
-          <svg *ngIf="isSubmitted && isCorrect && currentExercise.correctAnswerIndex === i"
-               class="status-icon success-icon" viewBox="0 0 24 24" fill="none"
-               stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <polyline points="20 6 9 17 4 12"></polyline>
-          </svg>
+        <!-- ── Múltipla Escolha (padrão) ── -->
+        <ng-container *ngSwitchDefault>
+          <h2 class="exercise-question">{{ currentExercise.theory }}</h2>
 
-          <svg *ngIf="isSubmitted && selectedOptionIndex === i && currentExercise.correctAnswerIndex !== i"
-               class="status-icon error-icon" viewBox="0 0 24 24" fill="none"
-               stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <line x1="18" y1="6" x2="6" y2="18"></line>
-            <line x1="6" y1="6" x2="18" y2="18"></line>
-          </svg>
-        </button>
-      </div>
+          <div class="options-container">
+            <button
+              *ngFor="let option of currentExercise.options; let i = index"
+              class="option-btn"
+              [ngClass]="{
+                'selected':   selectedOptionIndex === i && !isSubmitted,
+                'correct':    isSubmitted && isCorrect && currentExercise.correctAnswerIndex === i,
+                'incorrect':  isSubmitted && selectedOptionIndex === i && currentExercise.correctAnswerIndex !== i
+              }"
+              (click)="selectOption(i)"
+              [disabled]="isSubmitted"
+            >
+              <span class="option-text">{{ option }}</span>
+
+              <svg *ngIf="isSubmitted && isCorrect && currentExercise.correctAnswerIndex === i"
+                   class="status-icon success-icon" viewBox="0 0 24 24" fill="none"
+                   stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <polyline points="20 6 9 17 4 12"></polyline>
+              </svg>
+
+              <svg *ngIf="isSubmitted && selectedOptionIndex === i && currentExercise.correctAnswerIndex !== i"
+                   class="status-icon error-icon" viewBox="0 0 24 24" fill="none"
+                   stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <line x1="18" y1="6" x2="6" y2="18"></line>
+                <line x1="6" y1="6" x2="18" y2="18"></line>
+              </svg>
+            </button>
+          </div>
+        </ng-container>
+
+        <!-- ── Complete o Código (drag-fill) ── -->
+        <ng-container *ngSwitchCase="'drag-fill'">
+          <h2 class="exercise-question drag-fill-title">Complete o código</h2>
+
+          <div class="drag-fill-container">
+            <!-- Linha de código com lacuna -->
+            <div class="code-template">
+              <span class="code-part">{{ codeBeforeBlank }}</span>
+              <span class="drop-zone"
+                    [class.drop-zone-filled]="dragAnswer && !isDragSubmitted"
+                    [class.drop-zone-correct]="isDragSubmitted && isDragCorrect"
+                    [class.drop-zone-wrong]="isDragSubmitted && !isDragCorrect"
+                    (dragover)="$event.preventDefault()"
+                    (drop)="onTokenDrop(draggedToken); $event.preventDefault()"
+                    (click)="clearDragAnswer()">
+                {{ dragAnswer ?? '___' }}
+              </span>
+              <span class="code-part">{{ codeAfterBlank }}</span>
+            </div>
+
+            <!-- Tokens arrastáveis -->
+            <div class="token-pool">
+              <span class="code-token"
+                    *ngFor="let opt of currentExercise.options"
+                    [class.token-used]="dragAnswer === opt && !isDragSubmitted"
+                    draggable="true"
+                    (dragstart)="draggedToken = opt">
+                {{ opt }}
+              </span>
+            </div>
+          </div>
+        </ng-container>
+
+      </ng-container>
     </div>
 
     <div class="footer-actions">
-      <button
-        class="action-btn submit-btn"
-        *ngIf="!isSubmitted"
-        [disabled]="selectedOptionIndex === null"
-        (click)="submitAnswer()">
-        Verificar Resposta
-      </button>
 
+      <!-- Botão de confirmar — múltipla escolha -->
+      <ng-container *ngIf="currentExercise?.type !== 'drag-fill'">
+        <button
+          class="action-btn submit-btn"
+          *ngIf="!isSubmitted"
+          [disabled]="selectedOptionIndex === null"
+          (click)="submitAnswer()">
+          Verificar Resposta
+        </button>
+      </ng-container>
+
+      <!-- Botão de confirmar — drag-fill -->
+      <ng-container *ngIf="currentExercise?.type === 'drag-fill'">
+        <button
+          class="action-btn submit-btn"
+          *ngIf="!isDragSubmitted"
+          [disabled]="!dragAnswer"
+          (click)="submitDragAnswer()">
+          Confirmar
+        </button>
+      </ng-container>
+
+      <!-- Feedback compartilhado -->
       <div class="feedback-area" *ngIf="isSubmitted" [ngClass]="{'success': isCorrect, 'error': !isCorrect}">
         <div class="feedback-message">
           <h3 *ngIf="isCorrect">Correto! Mandou bem!</h3>
           <h3 *ngIf="!isCorrect">Incorreto. Tente novamente!</h3>
         </div>
 
-        <button
-          class="action-btn retry-btn"
-          *ngIf="!isCorrect"
-          (click)="isSubmitted = false; selectedOptionIndex = null;">
-          Tentar Novamente
-        </button>
+        <ng-container *ngIf="!isCorrect">
+          <button
+            class="action-btn retry-btn"
+            *ngIf="currentExercise?.type !== 'drag-fill'"
+            (click)="isSubmitted = false; selectedOptionIndex = null;">
+            Tentar Novamente
+          </button>
+          <button
+            class="action-btn retry-btn"
+            *ngIf="currentExercise?.type === 'drag-fill'"
+            (click)="retryDragAnswer()">
+            Tentar Novamente
+          </button>
+        </ng-container>
 
         <button
           class="action-btn complete-btn"
