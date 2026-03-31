@@ -202,7 +202,17 @@ export class AprendizadoComponent implements OnInit, OnDestroy {
               let lessonsCompleted: number;
 
               if (progress) {
-                moduleCompleted = section.listOrder < progress.currentSectionOrder;
+                const maxLessonOrder = sectionLessons.length > 0
+                  ? Math.max(...sectionLessons.map(l => l.listOrder))
+                  : 0;
+
+                // Backend signals last-module completion by setting currentLessonOrder
+                // to maxLessonOrder + 1 (currentSectionOrder never advances past the last section)
+                const completedByAdvance  = section.listOrder < progress.currentSectionOrder;
+                const completedByOverflow = section.listOrder === progress.currentSectionOrder
+                  && progress.currentLessonOrder > maxLessonOrder;
+
+                moduleCompleted = completedByAdvance || completedByOverflow;
                 moduleLocked    = section.listOrder > progress.currentSectionOrder;
 
                 if (moduleCompleted) {

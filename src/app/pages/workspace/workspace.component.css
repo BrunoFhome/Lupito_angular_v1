@@ -251,6 +251,18 @@
 }
 
 /* =============================================
+   Banner somente leitura
+   ============================================= */
+.readonly-banner {
+  flex-shrink: 0;
+  padding: 0.4rem 1rem;
+  background-color: #2a1f0e;
+  border-bottom: 1px solid #5a3e1b;
+  color: #f59e0b;
+  font-size: 0.78rem;
+}
+
+/* =============================================
    CodeMirror container
    ============================================= */
 .editor-container {
@@ -356,6 +368,23 @@
 /* =============================================
    Botões Verificar e Avaliar com IA
    ============================================= */
+
+.btn-complete-web {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+  background-color: #00695c;
+  color: #b2dfdb;
+  border: 1px solid #00897b;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.82rem;
+  font-weight: 600;
+  padding: 0.4rem 0.85rem;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background-color 0.15s;
+}
+.btn-complete-web:hover { background-color: #00897b; color: #fff; }
 
 .btn-verify {
   display: flex;

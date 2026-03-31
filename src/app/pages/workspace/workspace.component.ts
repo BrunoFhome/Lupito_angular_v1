@@ -7,7 +7,7 @@ import { debounceTime, filter, take, takeUntil } from 'rxjs/operators';
 import { KanbanService, KanbanTask } from '../../services/kanban.service';
 import { AIService } from '../../services/ai.service';
 import { AuthService } from '../../services/auth.service';
-import { DomSanitizer } from '@angular/platform-browser';
+import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
 import { ToastService } from '../../services/toast.service';
 
 import { EditorView, keymap, lineNumbers, highlightActiveLine, drawSelection } from '@codemirror/view';
@@ -32,7 +32,6 @@ type WebFile  = 'html' | 'css' | 'js';
 export class WorkspaceComponent implements OnInit, AfterViewInit, OnDestroy {
 
   @ViewChild('editorContainer') editorContainer!: ElementRef<HTMLDivElement>;
-  @ViewChild('previewFrame')    previewFrame!: ElementRef<HTMLIFrameElement>;
   @ViewChild('sandboxFrame')    sandboxFrame!: ElementRef<HTMLIFrameElement>;
 
   task: KanbanTask | null = null;
@@ -48,13 +47,14 @@ export class WorkspaceComponent implements OnInit, AfterViewInit, OnDestroy {
   // Modo Web: três arquivos independentes
   webFiles: { html: string; css: string; js: string } = { html: '', css: '', js: '' };
   activeFile: WebFile = 'html';
-  readonly webFileList: WebFile[] = ['html', 'css', 'js'];
+  readonly webFileList: WebFile[] = ['html', 'css'];
 
   // ── Output ──────────────────────────────────────────────────────────────
   output = '';
   outputType: 'text' | 'html' | 'error' | '' = '';
   isRunning = false;
   outputHeight = 220;
+  webPreviewSrcdoc: SafeHtml = '';
 
   private isResizing = false;
   private resizeStartY = 0;
@@ -213,6 +213,7 @@ export class WorkspaceComponent implements OnInit, AfterViewInit, OnDestroy {
         bracketMatching(),
         foldGutter(),
         this.getLangExtension(),
+        EditorState.readOnly.of(this.isCompleted),
         keymap.of([...defaultKeymap, ...historyKeymap, indentWithTab]),
         EditorView.theme({
           '&':            { height: '100%', fontSize: '14px' },
@@ -334,8 +335,7 @@ export class WorkspaceComponent implements OnInit, AfterViewInit, OnDestroy {
     if (this.mode === 'web') {
       this.outputType = 'html';
       this.output = ' '; // valor truthy para exibir o painel
-      this.cdr.detectChanges();
-      this.writeToPreview(this.buildWebPreview());
+      this.webPreviewSrcdoc = this.sanitizer.bypassSecurityTrustHtml(this.buildWebPreview());
       afterRun?.();
       return;
     }
@@ -450,26 +450,14 @@ export class WorkspaceComponent implements OnInit, AfterViewInit, OnDestroy {
     return doc;
   }
 
-  private writeToPreview(htmlContent: string): void {
-    const iframe = this.previewFrame?.nativeElement;
-    if (!iframe) return;
-    const doc = iframe.contentDocument || iframe.contentWindow?.document;
-    if (!doc) return;
-    doc.open();
-    doc.write(htmlContent);
-    doc.close();
-  }
-
   // ── Verificação de saída ─────────────────────────────────────────────────
 
   verifyOutput(): void {
-    if (this.mode !== 'javascript' || !this.task?.expectedOutput) return;
+    if (!this.task?.expectedOutput) return;
     this.verifyResult = null;
-    this.runCode(() => {
-      if (this.outputType === 'error') {
-        this.verifyResult = 'incorrect';
-        return;
-      }
+
+    const compare = () => {
+      if (this.outputType === 'error') { this.verifyResult = 'incorrect'; return; }
       const expected = this.task!.expectedOutput!.trim();
       const actual   = this.output.trim();
       if (actual === expected) {
@@ -479,7 +467,18 @@ export class WorkspaceComponent implements OnInit, AfterViewInit, OnDestroy {
         this.output     = `Esperado:\n  ${expected}\n\nObtido:\n  ${actual}`;
         this.outputType = 'error';
       }
-    });
+    };
+
+    if (this.mode === 'javascript') {
+      this.runCode(compare);
+    } else {
+      // Modo web: roda o script de teste (webFiles.js, não editável pelo usuário)
+      // no sandbox isolado e compara o console.log com expectedOutput
+      this.output     = '';
+      this.outputType = '';
+      this.isRunning  = true;
+      this.runInSandbox(this.webFiles.js, compare);
+    }
   }
 
   // ── Avaliação por IA ─────────────────────────────────────────────────────
@@ -509,10 +508,10 @@ export class WorkspaceComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   clearOutput() {
-    this.output      = '';
-    this.outputType  = '';
-    this.verifyResult = null;
-    this.writeToPreview('');
+    this.output          = '';
+    this.outputType      = '';
+    this.verifyResult    = null;
+    this.webPreviewSrcdoc = '';
   }
 
   completeTask() {

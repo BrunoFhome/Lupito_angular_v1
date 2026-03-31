@@ -17,9 +17,6 @@
         </div>
         <span class="task-title">{{ task.title }}</span>
         <span class="badge-priority">{{ task.priority }}</span>
-        <span class="badge-mode" [ngClass]="'badge-mode-' + mode">
-          {{ mode === 'web' ? 'HTML · CSS · JS' : 'JavaScript' }}
-        </span>
         <span class="badge-done" *ngIf="isCompleted">✓ Concluída</span>
       </div>
     </div>
@@ -43,11 +40,12 @@
       </div>
 
       <button class="btn-verify"
-        *ngIf="task?.expectedOutput && mode === 'javascript'"
+        *ngIf="task?.expectedOutput"
         (click)="verifyOutput()"
         [disabled]="isRunning">
         ✓ Conferir
       </button>
+
 
       <button class="btn-ai"
         (click)="evaluateWithAI()"
@@ -83,6 +81,11 @@
     <!-- Right: Editor + Output -->
     <div class="panel-editor">
 
+      <!-- Banner somente leitura -->
+      <div class="readonly-banner" *ngIf="isCompleted">
+        🔒 Somente leitura — mova a tarefa para <strong>Em desenvolvimento</strong> para editar
+      </div>
+
       <!-- CodeMirror container -->
       <div class="editor-container" #editorContainer></div>
 
@@ -96,10 +99,10 @@
           <button class="btn-clear" (click)="clearOutput()">✕ Fechar</button>
         </div>
         <iframe
-          #previewFrame
           class="html-preview"
           [class.hidden]="outputType !== 'html'"
-          sandbox="allow-scripts">
+          [srcdoc]="webPreviewSrcdoc"
+          sandbox="allow-scripts allow-same-origin">
         </iframe>
         <pre *ngIf="outputType !== 'html'"
           class="output-text"
