@@ -43,6 +43,8 @@ interface Segment {
   x2: number;
   y2: number;
   cssClass: string;
+  length: number;     // comprimento euclidiano do segmento, para animação
+  animDelay: number;  // delay escalonado em ms
 }
 
 export interface PathLayout {
@@ -73,6 +75,7 @@ const PAD_Y         = 110;
 export class AprendizadoComponent implements OnInit, OnDestroy {
   user: User | null = null;
   layouts: PathLayout[] = [];
+  animated = false;
 
   private destroy$ = new Subject<void>();
 
@@ -119,6 +122,8 @@ export class AprendizadoComponent implements OnInit, OnDestroy {
         }
       }
       this.layouts = paths.map(p => this.buildLayout(p));
+      // Pequeno delay garante que o DOM renderizou antes de iniciar a animação
+      setTimeout(() => { this.animated = true; }, 120);
     });
   }
 
@@ -137,6 +142,7 @@ export class AprendizadoComponent implements OnInit, OnDestroy {
     });
 
     const segments: Segment[] = [];
+    let animIndex = 0;  // conta apenas segmentos animados para escalonar o delay
     for (let i = 0; i < nodes.length - 1; i++) {
       const from = nodes[i];
       const to   = nodes[i + 1];
@@ -148,7 +154,11 @@ export class AprendizadoComponent implements OnInit, OnDestroy {
       } else {
         cssClass = 'seg-locked';
       }
-      segments.push({ x1: from.x, y1: from.y, x2: to.x, y2: to.y, cssClass });
+      const length = Math.round(Math.hypot(to.x - from.x, to.y - from.y));
+      const isAnimated = cssClass !== 'seg-locked';
+      const animDelay  = isAnimated ? animIndex * 90 : 0;
+      if (isAnimated) animIndex++;
+      segments.push({ x1: from.x, y1: from.y, x2: to.x, y2: to.y, cssClass, length, animDelay });
     }
 
     const rows      = Math.ceil(path.modules.length / NODES_PER_ROW);

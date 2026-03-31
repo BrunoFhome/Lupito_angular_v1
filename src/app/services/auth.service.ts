@@ -4,6 +4,11 @@ import { Router } from '@angular/router';
 import { Observable, tap, BehaviorSubject } from 'rxjs';
 import { environment } from '../../environments/environment';
 
+export interface ActivityDay {
+  date: string;   // "2026-03-31"
+  count: number;
+}
+
 export interface User {
   id: number;
   name: string;
@@ -16,6 +21,8 @@ export interface User {
   currentStreak?: number;
   city?: string;
   state?: string;
+  githubUrl?: string;
+  linkedinUrl?: string;
 }
 
 @Injectable({
@@ -80,6 +87,10 @@ getCurrentUser(): Observable<User> {
       });
     }
     return this.http.get<User>(`${environment.apiUrl}/users/${userId}`);
+  }
+
+  getActivityData(userId: number, days = 30): Observable<ActivityDay[]> {
+    return this.http.get<ActivityDay[]>(`${environment.apiUrl}/users/${userId}/activity?days=${days}`);
   }
 
   updateUserProfile(user: User): Observable<User> {

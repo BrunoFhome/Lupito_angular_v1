@@ -6,6 +6,7 @@ import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 import { LearningService, SectionDetails, Exercise } from '../../services/learning.service';
 import { AuthService, User } from '../../services/auth.service';
+import { ConfettiService } from '../../services/confetti.service';
 
 import { EditorView } from '@codemirror/view';
 import { EditorState } from '@codemirror/state';
@@ -92,7 +93,8 @@ export class LessonComponent implements OnInit, OnDestroy, AfterViewChecked {
     private router: Router,
     private learningService: LearningService,
     private authService: AuthService,
-    private sanitizer: DomSanitizer
+    private sanitizer: DomSanitizer,
+    private confetti: ConfettiService
   ) {}
 
   ngOnInit(): void {
@@ -197,6 +199,10 @@ export class LessonComponent implements OnInit, OnDestroy, AfterViewChecked {
   completeSection(): void {
     this.phase = 'completion';
     this.showMascot('assets/images/comemorando.png', 4000);
+
+    if (this.isLastLessonInModule) {
+      this.confetti.launch();
+    }
 
     if (this.courseId && this.sectionOrder && this.lessonOrder && this.sectionDetails && this.currentExercise) {
       const result: LessonResult = {

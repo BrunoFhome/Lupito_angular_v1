@@ -27,6 +27,8 @@ interface KanbanStats {
   done: number;
 }
 
+type MascotState = 'hidden' | 'entering' | 'visible' | 'leaving';
+
 @Component({
   selector: 'app-dashboard',
   standalone: true,
@@ -39,6 +41,11 @@ export class DashboardComponent implements OnInit, OnDestroy {
   courseCards: CourseCard[] = [];
   kanbanStats: KanbanStats = { todo: 0, inProgress: 0, inReview: 0, done: 0 };
   loading = true;
+
+  mascotState: MascotState = 'hidden';
+  mascotImage = '';
+  mascotMessage = '';
+  private mascotTimer: ReturnType<typeof setTimeout> | null = null;
 
   private destroy$ = new Subject<void>();
 
@@ -95,6 +102,49 @@ export class DashboardComponent implements OnInit, OnDestroy {
   ngOnDestroy(): void {
     this.destroy$.next();
     this.destroy$.complete();
+    if (this.mascotTimer) clearTimeout(this.mascotTimer);
+  }
+
+  showMascot(image: string, message: string, duration: number): void {
+    if (this.mascotTimer) clearTimeout(this.mascotTimer);
+    this.mascotImage = image;
+    this.mascotMessage = message;
+    this.mascotState = 'entering';
+    setTimeout(() => { this.mascotState = 'visible'; }, 50);
+    this.mascotTimer = setTimeout(() => this.hideMascot(), duration);
+  }
+
+  hideMascot(): void {
+    this.mascotState = 'leaving';
+    setTimeout(() => { this.mascotState = 'hidden'; }, 500);
+  }
+
+  private triggerWelcomeMascot(): void {
+    const streak = this.user?.currentStreak ?? 0;
+    let image: string;
+    let message: string;
+
+    if (this.overallPercent === 100) {
+      image = 'assets/images/comemorando.png';
+      message = 'Uau! Você completou todas as trilhas! Lendário! 🏆';
+    } else if (streak >= 30) {
+      image = 'assets/images/comemorando.png';
+      message = `${streak} dias seguidos! Você é absolutamente incrível! 🔥`;
+    } else if (streak >= 7) {
+      image = 'assets/images/comemorando.png';
+      message = `Incrível! ${streak} dias de sequência! Continue assim! 🔥`;
+    } else if (streak >= 2) {
+      image = 'assets/images/bemvindo.png';
+      message = `${streak} dias seguidos! Você está num ótimo ritmo! 💪`;
+    } else if (streak === 1) {
+      image = 'assets/images/bemvindo.png';
+      message = 'Você estudou hoje! Volte amanhã para manter a sequência! 😊';
+    } else {
+      image = 'assets/images/bemvindo.png';
+      message = 'Bem-vindo(a)! Que tal estudar um pouco hoje? 📚';
+    }
+
+    this.showMascot(image, message, 5500);
   }
 
   private loadDashboard(): void {
@@ -120,6 +170,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
       }
       this.courseCards = cards;
       this.loading = false;
+      setTimeout(() => this.triggerWelcomeMascot(), 1200);
     });
   }
 

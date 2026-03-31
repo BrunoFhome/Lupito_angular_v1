@@ -182,3 +182,15 @@
 
   </ng-container>
 </div>
+
+<!-- Mascote da Dashboard -->
+<div class="mascot-overlay"
+     [ngClass]="'mascot-' + mascotState"
+     *ngIf="mascotState !== 'hidden'"
+     (click)="hideMascot()"
+     title="Clique para fechar">
+  <div class="mascot-bubble">
+    <p>{{ mascotMessage }}</p>
+  </div>
+  <img [src]="mascotImage" alt="mascote" class="mascot-img" />
+</div>

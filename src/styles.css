@@ -5,3 +5,25 @@ html, body {
   height: 100%;
   font-family: 'JetBrains Mono', monospace;
 }
+
+/* ── Transições de página ───────────────────────────────── */
+@keyframes pageEnter {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/*
+ * router-outlet + * seleciona o componente de rota que o Angular
+ * injeta imediatamente após o <router-outlet> no DOM.
+ * Cada navegação recria o elemento, disparando a animação.
+ */
+router-outlet + * {
+  animation: pageEnter 220ms ease-out;
+  display: block;
+}

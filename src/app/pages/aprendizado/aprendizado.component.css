@@ -114,20 +114,26 @@
 .trail-seg {
   fill: none;
   stroke-width: 8;
+  /* Anima o preenchimento (stroke-dashoffset) e o fade-in (opacity) */
+  transition:
+    stroke-dashoffset 0.85s cubic-bezier(0.4, 0, 0.2, 1),
+    opacity           0.55s ease-out;
 }
 
-/* Segmento concluído: verde sólido */
+/* Segmento concluído: verde sólido com efeito de desenho */
 .seg-done {
   stroke: #4caf50;
+  /* stroke-dasharray e stroke-dashoffset são definidos via [style] no template */
 }
 
-/* Segmento atual (próxima lição): laranja tracejado */
+/* Segmento atual: laranja tracejado, aparece por fade após os concluídos */
 .seg-current {
   stroke: #ff9800;
   stroke-dasharray: 14 7;
+  /* opacity é controlada via [style] no template */
 }
 
-/* Segmento bloqueado: cinza claro */
+/* Segmento bloqueado: cinza claro, sem animação */
 .seg-locked {
   stroke: #dde3ed;
 }

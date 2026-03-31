@@ -4,7 +4,7 @@ import { Router } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
-import { AuthService, User } from '../../services/auth.service';
+import { AuthService, User, ActivityDay } from '../../services/auth.service';
 import { KanbanService, KanbanTask } from '../../services/kanban.service';
 import { ToastService } from '../../services/toast.service';
 
@@ -20,6 +20,9 @@ export class ProfileComponent implements OnInit, OnDestroy {
     loadingProfile = true;
     isEditingBio = false;
     isEditingLocation = false;
+    isEditingSocial = false;
+    socialGithub = '';
+    socialLinkedin = '';
     errorMessage: string | null = null;
 
     readonly DEFAULT_PHOTO = 'assets/images/loboIcon.jpg';
@@ -58,6 +61,10 @@ export class ProfileComponent implements OnInit, OnDestroy {
     completedProjects: KanbanTask[] = [];
     loadingProjects = true;
 
+    heatmapCells: { date: string; count: number; level: number; label: string }[] = [];
+    activeDaysCount = 0;
+    loadingActivity = true;
+
     private destroy$ = new Subject<void>();
 
     constructor(
@@ -71,7 +78,11 @@ export class ProfileComponent implements OnInit, OnDestroy {
         this.authService.getCurrentUser()
             .pipe(takeUntil(this.destroy$))
             .subscribe({
-                next: (data) => { this.user = data; this.loadingProfile = false; },
+                next: (data) => {
+                    this.user = data;
+                    this.loadingProfile = false;
+                    this.loadActivityData(data.id);
+                },
                 error: (err) => { this.errorMessage = err.message; this.loadingProfile = false; }
             });
 
@@ -89,12 +100,65 @@ export class ProfileComponent implements OnInit, OnDestroy {
         this.destroy$.complete();
     }
 
+    private loadActivityData(userId: number): void {
+        this.authService.getActivityData(userId, 30)
+            .pipe(takeUntil(this.destroy$))
+            .subscribe({
+                next: (days: ActivityDay[]) => {
+                    this.heatmapCells = days.map(d => ({
+                        date: d.date,
+                        count: d.count,
+                        level: d.count === 0 ? 0 : d.count === 1 ? 1 : d.count <= 3 ? 2 : 3,
+                        label: this.formatCellLabel(d.date, d.count)
+                    }));
+                    this.activeDaysCount = days.filter(d => d.count > 0).length;
+                    this.loadingActivity = false;
+                },
+                error: () => { this.loadingActivity = false; }
+            });
+    }
+
+    private formatCellLabel(dateStr: string, count: number): string {
+        const date = new Date(dateStr + 'T12:00:00');
+        const formatted = date.toLocaleDateString('pt-BR', { day: '2-digit', month: 'short', year: 'numeric' });
+        if (count === 0) return `${formatted} — sem atividade`;
+        return `${formatted} — ${count} lição${count > 1 ? 'ões' : ''}`;
+    }
+
     toggleEditBio(): void {
         this.isEditingBio = !this.isEditingBio;
     }
 
     toggleEditLocation(): void {
         this.isEditingLocation = !this.isEditingLocation;
+    }
+
+    toggleEditSocial(): void {
+        if (!this.isEditingSocial) {
+            this.socialGithub   = this.user?.githubUrl   ?? '';
+            this.socialLinkedin = this.user?.linkedinUrl ?? '';
+        }
+        this.isEditingSocial = !this.isEditingSocial;
+    }
+
+    saveSocial(): void {
+        if (!this.user) return;
+        this.user.githubUrl   = this.socialGithub.trim()   || undefined;
+        this.user.linkedinUrl = this.socialLinkedin.trim() || undefined;
+        this.authService.updateUserProfile(this.user).subscribe({
+            next: (updated) => {
+                this.user = updated;
+                this.isEditingSocial = false;
+                this.toast.success('Links atualizados!');
+            },
+            error: () => { this.isEditingSocial = false; }
+        });
+    }
+
+    openSocialUrl(url: string | undefined): void {
+        if (!url) return;
+        const full = url.startsWith('http') ? url : 'https://' + url;
+        window.open(full, '_blank', 'noopener,noreferrer');
     }
 
     saveLocation(): void {

@@ -44,7 +44,11 @@
                 [ngClass]="seg.cssClass"
                 [attr.x1]="seg.x1" [attr.y1]="seg.y1"
                 [attr.x2]="seg.x2" [attr.y2]="seg.y2"
-                stroke-linecap="round"/>
+                stroke-linecap="round"
+                [style.stroke-dasharray]="seg.cssClass === 'seg-done' ? seg.length : null"
+                [style.stroke-dashoffset]="seg.cssClass === 'seg-done' ? (animated ? 0 : seg.length) : null"
+                [style.opacity]="seg.cssClass === 'seg-current' ? (animated ? 1 : 0) : null"
+                [style.transition-delay]="seg.cssClass !== 'seg-locked' ? seg.animDelay + 'ms' : '0ms'"/>
         </svg>
 
         <!-- Camada HTML: nós (módulos) -->
