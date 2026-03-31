@@ -18,6 +18,7 @@ import { ToastService } from '../../services/toast.service';
 })
 export class KanbanComponent implements OnInit, OnDestroy {
   tasks: KanbanTask[] = [];
+  loading = true;
 
   // Auto avaliação modal
   showEvaluation: boolean = false;
@@ -48,7 +49,10 @@ export class KanbanComponent implements OnInit, OnDestroy {
   ngOnInit(): void {
     this.kanbanService.getTasks()
       .pipe(takeUntil(this.destroy$))
-      .subscribe(tasks => { this.tasks = tasks; });
+      .subscribe(tasks => {
+        this.tasks = tasks;
+        this.loading = false;
+      });
     this.kanbanService.loadTasks();
   }
 

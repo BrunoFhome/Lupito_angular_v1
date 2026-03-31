@@ -20,6 +20,8 @@ export class RegisterComponent {
     state = '';
     errorMessage = '';
     registrationSuccess = false;
+    showPassword = false;
+    showConfirmPassword = false;
 
     readonly brazilianStates = [
         { sigla: 'AC', nome: 'Acre' },

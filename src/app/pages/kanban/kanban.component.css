@@ -1,8 +1,74 @@
 .kanban-page {
   padding: 1rem 2rem;
-  background-color: #f1f5f9; /* fundo claro padrão da imagem */
-  min-height: calc(100vh - 80px); /* Ajuste de altura */
+  background-color: #f1f5f9;
+  min-height: calc(100vh - 80px);
   font-family: 'JetBrains Mono', monospace;
+}
+
+/* ── Skeleton ─────────────────────────────────────── */
+@keyframes shimmer {
+  0%   { background-position: -600px 0; }
+  100% { background-position:  600px 0; }
+}
+
+.sk-block {
+  background: linear-gradient(90deg, #e2e8f0 25%, #f1f5f9 50%, #e2e8f0 75%);
+  background-size: 600px 100%;
+  animation: shimmer 1.4s infinite linear;
+  border-radius: 6px;
+}
+
+.sk-col-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1rem 1.25rem;
+  opacity: 0.7;
+}
+
+.sk-col-title {
+  width: 110px;
+  height: 18px;
+}
+
+.sk-col-badge {
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+}
+
+.sk-column-body {
+  padding: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.sk-task-card {
+  background: #fff;
+  border-radius: 8px;
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.06);
+}
+
+.sk-task-title {
+  width: 70%;
+  height: 16px;
+}
+
+.sk-task-line {
+  width: 90%;
+  height: 12px;
+}
+
+.sk-task-btn {
+  width: 100%;
+  height: 34px;
+  border-radius: 6px;
+  margin-top: 4px;
 }
 
 .kanban-header {

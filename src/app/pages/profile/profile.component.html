@@ -3,7 +3,51 @@
         Erro ao carregar perfil: {{ errorMessage }}
     </div>
 
-    <div class="profile-layout" *ngIf="user">
+    <!-- Skeleton loader -->
+    <div class="profile-layout" *ngIf="loadingProfile">
+
+        <!-- Skeleton: profile card -->
+        <div class="profile-card">
+            <div class="profile-header-section">
+                <div class="sk-avatar sk-block"></div>
+                <div class="sk-profile-details">
+                    <div class="sk-block sk-name"></div>
+                    <div class="sk-block sk-role"></div>
+                    <div class="sk-block sk-bio"></div>
+                    <div class="sk-block sk-bio" style="width: 75%; margin-top: 8px;"></div>
+                    <div class="sk-stats-row">
+                        <div class="sk-block sk-stat" *ngFor="let s of [1,2,3]"></div>
+                    </div>
+                    <div class="sk-block sk-location"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Skeleton: badges -->
+        <div class="badges-section">
+            <div class="badges-header">
+                <div class="sk-block" style="width: 140px; height: 20px; border-radius: 6px;"></div>
+                <div class="sk-block" style="width: 100px; height: 16px; border-radius: 6px;"></div>
+            </div>
+            <div class="badges-grid">
+                <div class="sk-badge-card sk-block" *ngFor="let b of [1,2,3,4,5,6]"></div>
+            </div>
+        </div>
+
+        <!-- Skeleton: portfolio -->
+        <div class="portfolio-section">
+            <div class="portfolio-header">
+                <div class="sk-block" style="width: 200px; height: 20px; border-radius: 6px;"></div>
+                <div class="sk-block" style="width: 260px; height: 14px; border-radius: 6px; margin-top: 8px;"></div>
+            </div>
+            <div class="projects-grid">
+                <div class="sk-project-card sk-block" *ngFor="let p of [1,2,3]"></div>
+            </div>
+        </div>
+
+    </div>
+
+    <div class="profile-layout" *ngIf="!loadingProfile && user">
 
         <!-- Header / Perfil Pessoal -->
         <div class="profile-card">

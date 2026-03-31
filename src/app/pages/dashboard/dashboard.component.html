@@ -5,8 +5,14 @@
 
     <!-- Banner -->
     <div class="skeleton-banner">
-      <div class="skeleton-block" style="width: 220px; height: 28px; border-radius: 6px;"></div>
-      <div class="skeleton-block" style="width: 160px; height: 18px; border-radius: 6px; margin-top: 10px;"></div>
+      <div>
+        <div class="skeleton-block" style="width: 220px; height: 28px; border-radius: 6px;"></div>
+        <div class="skeleton-block" style="width: 200px; height: 16px; border-radius: 6px; margin-top: 10px;"></div>
+      </div>
+      <div style="display:flex; gap: 12px;">
+        <div class="skeleton-block" style="width: 90px; height: 72px; border-radius: 12px;"></div>
+        <div class="skeleton-block" style="width: 90px; height: 72px; border-radius: 12px;"></div>
+      </div>
     </div>
 
     <!-- Cards de progresso -->
@@ -33,11 +39,22 @@
     <div class="welcome-banner">
       <div class="welcome-text">
         <h1>Olá, {{ firstName }}! 👋</h1>
-        <p>Bem-vindo(a) de volta. Continue de onde parou.</p>
+        <p *ngIf="(user?.currentStreak ?? 0) === 0">Bem-vindo(a) de volta. Continue de onde parou.</p>
+        <p *ngIf="(user?.currentStreak ?? 0) === 1" class="streak-msg">Você estudou hoje! Mantenha a sequência amanhã. 💪</p>
+        <p *ngIf="(user?.currentStreak ?? 0) >= 2 && (user?.currentStreak ?? 0) < 7" class="streak-msg">{{ user?.currentStreak }} dias seguidos! Você está num ritmo ótimo.</p>
+        <p *ngIf="(user?.currentStreak ?? 0) >= 7 && (user?.currentStreak ?? 0) < 30" class="streak-msg">Incrível! {{ user?.currentStreak }} dias de sequência. Continue assim!</p>
+        <p *ngIf="(user?.currentStreak ?? 0) >= 30" class="streak-msg">Lendário! {{ user?.currentStreak }} dias sem parar. 🏆</p>
       </div>
-      <div class="overall-stat" *ngIf="totalLessons > 0">
-        <span class="stat-number">{{ overallPercent }}%</span>
-        <span class="stat-label">concluído no total</span>
+      <div class="banner-stats">
+        <div class="banner-stat streak-stat" *ngIf="(user?.currentStreak ?? 0) > 0">
+          <span class="streak-fire">🔥</span>
+          <span class="stat-number">{{ user?.currentStreak }}</span>
+          <span class="stat-label">{{ (user?.currentStreak ?? 0) === 1 ? 'dia seguido' : 'dias seguidos' }}</span>
+        </div>
+        <div class="banner-stat overall-stat" *ngIf="totalLessons > 0">
+          <span class="stat-number">{{ overallPercent }}%</span>
+          <span class="stat-label">concluído no total</span>
+        </div>
       </div>
     </div>
 

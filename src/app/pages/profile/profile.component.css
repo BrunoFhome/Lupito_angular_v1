@@ -9,6 +9,76 @@
     font-family: 'JetBrains Mono', monospace;
 }
 
+/* ── Skeleton ─────────────────────────────────────── */
+@keyframes shimmer {
+    0%   { background-position: -600px 0; }
+    100% { background-position:  600px 0; }
+}
+
+.sk-block {
+    background: linear-gradient(90deg, #e2e8f0 25%, #f1f5f9 50%, #e2e8f0 75%);
+    background-size: 600px 100%;
+    animation: shimmer 1.4s infinite linear;
+    border-radius: 6px;
+}
+
+.sk-avatar {
+    width: 110px;
+    height: 110px;
+    border-radius: 50%;
+    flex-shrink: 0;
+}
+
+.sk-profile-details {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    padding-left: 32px;
+}
+
+.sk-name {
+    width: 200px;
+    height: 26px;
+}
+
+.sk-role {
+    width: 160px;
+    height: 16px;
+}
+
+.sk-bio {
+    width: 100%;
+    height: 14px;
+}
+
+.sk-stats-row {
+    display: flex;
+    gap: 24px;
+    margin-top: 4px;
+}
+
+.sk-stat {
+    width: 70px;
+    height: 44px;
+    border-radius: 8px;
+}
+
+.sk-location {
+    width: 180px;
+    height: 14px;
+}
+
+.sk-badge-card {
+    height: 64px;
+    border-radius: 10px;
+}
+
+.sk-project-card {
+    height: 96px;
+    border-radius: 10px;
+}
+
 .profile-layout {
     display: flex;
     flex-direction: column;

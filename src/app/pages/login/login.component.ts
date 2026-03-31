@@ -18,6 +18,7 @@ export class LoginComponent {
     emailNotVerified = false;
     resendState: 'idle' | 'loading' | 'sent' | 'error' = 'idle';
     resendError = '';
+    showPassword = false;
 
     constructor(private authService: AuthService, private router: Router) { }
 

@@ -17,6 +17,7 @@ import { ToastService } from '../../services/toast.service';
 })
 export class ProfileComponent implements OnInit, OnDestroy {
     user: User | null = null;
+    loadingProfile = true;
     isEditingBio = false;
     isEditingLocation = false;
     errorMessage: string | null = null;
@@ -70,8 +71,8 @@ export class ProfileComponent implements OnInit, OnDestroy {
         this.authService.getCurrentUser()
             .pipe(takeUntil(this.destroy$))
             .subscribe({
-                next: (data) => { this.user = data; },
-                error: (err) => { this.errorMessage = err.message; }
+                next: (data) => { this.user = data; this.loadingProfile = false; },
+                error: (err) => { this.errorMessage = err.message; this.loadingProfile = false; }
             });
 
         this.kanbanService.getTasks()
