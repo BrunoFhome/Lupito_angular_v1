@@ -10,6 +10,11 @@
         Voltar
       </button>
       <div class="task-info" *ngIf="task">
+        <div class="breadcrumb-trail" *ngIf="task.courseName || task.moduleName">
+          <span class="breadcrumb-course" *ngIf="task.courseName">{{ task.courseName }}</span>
+          <span class="breadcrumb-sep" *ngIf="task.courseName && task.moduleName">›</span>
+          <span class="breadcrumb-module" *ngIf="task.moduleName">{{ task.moduleName }}</span>
+        </div>
         <span class="task-title">{{ task.title }}</span>
         <span class="badge-priority">{{ task.priority }}</span>
         <span class="badge-mode" [ngClass]="'badge-mode-' + mode">
@@ -82,7 +87,8 @@
       <div class="editor-container" #editorContainer></div>
 
       <!-- Output -->
-      <div class="output-panel" *ngIf="output">
+      <div class="output-panel" *ngIf="output" [style.height.px]="outputHeight">
+        <div class="resize-handle" (mousedown)="onResizeStart($event)" title="Arraste para redimensionar"></div>
         <div class="output-toolbar">
           <span class="output-label">▶ Saída</span>
           <span class="verify-badge verify-ok"  *ngIf="verifyResult === 'correct'">✓ Saída correta!</span>

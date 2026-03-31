@@ -23,6 +23,8 @@ export class ProfileComponent implements OnInit, OnDestroy {
     isEditingSocial = false;
     socialGithub = '';
     socialLinkedin = '';
+    githubError = '';
+    linkedinError = '';
     errorMessage: string | null = null;
 
     readonly DEFAULT_PHOTO = 'assets/images/loboIcon.jpg';
@@ -122,7 +124,7 @@ export class ProfileComponent implements OnInit, OnDestroy {
         const date = new Date(dateStr + 'T12:00:00');
         const formatted = date.toLocaleDateString('pt-BR', { day: '2-digit', month: 'short', year: 'numeric' });
         if (count === 0) return `${formatted} — sem atividade`;
-        return `${formatted} — ${count} lição${count > 1 ? 'ões' : ''}`;
+        return `${formatted} — ${count} ${count === 1 ? 'lição' : 'lições'}`;
     }
 
     toggleEditBio(): void {
@@ -137,21 +139,54 @@ export class ProfileComponent implements OnInit, OnDestroy {
         if (!this.isEditingSocial) {
             this.socialGithub   = this.user?.githubUrl   ?? '';
             this.socialLinkedin = this.user?.linkedinUrl ?? '';
+            this.githubError   = '';
+            this.linkedinError = '';
         }
         this.isEditingSocial = !this.isEditingSocial;
     }
 
+    private isValidGithubUrl(url: string): boolean {
+        if (!url) return true;
+        return /^https:\/\/github\.com\/[\w.-]+(\/[\w.\/-]*)?$/.test(url);
+    }
+
+    private isValidLinkedinUrl(url: string): boolean {
+        if (!url) return true;
+        return /^https:\/\/([a-z]{2,}\.)?linkedin\.com\/(in|company)\/[^\s/]+(\/[^\s]*)?$/i.test(url);
+    }
+
     saveSocial(): void {
+        this.githubError   = '';
+        this.linkedinError = '';
+
+        const github   = this.socialGithub.trim();
+        const linkedin = this.socialLinkedin.trim();
+
+        if (github && !this.isValidGithubUrl(github)) {
+            this.githubError = 'Use o formato: https://github.com/seu-usuario';
+            return;
+        }
+        if (linkedin && !this.isValidLinkedinUrl(linkedin)) {
+            this.linkedinError = 'Use o formato: https://linkedin.com/in/seu-perfil';
+            return;
+        }
+
         if (!this.user) return;
-        this.user.githubUrl   = this.socialGithub.trim()   || undefined;
-        this.user.linkedinUrl = this.socialLinkedin.trim() || undefined;
+        const prevGithub   = this.user.githubUrl;
+        const prevLinkedin = this.user.linkedinUrl;
+        this.user.githubUrl   = github   || undefined;
+        this.user.linkedinUrl = linkedin || undefined;
         this.authService.updateUserProfile(this.user).subscribe({
             next: (updated) => {
                 this.user = updated;
                 this.isEditingSocial = false;
                 this.toast.success('Links atualizados!');
             },
-            error: () => { this.isEditingSocial = false; }
+            error: () => {
+                this.user!.githubUrl   = prevGithub;
+                this.user!.linkedinUrl = prevLinkedin;
+                this.isEditingSocial = false;
+            }
         });
     }
 

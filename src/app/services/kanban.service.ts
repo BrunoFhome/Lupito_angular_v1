@@ -15,6 +15,8 @@ export interface KanbanTask {
   userCode?: string;
   language?: string;
   expectedOutput?: string;
+  courseName?: string;
+  moduleName?: string;
 }
 
 @Injectable({

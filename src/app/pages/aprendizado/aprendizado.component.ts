@@ -77,6 +77,10 @@ export class AprendizadoComponent implements OnInit, OnDestroy {
   layouts: PathLayout[] = [];
   animated = false;
 
+  hoveredNode: NodePos | null = null;
+  tooltipX = 0;
+  tooltipY = 0;
+
   private destroy$ = new Subject<void>();
 
   constructor(
@@ -254,6 +258,23 @@ export class AprendizadoComponent implements OnInit, OnDestroy {
         );
       })
     );
+  }
+
+  onNodeMouseEnter(event: MouseEvent, node: NodePos): void {
+    this.hoveredNode = node;
+    this.tooltipX = event.clientX;
+    this.tooltipY = event.clientY;
+  }
+
+  onNodeMouseLeave(): void {
+    this.hoveredNode = null;
+  }
+
+  getNodeStatus(module: Module): { label: string; css: string } {
+    if (module.completed)              return { label: 'Concluído',     css: 'status-done'    };
+    if (module.locked)                 return { label: 'Bloqueado',     css: 'status-locked'  };
+    if (module.lessonsCompleted > 0)   return { label: 'Em progresso',  css: 'status-current' };
+    return                                    { label: 'Não iniciado',  css: 'status-new'     };
   }
 
   navigateToModule(module: Module): void {

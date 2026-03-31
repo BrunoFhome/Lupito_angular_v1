@@ -155,11 +155,13 @@
                             <label>GitHub</label>
                             <input type="url" [(ngModel)]="socialGithub" name="socialGithub"
                                    placeholder="https://github.com/seu-usuario" />
+                            <span class="field-error" *ngIf="githubError">{{ githubError }}</span>
                         </div>
                         <div class="social-edit-field">
                             <label>LinkedIn</label>
                             <input type="url" [(ngModel)]="socialLinkedin" name="socialLinkedin"
                                    placeholder="https://linkedin.com/in/seu-perfil" />
+                            <span class="field-error" *ngIf="linkedinError">{{ linkedinError }}</span>
                         </div>
                         <div class="bio-actions">
                             <button class="btn-save" (click)="saveSocial()">Salvar</button>

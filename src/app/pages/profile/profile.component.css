@@ -338,6 +338,12 @@
     border-color: #00b4cc;
 }
 
+.field-error {
+    font-size: 11px;
+    color: #e53e3e;
+    margin-top: 2px;
+}
+
 /* Portfólio Section */
 .portfolio-section {
     display: flex;

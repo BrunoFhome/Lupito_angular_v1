@@ -53,6 +53,33 @@
   border-left: 1px solid #444;
 }
 
+.breadcrumb-trail {
+  display: flex;
+  align-items: center;
+  gap: 0.3rem;
+  padding: 0.2rem 0.6rem;
+  background-color: #1a1a2e;
+  border: 1px solid #2a2a4a;
+  border-radius: 4px;
+  font-size: 0.7rem;
+}
+
+.breadcrumb-course {
+  color: #00dffc;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.breadcrumb-sep {
+  color: #555;
+  font-size: 0.75rem;
+}
+
+.breadcrumb-module {
+  color: #94a3b8;
+  white-space: nowrap;
+}
+
 .task-title {
   font-size: 0.95rem;
   font-weight: 600;
@@ -237,11 +264,39 @@
    ============================================= */
 .output-panel {
   flex-shrink: 0;
-  height: 220px;
   display: flex;
   flex-direction: column;
-  border-top: 2px solid #3c3c3c;
   background-color: #1a1a1a;
+}
+
+.resize-handle {
+  flex-shrink: 0;
+  height: 5px;
+  background-color: #3c3c3c;
+  cursor: ns-resize;
+  transition: background-color 0.15s;
+  position: relative;
+}
+
+.resize-handle:hover,
+.resize-handle:active {
+  background-color: #00b4cc;
+}
+
+.resize-handle::before {
+  content: '';
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  width: 32px;
+  height: 3px;
+  border-radius: 2px;
+  background: repeating-linear-gradient(
+    90deg,
+    #666 0px, #666 3px,
+    transparent 3px, transparent 6px
+  );
 }
 
 .output-toolbar {

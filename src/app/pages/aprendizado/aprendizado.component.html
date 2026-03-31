@@ -61,7 +61,9 @@
                'node-unlocked':  !node.module.locked && !node.module.completed,
                'node-locked':    node.module.locked
              }"
-             (click)="navigateToModule(node.module)">
+             (click)="navigateToModule(node.module)"
+             (mouseenter)="onNodeMouseEnter($event, node)"
+             (mouseleave)="onNodeMouseLeave()">
 
           <!-- Módulo completo -->
           <div class="node-circle" *ngIf="node.module.completed">
@@ -106,4 +108,18 @@
     </div><!-- .trail-scroll -->
 
   </div><!-- .path-section -->
+</div>
+
+<!-- Tooltip flutuante (position: fixed evita clipping do overflow do trail-scroll) -->
+<div class="node-floating-tooltip"
+     *ngIf="hoveredNode"
+     [style.left.px]="tooltipX"
+     [style.top.px]="tooltipY">
+  <span class="tt-title">{{ hoveredNode.module.title }}</span>
+  <span class="tt-lessons">
+    {{ hoveredNode.module.totalLessons }} {{ hoveredNode.module.totalLessons === 1 ? 'lição' : 'lições' }}
+  </span>
+  <span class="tt-status" [ngClass]="getNodeStatus(hoveredNode.module).css">
+    {{ getNodeStatus(hoveredNode.module).label }}
+  </span>
 </div>

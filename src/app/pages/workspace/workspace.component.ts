@@ -54,6 +54,11 @@ export class WorkspaceComponent implements OnInit, AfterViewInit, OnDestroy {
   output = '';
   outputType: 'text' | 'html' | 'error' | '' = '';
   isRunning = false;
+  outputHeight = 220;
+
+  private isResizing = false;
+  private resizeStartY = 0;
+  private resizeStartHeight = 0;
 
   // ── Save status ─────────────────────────────────────────────────────────
   saveStatus: 'idle' | 'saving' | 'saved' | 'error' = 'idle';
@@ -89,6 +94,30 @@ export class WorkspaceComponent implements OnInit, AfterViewInit, OnDestroy {
   @HostListener('window:beforeunload', ['$event'])
   onBeforeUnload(event: BeforeUnloadEvent): void {
     if (this.saveStatus === 'saving') event.preventDefault();
+  }
+
+  @HostListener('document:mousemove', ['$event'])
+  onDocMouseMove(event: MouseEvent): void {
+    if (!this.isResizing) return;
+    const delta = this.resizeStartY - event.clientY;
+    this.outputHeight = Math.max(80, Math.min(600, this.resizeStartHeight + delta));
+  }
+
+  @HostListener('document:mouseup')
+  onDocMouseUp(): void {
+    if (!this.isResizing) return;
+    this.isResizing = false;
+    document.body.style.userSelect = '';
+    document.body.style.cursor = '';
+  }
+
+  onResizeStart(event: MouseEvent): void {
+    this.isResizing = true;
+    this.resizeStartY = event.clientY;
+    this.resizeStartHeight = this.outputHeight;
+    document.body.style.userSelect = 'none';
+    document.body.style.cursor = 'ns-resize';
+    event.preventDefault();
   }
 
   constructor(
