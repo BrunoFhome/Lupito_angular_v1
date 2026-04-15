@@ -35,12 +35,12 @@ export class AuthService {
   // Static mock user - temporary fallback if not using Spring user fetching yet
   private mockUser: User = {
     id: 1,
-    name: 'Luiz Pinto',
-    email: 'luiz.pinto@email.com',
+    name: 'Bruno teste',
+    email: 'bruno.teste@email.com',
     username: 'lupito',
     role: 'Student',
     joinDate: '2024-01-15',
-    bio: 'Computer Science student passionate about programming and learning new technologies.'
+    bio: 'Computer Science student.'
   };
 
   constructor(private http: HttpClient, private router: Router) {}

@@ -126,7 +126,6 @@ export class AprendizadoComponent implements OnInit, OnDestroy {
         }
       }
       this.layouts = paths.map(p => this.buildLayout(p));
-      // Pequeno delay garante que o DOM renderizou antes de iniciar a animação
       setTimeout(() => { this.animated = true; }, 120);
     });
   }
@@ -172,7 +171,7 @@ export class AprendizadoComponent implements OnInit, OnDestroy {
     return { path, nodes, segments, svgWidth, svgHeight };
   }
 
-  // ── Data loading ─────────────────────────────────────────────────────────────
+  
 
   private buildLearningPath(course: CourseDTO, isFirstCourse: boolean): Observable<LearningPath> {
     return forkJoin({
@@ -196,7 +195,7 @@ export class AprendizadoComponent implements OnInit, OnDestroy {
               const section = sections[idx];
               sectionLessons.sort((a, b) => a.listOrder - b.listOrder);
 
-              // ── Determine module state ────────────────────────────────────
+              // ── Determina estado do mudolo
               let moduleCompleted: boolean;
               let moduleLocked: boolean;
               let lessonsCompleted: number;
