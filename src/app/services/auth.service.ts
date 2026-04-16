@@ -32,15 +32,15 @@ export class AuthService {
   private apiUrl = `${environment.apiUrl}/auth`;
   private loggedIn = new BehaviorSubject<boolean>(this.hasToken());
 
-  // Static mock user - temporary fallback if not using Spring user fetching yet
+  // dados estaticos para simular um usuário logado, caso o token não esteja presente ou seja inválido
   private mockUser: User = {
     id: 1,
     name: 'Bruno teste',
     email: 'bruno.teste@email.com',
     username: 'lupito',
-    role: 'Student',
+    role: 'Estudante',
     joinDate: '2024-01-15',
-    bio: 'Computer Science student.'
+    bio: 'Estudante.'
   };
 
   constructor(private http: HttpClient, private router: Router) {}

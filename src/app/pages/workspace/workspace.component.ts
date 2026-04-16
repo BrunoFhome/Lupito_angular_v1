@@ -349,8 +349,7 @@ export class WorkspaceComponent implements OnInit, AfterViewInit, OnDestroy {
     const execId = Date.now().toString();
     const outputLines: string[] = [];
 
-    // O código do usuário começa na linha 9 do srcdoc (após 8 linhas de setup).
-    // window.onerror recebe a linha absoluta do srcdoc; subtraímos 8 para obter a linha do usuário.
+    
     const USER_CODE_LINE_OFFSET = 8;
 
     const sandboxDoc = [
