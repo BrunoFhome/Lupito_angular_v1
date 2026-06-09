@@ -1,330 +1,319 @@
-<!-- HERO -->
-<section class="hero">
-  <nav class="nav">
-    <img src="assets/images/logo_lupitoo.png" alt="Lupito" class="nav-logo" />
-    <a routerLink="/login" class="btn-nav">Entrar</a>
-  </nav>
+<div class="landing-wrapper">
 
-  <div class="hero-content">
-    <div class="hero-text">
-      <h1>Aprenda programação de forma <span class="highlight">interativa</span> e organizada</h1>
-      <p>O Lupito é uma plataforma educacional que combina trilhas de aprendizado, gerenciamento de tarefas e um ambiente de prática para impulsionar seu desenvolvimento.</p>
-      <div class="hero-actions">
-        <a routerLink="/login" class="btn-primary">Começar agora</a>
-        <a routerLink="/register" class="btn-ghost">Criar conta gratuita</a>
-      </div>
-    </div>
-    <div class="hero-image">
-      <div class="image-circle">
-        <img src="assets/images/comemorando.png" alt="Lupito comemorando" />
-      </div>
-    </div>
-  </div>
-</section>
+  <!-- ── 70% conteúdo ─────────────────────────────────── -->
+  <div class="landing-content">
 
-<!-- COURSES STRIP -->
-<section class="courses-strip">
-  <div class="courses-strip-inner">
-    <div class="course-chip">
-      <div class="course-chip-icon course-chip-html">
-        <svg viewBox="0 0 24 24" fill="currentColor">
-          <path d="M1.5 0h21l-1.91 21.563L11.977 24l-8.564-2.438L1.5 0zm7.031 9.75l-.232-2.718 10.059.003.23-2.622L5.412 4.41l.698 8.01h9.126l-.326 3.426-2.91.804-2.955-.81-.188-2.11H6.248l.33 4.171L12 19.351l5.379-1.443.744-8.157H8.531z"/>
-        </svg>
-      </div>
-      <span>HTML</span>
-    </div>
-    <div class="course-chip">
-      <div class="course-chip-icon course-chip-css">
-        <svg viewBox="0 0 24 24" fill="currentColor">
-          <path d="M1.5 0h21l-1.91 21.563L11.977 24l-8.565-2.438L1.5 0zm17.09 4.413L5.41 4.41l.213 2.622 10.125.002-.255 2.716h-6.64l.24 2.573h6.182l-.366 3.523-2.91.804-2.956-.81-.188-2.11h-2.61l.29 3.855L12 19.288l5.373-1.53L18.59 4.413z"/>
-        </svg>
-      </div>
-      <span>CSS</span>
-    </div>
-    <div class="course-chip">
-      <div class="course-chip-icon course-chip-js">
-        <svg viewBox="0 0 24 24" fill="currentColor">
-          <path d="M0 0h24v24H0V0zm22.034 18.276c-.175-1.095-.888-2.015-3.003-2.873-.736-.345-1.554-.585-1.797-1.14-.091-.33-.105-.51-.046-.705.15-.646.915-.84 1.515-.66.39.12.75.42.976.9 1.034-.676 1.034-.676 1.755-1.125-.27-.42-.404-.601-.586-.78-.63-.705-1.469-1.065-2.834-1.034l-.705.089c-.676.165-1.32.525-1.71 1.005-1.14 1.291-.811 3.541.569 4.471 1.365 1.02 3.361 1.244 3.616 2.205.24 1.17-.87 1.545-1.966 1.41-.811-.18-1.26-.586-1.755-1.336l-1.83 1.051c.21.48.45.689.81 1.109 1.74 1.756 6.09 1.666 6.871-1.004.029-.09.24-.705.074-1.65l.046.067zm-8.983-7.245h-2.248c0 1.938-.009 3.864-.009 5.805 0 1.232.063 2.363-.138 2.700-.33.689-1.18.601-1.566.48-.396-.196-.597-.466-.83-.855-.063-.105-.11-.196-.127-.196l-1.825 1.125c.305.63.75 1.172 1.324 1.517.855.51 2.004.675 3.207.405.783-.226 1.458-.691 1.811-1.411.51-.93.402-2.07.397-3.346.012-2.054 0-4.109 0-6.179l.004-.045z"/>
-        </svg>
-      </div>
-      <span>JavaScript</span>
-    </div>
-  </div>
-</section>
+    <!-- SEÇÃO 0: O que é o Lupito? -->
+    <section class="hero" data-section="0">
+      <nav class="nav">
+        <img src="assets/images/logo_lupitoo.png" alt="Lupito" class="nav-logo" />
+        <a routerLink="/login" class="btn-nav">Entrar</a>
+      </nav>
 
-<!-- FEATURE ROW 1: Cursos HTML, CSS & JavaScript -->
-<section class="feature-row">
-  <div class="feature-row-inner">
-    <div class="feature-image">
-      <div class="image-circle">
-        <img src="assets/images/comemorando.png" alt="Cursos" />
-      </div>
-    </div>
-    <div class="feature-text">
-      <h2>HTML, CSS & JavaScript do zero ao avançado</h2>
-      <p>Trilhas estruturadas com lições progressivas e conteúdo cuidadosamente organizado. Desbloqueie novos tópicos conforme avança e acompanhe seu progresso em tempo real.</p>
-      <ul class="feature-list">
-        <li>
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
-          Estrutura de documentos HTML semânticos
-        </li>
-        <li>
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
-          Layouts modernos com Flexbox e Grid
-        </li>
-        <li>
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
-          Lógica e interatividade com JavaScript
-        </li>
-      </ul>
-    </div>
-  </div>
-</section>
-
-<!-- FEATURE ROW 2: Aprendizado com Exercícios -->
-<section class="feature-row feature-row-alt">
-  <div class="feature-row-inner reverse">
-    <div class="feature-text">
-      <h2>Aprenda com exercícios práticos e interativos</h2>
-      <p>Cada lição termina com exercícios de múltipla escolha que fixam o conteúdo. Receba feedback imediato e só avance quando estiver pronto.</p>
-      <ul class="feature-list">
-        <li>
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
-          Questões contextualizadas com o conteúdo
-        </li>
-        <li>
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
-          Feedback visual imediato a cada resposta
-        </li>
-        <li>
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
-          Progresso salvo automaticamente
-        </li>
-      </ul>
-    </div>
-    <div class="feature-image">
-      <div class="image-circle">
-        <img src="assets/images/duvida.png" alt="Exercícios" />
-      </div>
-    </div>
-  </div>
-</section>
-
-<!-- FEATURE ROW 3: Metodologia Ágil Kanban -->
-<section class="feature-row">
-  <div class="feature-row-inner">
-    <div class="feature-image">
-      <div class="image-circle">
-        <img src="assets/images/explicando.png" alt="Kanban" />
-      </div>
-    </div>
-    <div class="feature-text">
-      <h2>Metodologia Ágil aplicada ao aprendizado</h2>
-      <p>Organize suas tarefas em um quadro Kanban integrado. Visualize o que está pendente, em andamento, em revisão e concluído — do jeito que times de tecnologia trabalham.</p>
-      <ul class="feature-list">
-        <li>
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
-          Quadro com colunas A Fazer / Em Andamento / Concluído
-        </li>
-        <li>
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
-          Drag & drop para mover tarefas
-        </li>
-        <li>
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
-          Templates de tarefas vinculados às lições
-        </li>
-      </ul>
-    </div>
-  </div>
-</section>
-
-<!-- FEATURE ROW 4: Projetos Mão na Massa -->
-<section class="feature-row feature-row-alt">
-  <div class="feature-row-inner reverse">
-    <div class="feature-text">
-      <h2>Projetos mão na massa no workspace integrado</h2>
-      <p>Coloque em prática o que aprendeu em um ambiente de código integrado à plataforma. Escreva, teste e valide seu código diretamente no navegador, sem instalar nada.</p>
-      <ul class="feature-list">
-        <li>
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
-          Editor com destaque de sintaxe (CodeMirror)
-        </li>
-        <li>
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
-          Desafio e editor lado a lado
-        </li>
-        <li>
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
-          Código salvo e vinculado à tarefa Kanban
-        </li>
-      </ul>
-    </div>
-    <div class="feature-image">
-      <div class="image-circle">
-        <img src="assets/images/bemvindo.png" alt="Workspace" />
-      </div>
-    </div>
-  </div>
-</section>
-
-<!-- FEATURE ROW 5: Portfólio Dinâmico -->
-<section class="feature-row">
-  <div class="feature-row-inner">
-    <div class="feature-image">
-      <div class="image-circle">
-        <img src="assets/images/triste.png" alt="Portfólio" />
-      </div>
-    </div>
-    <div class="feature-text">
-      <h2>Construa um portfólio dinâmico enquanto aprende</h2>
-      <p>Cada projeto concluído no workspace faz parte do seu histórico. Seu perfil registra tudo: lições completadas, tarefas resolvidas e código produzido ao longo da jornada.</p>
-      <ul class="feature-list">
-        <li>
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
-          Perfil público com histórico de progresso
-        </li>
-        <li>
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
-          Projetos e desafios registrados automaticamente
-        </li>
-        <li>
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
-          Evolução visível a cada etapa concluída
-        </li>
-      </ul>
-    </div>
-  </div>
-</section>
-
-<!-- GAMIFICATION: Streaks, Conquistas e Histórico -->
-<section class="gamification">
-  <div class="gamification-inner">
-    <div class="gamification-header">
-      <h2>Mantenha-se motivado com streaks, conquistas e histórico de atividade</h2>
-      <p>Desenvolva o hábito de estudar todos os dias. Acompanhe sua sequência de dias, desbloqueie conquistas e veja seu histórico crescer.</p>
-    </div>
-    <div class="stat-grid">
-      <div class="stat-item">
-        <div class="stat-icon">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z"/>
-            <circle cx="12" cy="9" r="2.5" fill="currentColor" stroke="none"/>
-          </svg>
+      <div class="hero-content hero-content--text-only">
+        <div class="hero-text">
+          <h1>Aprenda programação de forma <span class="highlight">interativa</span> e organizada</h1>
+          <p>O Lupito é uma plataforma educacional que combina trilhas de aprendizado, gerenciamento de tarefas e um ambiente de prática para impulsionar seu desenvolvimento.</p>
+          <div class="hero-actions">
+            <a routerLink="/login" class="btn-primary">Começar agora</a>
+            <a routerLink="/register" class="btn-ghost">Criar conta gratuita</a>
+          </div>
         </div>
-        <span class="stat-value">Streak</span>
-        <span class="stat-label">Sequência diária de estudos para manter o ritmo</span>
       </div>
-      <div class="stat-item stat-item-featured">
-        <div class="stat-icon">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6"/><path d="M18 9h1.5a2.5 2.5 0 0 0 0-5H18"/>
-            <path d="M4 22h16"/><path d="M10 14.66V17c0 .55-.47.98-.97 1.21C7.85 18.75 7 20.24 7 22"/>
-            <path d="M14 14.66V17c0 .55.47.98.97 1.21C16.15 18.75 17 20.24 17 22"/>
-            <path d="M18 2H6v7a6 6 0 0 0 12 0V2Z"/>
-          </svg>
+    </section>
+
+    <!-- SEÇÃO 1: Tecnologias (chips + conteúdo de trilhas) -->
+    <section class="feature-row" data-section="1">
+      <div class="feature-row-inner">
+        <div class="feature-text">
+          <div class="tech-chips">
+            <div class="course-chip">
+              <div class="course-chip-icon course-chip-html">
+                <svg viewBox="0 0 24 24" fill="currentColor">
+                  <path d="M1.5 0h21l-1.91 21.563L11.977 24l-8.564-2.438L1.5 0zm7.031 9.75l-.232-2.718 10.059.003.23-2.622L5.412 4.41l.698 8.01h9.126l-.326 3.426-2.91.804-2.955-.81-.188-2.11H6.248l.33 4.171L12 19.351l5.379-1.443.744-8.157H8.531z"/>
+                </svg>
+              </div>
+              <span>HTML</span>
+            </div>
+            <div class="course-chip">
+              <div class="course-chip-icon course-chip-css">
+                <svg viewBox="0 0 24 24" fill="currentColor">
+                  <path d="M1.5 0h21l-1.91 21.563L11.977 24l-8.565-2.438L1.5 0zm17.09 4.413L5.41 4.41l.213 2.622 10.125.002-.255 2.716h-6.64l.24 2.573h6.182l-.366 3.523-2.91.804-2.956-.81-.188-2.11h-2.61l.29 3.855L12 19.288l5.373-1.53L18.59 4.413z"/>
+                </svg>
+              </div>
+              <span>CSS</span>
+            </div>
+            <div class="course-chip">
+              <div class="course-chip-icon course-chip-js">
+                <svg viewBox="0 0 24 24" fill="currentColor">
+                  <path d="M0 0h24v24H0V0zm22.034 18.276c-.175-1.095-.888-2.015-3.003-2.873-.736-.345-1.554-.585-1.797-1.14-.091-.33-.105-.51-.046-.705.15-.646.915-.84 1.515-.66.39.12.75.42.976.9 1.034-.676 1.034-.676 1.755-1.125-.27-.42-.404-.601-.586-.78-.63-.705-1.469-1.065-2.834-1.034l-.705.089c-.676.165-1.32.525-1.71 1.005-1.14 1.291-.811 3.541.569 4.471 1.365 1.02 3.361 1.244 3.616 2.205.24 1.17-.87 1.545-1.966 1.41-.811-.18-1.26-.586-1.755-1.336l-1.83 1.051c.21.48.45.689.81 1.109 1.74 1.756 6.09 1.666 6.871-1.004.029-.09.24-.705.074-1.65l.046.067zm-8.983-7.245h-2.248c0 1.938-.009 3.864-.009 5.805 0 1.232.063 2.363-.138 2.700-.33.689-1.18.601-1.566.48-.396-.196-.597-.466-.83-.855-.063-.105-.11-.196-.127-.196l-1.825 1.125c.305.63.75 1.172 1.324 1.517.855.51 2.004.675 3.207.405.783-.226 1.458-.691 1.811-1.411.51-.93.402-2.07.397-3.346.012-2.054 0-4.109 0-6.179l.004-.045z"/>
+                </svg>
+              </div>
+              <span>JavaScript</span>
+            </div>
+          </div>
+
+          <h2>HTML, CSS & JavaScript do zero ao avançado</h2>
+          <p>Trilhas estruturadas com lições progressivas e conteúdo cuidadosamente organizado. Desbloqueie novos tópicos conforme avança e acompanhe seu progresso em tempo real.</p>
+          <ul class="feature-list">
+            <li>
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+              Estrutura de documentos HTML semânticos
+            </li>
+            <li>
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+              Layouts modernos com Flexbox e Grid
+            </li>
+            <li>
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+              Lógica e interatividade com JavaScript
+            </li>
+          </ul>
         </div>
-        <span class="stat-value">Conquistas</span>
-        <span class="stat-label">Medalhas desbloqueadas ao completar desafios e marcos</span>
       </div>
-      <div class="stat-item">
-        <div class="stat-icon">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/>
-            <line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/>
-            <path d="M8 14h.01"/><path d="M12 14h.01"/><path d="M16 14h.01"/>
-            <path d="M8 18h.01"/><path d="M12 18h.01"/><path d="M16 18h.01"/>
-          </svg>
+    </section>
+
+    <!-- SEÇÃO 2: Exercícios Práticos -->
+    <section class="feature-row feature-row-alt" data-section="2">
+      <div class="feature-row-inner">
+        <div class="feature-text">
+          <h2>Aprenda com exercícios práticos e interativos</h2>
+          <p>Cada lição termina com exercícios de múltipla escolha que fixam o conteúdo. Receba feedback imediato e só avance quando estiver pronto.</p>
+          <ul class="feature-list">
+            <li>
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+              Questões contextualizadas com o conteúdo
+            </li>
+            <li>
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+              Feedback visual imediato a cada resposta
+            </li>
+            <li>
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+              Progresso salvo automaticamente
+            </li>
+          </ul>
         </div>
-        <span class="stat-value">Histórico</span>
-        <span class="stat-label">Registro completo de todas as atividades realizadas</span>
       </div>
+    </section>
+
+    <!-- SEÇÃO 3: Kanban -->
+    <section class="feature-row" data-section="3">
+      <div class="feature-row-inner">
+        <div class="feature-text">
+          <h2>Metodologia Ágil aplicada ao aprendizado</h2>
+          <p>Organize suas tarefas em um quadro Kanban integrado. Visualize o que está pendente, em andamento, em revisão e concluído — do jeito que times de tecnologia trabalham.</p>
+          <ul class="feature-list">
+            <li>
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+              Quadro com colunas A Fazer / Em Andamento / Concluído
+            </li>
+            <li>
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+              Drag & drop para mover tarefas
+            </li>
+            <li>
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+              Templates de tarefas vinculados às lições
+            </li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <!-- SEÇÃO 4: Projetos -->
+    <section class="feature-row feature-row-alt" data-section="4">
+      <div class="feature-row-inner">
+        <div class="feature-text">
+          <h2>Projetos mão na massa no workspace integrado</h2>
+          <p>Coloque em prática o que aprendeu em um ambiente de código integrado à plataforma. Escreva, teste e valide seu código diretamente no navegador, sem instalar nada.</p>
+          <ul class="feature-list">
+            <li>
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+              Editor com destaque de sintaxe (CodeMirror)
+            </li>
+            <li>
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+              Desafio e editor lado a lado
+            </li>
+            <li>
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+              Código salvo e vinculado à tarefa Kanban
+            </li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <!-- SEÇÃO 5: Portfólio -->
+    <section class="feature-row" data-section="5">
+      <div class="feature-row-inner">
+        <div class="feature-text">
+          <h2>Construa um portfólio dinâmico enquanto aprende</h2>
+          <p>Cada projeto concluído no workspace faz parte do seu histórico. Seu perfil registra tudo: lições completadas, tarefas resolvidas e código produzido ao longo da jornada.</p>
+          <ul class="feature-list">
+            <li>
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+              Perfil público com histórico de progresso
+            </li>
+            <li>
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+              Projetos e desafios registrados automaticamente
+            </li>
+            <li>
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+              Evolução visível a cada etapa concluída
+            </li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <!-- SEÇÃO 6: Conquistas -->
+    <section class="gamification" data-section="6">
+      <div class="gamification-inner">
+        <div class="gamification-header">
+          <h2>Mantenha-se motivado com streaks, conquistas e histórico de atividade</h2>
+          <p>Desenvolva o hábito de estudar todos os dias. Acompanhe sua sequência de dias, desbloqueie conquistas e veja seu histórico crescer.</p>
+        </div>
+        <div class="stat-grid">
+          <div class="stat-item">
+            <div class="stat-icon">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z"/>
+                <circle cx="12" cy="9" r="2.5" fill="currentColor" stroke="none"/>
+              </svg>
+            </div>
+            <span class="stat-value">Streak</span>
+            <span class="stat-label">Sequência diária de estudos para manter o ritmo</span>
+          </div>
+          <div class="stat-item stat-item-featured">
+            <div class="stat-icon">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6"/><path d="M18 9h1.5a2.5 2.5 0 0 0 0-5H18"/>
+                <path d="M4 22h16"/><path d="M10 14.66V17c0 .55-.47.98-.97 1.21C7.85 18.75 7 20.24 7 22"/>
+                <path d="M14 14.66V17c0 .55.47.98.97 1.21C16.15 18.75 17 20.24 17 22"/>
+                <path d="M18 2H6v7a6 6 0 0 0 12 0V2Z"/>
+              </svg>
+            </div>
+            <span class="stat-value">Conquistas</span>
+            <span class="stat-label">Medalhas desbloqueadas ao completar desafios e marcos</span>
+          </div>
+          <div class="stat-item">
+            <div class="stat-icon">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/>
+                <line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/>
+                <path d="M8 14h.01"/><path d="M12 14h.01"/><path d="M16 14h.01"/>
+                <path d="M8 18h.01"/><path d="M12 18h.01"/><path d="M16 18h.01"/>
+              </svg>
+            </div>
+            <span class="stat-value">Histórico</span>
+            <span class="stat-label">Registro completo de todas as atividades realizadas</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- SEÇÃO 7: CTA + Footer -->
+    <section class="cta-footer-section" data-section="7">
+      <div class="cta">
+        <div class="cta-content">
+          <img src="assets/images/bemvindo.png" alt="Lupito" class="cta-mascot" />
+          <h2>Pronto para começar sua jornada?</h2>
+          <p>Crie sua conta gratuitamente e comece a aprender agora mesmo.</p>
+          <div class="cta-actions">
+            <a routerLink="/login" class="btn-primary">Entrar na plataforma</a>
+            <a routerLink="/register" class="btn-ghost-light">Cadastrar-se</a>
+          </div>
+        </div>
+      </div>
+
+      <footer class="footer">
+        <div class="footer-main">
+          <div class="footer-col">
+            <h4>Quem somos</h4>
+            <ul>
+              <li><a routerLink="/">Sobre o Lupito</a></li>
+              <li><a routerLink="/">Missão</a></li>
+              <li><a routerLink="/">Método</a></li>
+              <li><a routerLink="/">TCC</a></li>
+            </ul>
+          </div>
+          <div class="footer-col">
+            <h4>Plataforma</h4>
+            <ul>
+              <li><a routerLink="/login">Dashboard</a></li>
+              <li><a routerLink="/login">Trilhas de Aprendizado</a></li>
+              <li><a routerLink="/login">Kanban de Tarefas</a></li>
+              <li><a routerLink="/login">Workspace</a></li>
+              <li><a routerLink="/login">Perfil</a></li>
+            </ul>
+          </div>
+          <div class="footer-col">
+            <h4>Acesso</h4>
+            <ul>
+              <li><a routerLink="/login">Entrar</a></li>
+              <li><a routerLink="/register">Criar conta</a></li>
+              <li><a routerLink="/forgot-password">Esqueci minha senha</a></li>
+            </ul>
+          </div>
+          <div class="footer-col">
+            <h4>Ajuda e suporte</h4>
+            <ul>
+              <li><a routerLink="/">Dúvidas frequentes</a></li>
+              <li><a routerLink="/">Entre em contato</a></li>
+            </ul>
+          </div>
+          <div class="footer-col">
+            <h4>Termos e privacidade</h4>
+            <ul>
+              <li><a routerLink="/">Termos de uso</a></li>
+              <li><a routerLink="/">Privacidade</a></li>
+            </ul>
+          </div>
+          <div class="footer-col">
+            <h4>Redes sociais</h4>
+            <ul>
+              <li><a routerLink="/">GitHub</a></li>
+              <li><a routerLink="/">LinkedIn</a></li>
+              <li><a routerLink="/">Instagram</a></li>
+            </ul>
+          </div>
+        </div>
+        <div class="footer-bottom">
+          <img src="assets/images/logo_lupitoo.png" alt="Lupito" class="footer-logo" />
+          <p>&copy; 2026 Lupito &mdash; Todos os direitos reservados.</p>
+        </div>
+      </footer>
+    </section>
+
+  </div><!-- /landing-content -->
+
+  <!-- ── 30% trilha ────────────────────────────────────── -->
+  <aside class="trail-panel">
+
+    <p class="trail-title">TRILHA DO LUPITO</p>
+
+    <div class="trail-track">
+      <div class="trail-line-bg"></div>
+      <div class="trail-line-fill" [style.height]="trailFillHeight"></div>
+
+      <div *ngFor="let cp of checkpoints; let i = index"
+           class="trail-checkpoint"
+           [style.top]="checkpointTopStyle(i)"
+           [class.trail-checkpoint--done]="i < activeSection"
+           [class.trail-checkpoint--active]="i === activeSection">
+        <div class="trail-dot"></div>
+        <span class="trail-label">{{ cp.label }}</span>
+      </div>
+
+      <img [src]="walkFrame"
+           alt="Lupito andando"
+           class="trail-mascot"
+           [style.top]="mascotTopPercent" />
     </div>
-  </div>
-</section>
 
-<!-- CTA FINAL -->
-<section class="cta">
-  <div class="cta-content">
-    <img src="assets/images/bemvindo.png" alt="Lupito" class="cta-mascot" />
-    <h2>Pronto para começar sua jornada?</h2>
-    <p>Crie sua conta gratuitamente e comece a aprender agora mesmo.</p>
-    <div class="cta-actions">
-      <a routerLink="/login" class="btn-primary">Entrar na plataforma</a>
-      <a routerLink="/register" class="btn-ghost-light">Cadastrar-se</a>
-    </div>
-  </div>
-</section>
+  </aside>
 
-<!-- FOOTER -->
-<footer class="footer">
-  <div class="footer-main">
-
-    <!-- Coluna: Quem somos -->
-    <div class="footer-col">
-      <h4>Quem somos</h4>
-      <ul>
-        <li><a routerLink="/">Sobre o Lupito</a></li>
-        <li><a routerLink="/">Missão</a></li>
-        <li><a routerLink="/">Método</a></li>
-        <li><a routerLink="/">TCC</a></li>
-      </ul>
-    </div>
-
-    <!-- Coluna: Plataforma -->
-    <div class="footer-col">
-      <h4>Plataforma</h4>
-      <ul>
-        <li><a routerLink="/login">Dashboard</a></li>
-        <li><a routerLink="/login">Trilhas de Aprendizado</a></li>
-        <li><a routerLink="/login">Kanban de Tarefas</a></li>
-        <li><a routerLink="/login">Workspace</a></li>
-        <li><a routerLink="/login">Perfil</a></li>
-      </ul>
-    </div>
-
-    <!-- Coluna: Acesso -->
-    <div class="footer-col">
-      <h4>Acesso</h4>
-      <ul>
-        <li><a routerLink="/login">Entrar</a></li>
-        <li><a routerLink="/register">Criar conta</a></li>
-        <li><a routerLink="/forgot-password">Esqueci minha senha</a></li>
-      </ul>
-    </div>
-
-    <!-- Coluna: Ajuda e suporte -->
-    <div class="footer-col">
-      <h4>Ajuda e suporte</h4>
-      <ul>
-        <li><a routerLink="/">Dúvidas frequentes</a></li>
-        <li><a routerLink="/">Entre em contato</a></li>
-      </ul>
-    </div>
-
-    <!-- Coluna: Termos e privacidade -->
-    <div class="footer-col">
-      <h4>Termos e privacidade</h4>
-      <ul>
-        <li><a routerLink="/">Termos de uso</a></li>
-        <li><a routerLink="/">Privacidade</a></li>
-      </ul>
-    </div>
-
-    <!-- Coluna: Redes sociais -->
-    <div class="footer-col">
-      <h4>Redes sociais</h4>
-      <ul>
-        <li><a routerLink="/">GitHub</a></li>
-        <li><a routerLink="/">LinkedIn</a></li>
-        <li><a routerLink="/">Instagram</a></li>
-      </ul>
-    </div>
-
-  </div>
-
-  <div class="footer-bottom">
-    <img src="assets/images/logo_lupitoo.png" alt="Lupito" class="footer-logo" />
-    <p>&copy; 2026 Lupito &mdash; Todos os direitos reservados.</p>
-  </div>
-</footer>
+</div><!-- /landing-wrapper -->
