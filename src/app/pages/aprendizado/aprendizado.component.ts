@@ -279,6 +279,13 @@ export class AprendizadoComponent implements OnInit, OnDestroy {
     this.hoveredNode = null;
   }
 
+  pathIcon(title: string): string {
+    const t = (title ?? '').toLowerCase();
+    if (t.includes('html') || t.includes('css')) return 'assets/images/lupito_tecs/2.png';
+    if (t.includes('javascript') || t.includes('js')) return 'assets/images/lupito_tecs/1.png';
+    return 'assets/images/lupito_tecs/1.png';
+  }
+
   getNodeStatus(module: Module): { label: string; css: string } {
     if (module.completed)              return { label: 'Concluído',     css: 'status-done'    };
     if (module.locked)                 return { label: 'Bloqueado',     css: 'status-locked'  };

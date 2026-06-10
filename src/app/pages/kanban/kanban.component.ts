@@ -8,6 +8,7 @@ import { takeUntil } from 'rxjs/operators';
 import { NavbarComponent } from '../../components/navbar/navbar.component';
 import { KanbanService, KanbanTask } from '../../services/kanban.service';
 import { ToastService } from '../../services/toast.service';
+import { AuthService } from '../../services/auth.service';
 
 @Component({
   selector: 'app-kanban',
@@ -19,6 +20,7 @@ import { ToastService } from '../../services/toast.service';
 export class KanbanComponent implements OnInit, OnDestroy {
   tasks: KanbanTask[] = [];
   loading = true;
+  studentName = 'Aluno';
 
   // Auto avaliação modal
   showEvaluation: boolean = false;
@@ -38,15 +40,21 @@ export class KanbanComponent implements OnInit, OnDestroy {
   private destroy$ = new Subject<void>();
 
   private readonly statusLabels: Record<KanbanTask['status'], string> = {
-    'todo': 'A Fazer',
-    'in-progress': 'Em Andamento',
-    'in-review': 'Em Revisão',
-    'done': 'Concluído'
+    'todo': 'Missões',
+    'in-progress': 'Em progresso',
+    'in-review': 'Revisão',
+    'done': 'Conquistas'
   };
 
-  constructor(private router: Router, private kanbanService: KanbanService, private toast: ToastService) {}
+  constructor(private router: Router, private kanbanService: KanbanService, private toast: ToastService, private authService: AuthService) {}
 
   ngOnInit(): void {
+    this.authService.getCurrentUser()
+      .pipe(takeUntil(this.destroy$))
+      .subscribe(user => {
+        this.studentName = user.name?.split(' ')[0] || 'Aluno';
+      });
+
     this.kanbanService.getTasks()
       .pipe(takeUntil(this.destroy$))
       .subscribe(tasks => {

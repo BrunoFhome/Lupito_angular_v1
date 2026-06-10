@@ -1,51 +1,59 @@
 <nav class="sidebar">
   <div class="logo-container">
-    <img src="assets/images/logo_lupitoo.png" alt="Lupito" class="logo-img" />
+    <img src="assets/images/logo_nova.png" alt="Lupito" class="logo-img" />
   </div>
 
   <ul class="nav-links">
     <li>
       <a routerLink="/dashboard" routerLinkActive="active">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-          <rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/>
-          <rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/>
-        </svg>
+        <span class="nav-icon nav-icon-img">
+          <img src="assets/images/icons/1.png" alt="" />
+        </span>
         Início
       </a>
     </li>
     <li>
       <a routerLink="/aprendizado" routerLinkActive="active">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-          <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/>
-          <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/>
-        </svg>
+        <span class="nav-icon nav-icon-img">
+          <img src="assets/images/icons/2.png" alt="" />
+        </span>
         Aprendizado
       </a>
     </li>
     <li>
       <a routerLink="/kanban" routerLinkActive="active">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-          <rect x="3" y="3" width="5" height="18" rx="1"/>
-          <rect x="10" y="3" width="5" height="12" rx="1"/>
-          <rect x="17" y="3" width="5" height="15" rx="1"/>
-        </svg>
-        Kanban
-      </a>
-    </li>
-    <li>
-      <a routerLink="/profile" routerLinkActive="active">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-          <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
-          <circle cx="12" cy="7" r="4"/>
-        </svg>
-        Perfil
+        <span class="nav-icon nav-icon-img">
+          <img src="assets/images/icons/3.png" alt="" />
+        </span>
+        Projetos Kanban
       </a>
     </li>
   </ul>
 
   <div class="spacer"></div>
 
+  <a routerLink="/profile" routerLinkActive="active" class="profile-link">
+    <span class="profile-avatar">
+      <img [src]="profilePhoto" alt="" />
+    </span>
+    Perfil
+  </a>
+
+  <div class="stats">
+    <div class="stat-item">
+      <span class="stat-emoji">🔥</span>
+      <span class="stat-text"><strong>{{ streak }}</strong> {{ streak === 1 ? 'dia seguido' : 'dias seguidos' }}</span>
+    </div>
+  </div>
+
   <div class="logout-container">
+    <a routerLink="/preferences" routerLinkActive="active" class="settings-btn">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <circle cx="12" cy="12" r="3"/>
+        <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/>
+      </svg>
+      Configurações
+    </a>
     <button (click)="authService.logout()" class="logout-btn">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
         <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/>

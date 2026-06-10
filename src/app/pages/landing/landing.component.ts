@@ -5,6 +5,7 @@ import { CommonModule } from '@angular/common';
 interface Checkpoint {
   label: string;
   image: string;
+  zoom?: boolean;
 }
 
 @Component({
@@ -17,13 +18,13 @@ interface Checkpoint {
 export class LandingComponent implements AfterViewInit, OnDestroy {
 
   readonly checkpoints: Checkpoint[] = [
-    { label: 'O que é o Lupito?', image: 'assets/images/comemorando.png' },
+    { label: 'O que é o Lupito?', image: 'assets/images/duvida.png' },
     { label: 'Tecnologias',       image: 'assets/images/landing/lupito_tec - Editado.png' },
     { label: 'Exercícios',        image: 'assets/images/landing/lupito_checklist.png' },
-    { label: 'Kanban',            image: 'assets/images/landing/lupito_kanban.png' },
-    { label: 'Projetos',          image: 'assets/images/landing/lupito_projeto_completo.png' },
-    { label: 'Portfólio',         image: 'assets/images/landing/lupito_portfolio.png' },
-    { label: 'Conquistas',        image: 'assets/images/landing/lupito_conquista.png' },
+    { label: 'Kanban',            image: 'assets/images/landing/lupito_kanban.png',           zoom: true },
+    { label: 'Projetos',          image: 'assets/images/landing/lupito_projeto_completo.png', zoom: true },
+    { label: 'Portfólio',         image: 'assets/images/landing/lupito_portfolio.png',        zoom: true },
+    { label: 'Conquistas',        image: 'assets/images/landing/lupito_conquista.png',        zoom: true },
     { label: 'Começar!',          image: 'assets/images/bemvindo.png' },
   ];
 
@@ -40,7 +41,7 @@ export class LandingComponent implements AfterViewInit, OnDestroy {
   private walkInterval: ReturnType<typeof setInterval> | null = null;
   private observer: IntersectionObserver | null = null;
   private scrollContainer: HTMLElement | null = null;
-  private isScrolling = false;
+  isScrolling = false;
 
   constructor(private el: ElementRef) {}
 
@@ -60,7 +61,7 @@ export class LandingComponent implements AfterViewInit, OnDestroy {
   get mascotTopPercent(): string {
     const n = this.checkpoints.length;
     const pct = 5 + (this.activeSection / (n - 1)) * 90;
-    return `calc(${pct.toFixed(2)}% - 60px)`;   // metade de 120px
+    return `calc(${pct.toFixed(2)}% - 80px)`;   // metade de 160px
   }
 
   ngAfterViewInit(): void {
@@ -121,6 +122,11 @@ export class LandingComponent implements AfterViewInit, OnDestroy {
     }
   };
 
+  // Wrapper público para uso no template (ex: indicador de scroll)
+  goToSection(index: number): void {
+    this.scrollToSection(index);
+  }
+
   // ── Navegar para seção específica ─────────────────────
   private scrollToSection(index: number): void {
     if (this.isScrolling) return;
@@ -133,7 +139,9 @@ export class LandingComponent implements AfterViewInit, OnDestroy {
     if (section && this.scrollContainer) {
       const rect          = section.getBoundingClientRect();
       const containerRect = this.scrollContainer.getBoundingClientRect();
-      const newScrollTop  = this.scrollContainer.scrollTop + rect.top - containerRect.top;
+      const navEl         = document.querySelector<HTMLElement>('.nav');
+      const navHeight     = navEl ? navEl.offsetHeight : 0;
+      const newScrollTop  = this.scrollContainer.scrollTop + rect.top - containerRect.top - navHeight;
 
       this.scrollContainer.scrollTo({ top: newScrollTop, behavior: 'smooth' });
     }

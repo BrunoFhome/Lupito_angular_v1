@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Router } from '@angular/router';
-import { Observable, tap, BehaviorSubject } from 'rxjs';
+import { Observable, tap, BehaviorSubject, of } from 'rxjs';
 import { environment } from '../../environments/environment';
 
 export interface ActivityDay {
@@ -103,6 +103,15 @@ getCurrentUser(): Observable<User> {
       });
     }
     return this.http.put<User>(`${environment.apiUrl}/users/${userId}`, user);
+  }
+
+  updateAccount(data: { name: string; email: string; password?: string }): Observable<User> {
+    const userId = this.getCurrentUserId();
+    if (!userId) {
+      this.mockUser = { ...this.mockUser, name: data.name, email: data.email };
+      return of(this.mockUser);
+    }
+    return this.http.put<User>(`${environment.apiUrl}/users/${userId}/account`, data);
   }
 
   verifyEmail(token: string): Observable<any> {
