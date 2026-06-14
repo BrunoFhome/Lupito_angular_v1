@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Router } from '@angular/router';
-import { Observable, tap, BehaviorSubject } from 'rxjs';
+import { Observable, tap, BehaviorSubject, of } from 'rxjs';
 import { environment } from '../../environments/environment';
 
 export interface ActivityDay {
@@ -32,15 +32,15 @@ export class AuthService {
   private apiUrl = `${environment.apiUrl}/auth`;
   private loggedIn = new BehaviorSubject<boolean>(this.hasToken());
 
-  // Static mock user - temporary fallback if not using Spring user fetching yet
+  // dados estaticos para simular um usuário logado, caso o token não esteja presente ou seja inválido
   private mockUser: User = {
     id: 1,
     name: 'Bruno teste',
     email: 'bruno.teste@email.com',
     username: 'lupito',
-    role: 'Student',
+    role: 'Estudante',
     joinDate: '2024-01-15',
-    bio: 'Computer Science student.'
+    bio: 'Estudante.'
   };
 
   constructor(private http: HttpClient, private router: Router) {}
@@ -103,6 +103,15 @@ getCurrentUser(): Observable<User> {
       });
     }
     return this.http.put<User>(`${environment.apiUrl}/users/${userId}`, user);
+  }
+
+  updateAccount(data: { name: string; email: string; password?: string }): Observable<User> {
+    const userId = this.getCurrentUserId();
+    if (!userId) {
+      this.mockUser = { ...this.mockUser, name: data.name, email: data.email };
+      return of(this.mockUser);
+    }
+    return this.http.put<User>(`${environment.apiUrl}/users/${userId}/account`, data);
   }
 
   verifyEmail(token: string): Observable<any> {

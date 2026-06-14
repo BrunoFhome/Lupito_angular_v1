@@ -8,6 +8,7 @@ import { takeUntil } from 'rxjs/operators';
 import { NavbarComponent } from '../../components/navbar/navbar.component';
 import { KanbanService, KanbanTask } from '../../services/kanban.service';
 import { ToastService } from '../../services/toast.service';
+import { AuthService } from '../../services/auth.service';
 
 @Component({
   selector: 'app-kanban',
@@ -19,11 +20,13 @@ import { ToastService } from '../../services/toast.service';
 export class KanbanComponent implements OnInit, OnDestroy {
   tasks: KanbanTask[] = [];
   loading = true;
+  studentName = 'Aluno';
 
   // Auto avaliação modal
   showEvaluation: boolean = false;
   evaluationTask: KanbanTask | null = null;
   evalChecks: boolean[] = [false, false, false, false];
+  outputVerified = false; // checkbox bloqueado: saída do exercício verificada
 
   // Edição de prioridade
   priorityEditTaskId: number | null = null;
@@ -38,15 +41,21 @@ export class KanbanComponent implements OnInit, OnDestroy {
   private destroy$ = new Subject<void>();
 
   private readonly statusLabels: Record<KanbanTask['status'], string> = {
-    'todo': 'A Fazer',
-    'in-progress': 'Em Andamento',
-    'in-review': 'Em Revisão',
-    'done': 'Concluído'
+    'todo': 'Missões',
+    'in-progress': 'Em progresso',
+    'in-review': 'Revisão',
+    'done': 'Conquistas'
   };
 
-  constructor(private router: Router, private kanbanService: KanbanService, private toast: ToastService) {}
+  constructor(private router: Router, private kanbanService: KanbanService, private toast: ToastService, private authService: AuthService) {}
 
   ngOnInit(): void {
+    this.authService.getCurrentUser()
+      .pipe(takeUntil(this.destroy$))
+      .subscribe(user => {
+        this.studentName = user.name?.split(' ')[0] || 'Aluno';
+      });
+
     this.kanbanService.getTasks()
       .pipe(takeUntil(this.destroy$))
       .subscribe(tasks => {
@@ -120,7 +129,17 @@ export class KanbanComponent implements OnInit, OnDestroy {
   openEvaluation(task: KanbanTask) {
     this.evaluationTask = task;
     this.evalChecks = [false, false, false, false];
+    // Checkbox bloqueado no topo: marcado só se a saída do exercício foi verificada.
+    this.outputVerified = this.isTaskVerified(task.id);
     this.showEvaluation = true;
+  }
+
+  private isTaskVerified(taskId: number): boolean {
+    try {
+      return localStorage.getItem(`taskVerified_${taskId}`) === 'true';
+    } catch {
+      return false;
+    }
   }
 
   closeEvaluation() {
@@ -129,7 +148,10 @@ export class KanbanComponent implements OnInit, OnDestroy {
   }
 
   allChecked(): boolean {
-    return this.evalChecks.every(c => c === true);
+    const manualOk = this.evalChecks.every(c => c === true);
+    // Quando a tarefa tem saída esperada, ela precisa estar verificada como correta.
+    const outputOk = !this.evaluationTask?.expectedOutput || this.outputVerified;
+    return manualOk && outputOk;
   }
 
   confirmEvaluation() {

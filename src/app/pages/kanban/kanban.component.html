@@ -1,6 +1,21 @@
 <div class="kanban-page">
+  <!-- Pegadas decorativas (fundo) -->
+  <img class="paw-deco paw-1" src="assets/images/pawprint.png" alt="" aria-hidden="true" />
+  <img class="paw-deco paw-2" src="assets/images/pawprint.png" alt="" aria-hidden="true" />
+  <img class="paw-deco paw-3" src="assets/images/pawprint.png" alt="" aria-hidden="true" />
+  <img class="paw-deco paw-4" src="assets/images/pawprint.png" alt="" aria-hidden="true" />
+  <img class="paw-deco paw-5" src="assets/images/pawprint.png" alt="" aria-hidden="true" />
+  <img class="paw-deco paw-6" src="assets/images/pawprint.png" alt="" aria-hidden="true" />
+  <img class="paw-deco paw-7" src="assets/images/pawprint.png" alt="" aria-hidden="true" />
+
   <div class="kanban-header">
-    <h1>Meu Kanban</h1>
+    <div class="kanban-hero">
+      <img class="hero-img" src="assets/images/lupito_hello.png" alt="Lupito" />
+      <div class="hero-text">
+        <p class="hero-greeting">🐺 Olá {{ studentName }}!</p>
+        <p class="hero-sub">Acompanhe suas missões e projetos.</p>
+      </div>
+    </div>
     <div class="header-actions"></div>
   </div>
 
@@ -28,8 +43,8 @@
     
     <!-- A FAZER -->
     <div class="kanban-column">
-      <div class="column-header col-todo">
-        <h2>A fazer</h2>
+      <div class="column-header">
+        <img class="header-img" src="assets/images/lupito_cabecalhos/1.png" alt="Missões" />
         <span class="task-count">{{ getTasksByStatus('todo').length }}</span>
       </div>
       <div class="column-content">
@@ -53,7 +68,7 @@
           </div>
           <p class="task-description">{{ task.description }}</p>
           <div class="card-actions">
-            <button class="action-btn workspace-btn" (click)="requestMoveTask(task.id, 'in-progress')">
+            <button class="action-btn workspace-btn btn-missoes" (click)="requestMoveTask(task.id, 'in-progress')">
               Iniciar Tarefa
             </button>
           </div>
@@ -80,8 +95,8 @@
 
     <!-- EM ANDAMENTO -->
     <div class="kanban-column">
-      <div class="column-header col-in-progress">
-        <h2>Em andamento</h2>
+      <div class="column-header">
+        <img class="header-img" src="assets/images/lupito_cabecalhos/2.png" alt="Em progresso" />
         <span class="task-count">{{ getTasksByStatus('in-progress').length }}</span>
       </div>
       <div class="column-content">
@@ -105,7 +120,7 @@
           </div>
           <p class="task-description">{{ task.description }}</p>
           <div class="card-actions">
-            <button class="action-btn workspace-btn" (click)="openWorkspace(task.id)">
+            <button class="action-btn workspace-btn btn-progresso" (click)="openWorkspace(task.id)">
               Espaço de Trabalho
             </button>
             <div class="secondary-actions">
@@ -119,8 +134,8 @@
 
     <!-- EM REVISÃO -->
     <div class="kanban-column">
-      <div class="column-header col-review">
-        <h2>Em revisão</h2>
+      <div class="column-header">
+        <img class="header-img" src="assets/images/lupito_cabecalhos/3.png" alt="Revisão" />
         <span class="task-count">{{ getTasksByStatus('in-review').length }}</span>
       </div>
       <div class="column-content">
@@ -144,7 +159,7 @@
           </div>
           <p class="task-description">{{ task.description }}</p>
           <div class="card-actions">
-            <button class="action-btn workspace-btn" style="background-color: #d97706;" (click)="openEvaluation(task)">
+            <button class="action-btn workspace-btn btn-revisao" (click)="openEvaluation(task)">
               Revisar
             </button>
             <div class="secondary-actions">
@@ -157,8 +172,8 @@
 
     <!-- CONCLUÍDO -->
     <div class="kanban-column">
-      <div class="column-header col-done">
-        <h2>Concluído</h2>
+      <div class="column-header">
+        <img class="header-img" src="assets/images/lupito_cabecalhos/4.png" alt="Conquistas" />
         <span class="task-count">{{ getTasksByStatus('done').length }}</span>
       </div>
       <div class="column-content">
@@ -171,7 +186,7 @@
           </div>
           <p class="task-description">{{ task.description }}</p>
           <div class="card-actions">
-            <button class="action-btn workspace-btn" style="background-color: #10b981;" (click)="openWorkspace(task.id)">
+            <button class="action-btn workspace-btn btn-conquistas" (click)="openWorkspace(task.id)">
               Analisar código
             </button>
             <div class="secondary-actions">
@@ -217,6 +232,11 @@
         Antes de concluir a tarefa <strong>{{ evaluationTask?.title }}</strong>, confirme que você atendeu todos os critérios abaixo:
       </p>
       <div class="checkbox-group">
+        <label class="custom-checkbox checkbox-locked" *ngIf="evaluationTask?.expectedOutput"
+               [title]="outputVerified ? 'Verificado automaticamente' : 'Confira a saída no Espaço de Trabalho'">
+          <input type="checkbox" [checked]="outputVerified" disabled>
+          <span>Saída do exercício corresponde ao esperado <em>(automático)</em></span>
+        </label>
         <label class="custom-checkbox">
           <input type="checkbox" [(ngModel)]="evalChecks[0]">
           <span>Completei todos os exercícios propostos na tarefa.</span>

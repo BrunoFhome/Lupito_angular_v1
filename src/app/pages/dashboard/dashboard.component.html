@@ -1,4 +1,13 @@
-<div class="dashboard-container">
+<div class="dashboard-page">
+  <!-- Pegadas decorativas (fundo) -->
+  <img class="paw-deco paw-1" src="assets/images/pawprint.png" alt="" aria-hidden="true" />
+  <img class="paw-deco paw-2" src="assets/images/pawprint.png" alt="" aria-hidden="true" />
+  <img class="paw-deco paw-3" src="assets/images/pawprint.png" alt="" aria-hidden="true" />
+  <img class="paw-deco paw-4" src="assets/images/pawprint.png" alt="" aria-hidden="true" />
+  <img class="paw-deco paw-5" src="assets/images/pawprint.png" alt="" aria-hidden="true" />
+  <img class="paw-deco paw-6" src="assets/images/pawprint.png" alt="" aria-hidden="true" />
+
+  <div class="dashboard-container">
 
   <!-- Skeleton loader -->
   <div class="skeleton-layout" *ngIf="loading">
@@ -37,6 +46,7 @@
 
     <!-- Boas-vindas -->
     <div class="welcome-banner">
+      <img class="welcome-mascot" src="assets/images/bemvindo.png" alt="Lupito" />
       <div class="welcome-text">
         <h1>Olá, {{ firstName }}! 👋</h1>
         <p *ngIf="(user?.currentStreak ?? 0) === 0">Bem-vindo(a) de volta. Continue de onde parou.</p>
@@ -45,18 +55,33 @@
         <p *ngIf="(user?.currentStreak ?? 0) >= 7 && (user?.currentStreak ?? 0) < 30" class="streak-msg">Incrível! {{ user?.currentStreak }} dias de sequência. Continue assim!</p>
         <p *ngIf="(user?.currentStreak ?? 0) >= 30" class="streak-msg">Lendário! {{ user?.currentStreak }} dias sem parar. 🏆</p>
       </div>
-      <div class="banner-stats">
-        <div class="banner-stat streak-stat" *ngIf="(user?.currentStreak ?? 0) > 0">
-          <span class="streak-fire">🔥</span>
-          <span class="stat-number">{{ user?.currentStreak }}</span>
-          <span class="stat-label">{{ (user?.currentStreak ?? 0) === 1 ? 'dia seguido' : 'dias seguidos' }}</span>
-        </div>
-        <div class="banner-stat overall-stat" *ngIf="totalLessons > 0">
-          <span class="stat-number">{{ overallPercent }}%</span>
-          <span class="stat-label">concluído no total</span>
-        </div>
-      </div>
     </div>
+
+    <div class="dash-main">
+    <div class="dash-left">
+
+    <!-- Hero: Continuar aprendendo (próximo passo) -->
+    <section class="next-hero" *ngIf="suggestedLesson">
+      <div class="next-hero-content">
+        <span class="next-hero-eyebrow">🚀 Continuar aprendendo</span>
+        <h2 class="next-hero-course">{{ suggestedLesson.title }}</h2>
+        <p class="next-hero-lesson">{{ suggestedLesson.nextLessonTitle }}</p>
+        <button class="next-hero-btn" (click)="goToLesson(suggestedLesson)">
+          Iniciar Lição →
+        </button>
+      </div>
+      <img class="next-hero-mascot" src="assets/images/explicando.png" alt="" aria-hidden="true" />
+    </section>
+
+    <!-- Hero: todas as trilhas concluídas -->
+    <section class="next-hero next-hero-done" *ngIf="!suggestedLesson">
+      <div class="next-hero-content">
+        <span class="next-hero-eyebrow">🏆 Tudo em dia!</span>
+        <h2 class="next-hero-course">Você completou todas as trilhas!</h2>
+        <p class="next-hero-lesson">Volte em breve para novos conteúdos.</p>
+      </div>
+      <img class="next-hero-mascot" src="assets/images/comemorando.png" alt="" aria-hidden="true" />
+    </section>
 
     <!-- Progresso por curso (Ponto 2) -->
     <section class="section">
@@ -69,10 +94,7 @@
         <div class="course-card" *ngFor="let card of courseCards">
           <div class="course-card-header">
             <div class="course-icon">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path>
-                <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path>
-              </svg>
+              <img [src]="courseIcon(card.title)" alt="" aria-hidden="true" />
             </div>
             <div class="course-title-group">
               <h3>{{ card.title }}</h3>
@@ -118,79 +140,41 @@
       </div>
     </section>
 
-    <!-- Cards inferiores -->
-    <div class="bottom-grid">
+    </div><!-- .dash-left -->
 
-      <!-- Kanban resumo -->
-      <section class="info-card kanban-card">
-        <div class="info-card-header">
-          <h2>Projetos</h2>
-          <button class="link-btn" (click)="goToKanban()">Ver Kanban →</button>
+    <aside class="dash-right">
+    <!-- Resumo de Projetos (Kanban) -->
+    <section class="info-card kanban-card">
+      <div class="info-card-header">
+        <h2>Projetos</h2>
+        <button class="link-btn" (click)="goToKanban()">Ver Kanban →</button>
+      </div>
+      <div class="kanban-stats">
+        <div class="kchip kchip-missoes">
+          <span class="kchip-emoji">🐾</span>
+          <span class="kchip-label">Missões</span>
+          <span class="kchip-count">{{ kanbanStats.todo }}</span>
         </div>
-        <div class="kanban-stats">
-          <div class="kstat">
-            <span class="kstat-value">{{ kanbanStats.todo }}</span>
-            <span class="kstat-label">A fazer</span>
-          </div>
-          <div class="kstat-divider"></div>
-          <div class="kstat">
-            <span class="kstat-value kstat-blue">{{ kanbanStats.inProgress }}</span>
-            <span class="kstat-label">Em andamento</span>
-          </div>
-          <div class="kstat-divider"></div>
-          <div class="kstat">
-            <span class="kstat-value kstat-yellow">{{ kanbanStats.inReview }}</span>
-            <span class="kstat-label">Em revisão</span>
-          </div>
-          <div class="kstat-divider"></div>
-          <div class="kstat">
-            <span class="kstat-value kstat-green">{{ kanbanStats.done }}</span>
-            <span class="kstat-label">Concluídos</span>
-          </div>
+        <div class="kchip kchip-progresso">
+          <span class="kchip-emoji">🚀</span>
+          <span class="kchip-label">Em progresso</span>
+          <span class="kchip-count">{{ kanbanStats.inProgress }}</span>
         </div>
-      </section>
-
-      <!-- Próximo passo sugerido -->
-      <section class="info-card next-step-card" *ngIf="suggestedLesson">
-        <div class="info-card-header">
-          <h2>Próximo Passo</h2>
+        <div class="kchip kchip-revisao">
+          <span class="kchip-emoji">🔍</span>
+          <span class="kchip-label">Revisão</span>
+          <span class="kchip-count">{{ kanbanStats.inReview }}</span>
         </div>
-        <div class="next-step-content">
-          <div class="next-step-icon">▶</div>
-          <div class="next-step-info">
-            <span class="next-step-course">{{ suggestedLesson.title }}</span>
-            <span class="next-step-lesson">{{ suggestedLesson.nextLessonTitle }}</span>
-          </div>
+        <div class="kchip kchip-conquistas">
+          <span class="kchip-emoji">🏆</span>
+          <span class="kchip-label">Concluídas</span>
+          <span class="kchip-count">{{ kanbanStats.done }}</span>
         </div>
-        <button class="btn-primary" (click)="goToLesson(suggestedLesson)">
-          Iniciar Lição →
-        </button>
-      </section>
-
-      <!-- Estado vazio (nenhum passo sugerido) -->
-      <section class="info-card next-step-card next-step-empty" *ngIf="!suggestedLesson">
-        <div class="info-card-header">
-          <h2>Próximo Passo</h2>
-        </div>
-        <div class="empty-next">
-          <span class="trophy">🏆</span>
-          <p>Você completou todas as trilhas disponíveis!</p>
-        </div>
-      </section>
-
-    </div>
+      </div>
+    </section>
+    </aside><!-- .dash-right -->
+    </div><!-- .dash-main -->
 
   </ng-container>
-</div>
-
-<!-- Mascote da Dashboard -->
-<div class="mascot-overlay"
-     [ngClass]="'mascot-' + mascotState"
-     *ngIf="mascotState !== 'hidden'"
-     (click)="hideMascot()"
-     title="Clique para fechar">
-  <div class="mascot-bubble">
-    <p>{{ mascotMessage }}</p>
   </div>
-  <img [src]="mascotImage" alt="mascote" class="mascot-img" />
 </div>

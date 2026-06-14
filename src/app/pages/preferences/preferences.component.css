@@ -1,0 +1,143 @@
+.prefs-container {
+  max-width: 640px;
+  margin: 0 auto;
+  padding: 48px 32px;
+}
+
+.prefs-title {
+  font-size: 30px;
+  font-weight: 800;
+  color: #3c3c3c;
+  margin: 0 0 36px;
+}
+
+.prefs-section {
+  margin-bottom: 40px;
+}
+
+.section-heading {
+  font-size: 18px;
+  font-weight: 700;
+  color: #9aa3ab;
+  margin: 0 0 8px;
+  padding-bottom: 14px;
+  border-bottom: 2px solid #f0f2f4;
+}
+
+.pref-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px 0;
+}
+
+.pref-label {
+  font-size: 16px;
+  font-weight: 600;
+  color: #3c3c3c;
+}
+
+/* Linha de navegação (ex.: Editar perfil) */
+.pref-link-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px;
+  margin-top: 8px;
+  border: 2px solid #f0f2f4;
+  border-radius: 14px;
+  text-decoration: none;
+  transition: background-color 0.18s ease, border-color 0.18s ease;
+}
+
+.pref-link-row:hover {
+  background-color: #f5f7f9;
+  border-color: #e2e6ea;
+}
+
+.pref-link-arrow {
+  width: 20px;
+  height: 20px;
+  color: #9aa3ab;
+  flex-shrink: 0;
+}
+
+/* Toggle switch estilo Duolingo */
+.switch {
+  position: relative;
+  width: 52px;
+  height: 30px;
+  border: none;
+  border-radius: 999px;
+  background-color: #e2e6ea;
+  cursor: pointer;
+  padding: 0;
+  transition: background-color 0.2s ease;
+  flex-shrink: 0;
+}
+
+.switch.on {
+  background-color: #1cb0f6;
+}
+
+.switch-knob {
+  position: absolute;
+  top: 3px;
+  left: 3px;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  background-color: #ffffff;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+  transition: transform 0.2s ease;
+}
+
+.switch.on .switch-knob {
+  transform: translateX(22px);
+}
+
+/* Campo Visual / select */
+.pref-field {
+  padding: 16px 0;
+}
+
+.pref-field .pref-label {
+  display: block;
+  margin-bottom: 10px;
+}
+
+.select-wrapper {
+  position: relative;
+}
+
+.pref-select {
+  width: 100%;
+  appearance: none;
+  -webkit-appearance: none;
+  padding: 14px 44px 14px 16px;
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  color: #6b7280;
+  background-color: #ffffff;
+  border: 2px solid #f0f2f4;
+  border-radius: 14px;
+  cursor: pointer;
+  transition: border-color 0.18s ease;
+}
+
+.pref-select:focus {
+  outline: none;
+  border-color: #b9e6fb;
+}
+
+.select-arrow {
+  position: absolute;
+  right: 16px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 20px;
+  height: 20px;
+  color: #9aa3ab;
+  pointer-events: none;
+}

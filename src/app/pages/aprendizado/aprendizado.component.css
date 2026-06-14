@@ -1,7 +1,37 @@
 /* ── Página ─────────────────────────────────────────────────────────────────── */
+/* Wrapper full-width: fundo suave + patinhas (igual ao Início) */
+.learning-page {
+  position: relative;
+  isolation: isolate; /* contexto de empilhamento p/ as patinhas (z-index:-1) */
+  min-height: calc(100vh - 80px);
+  background-color: #f1f5f9;
+  background-image:
+    radial-gradient(circle at 12% 18%, rgba(0, 180, 204, 0.10), transparent 40%),
+    radial-gradient(circle at 88% 72%, rgba(32, 128, 224, 0.09), transparent 42%),
+    radial-gradient(circle at 70% 8%, rgba(112, 192, 80, 0.08), transparent 38%),
+    linear-gradient(135deg, #f6f9fc 0%, #eef2f7 100%);
+}
+
+.paw-deco {
+  position: absolute;
+  z-index: -1;
+  width: 64px;
+  height: auto;
+  opacity: 0.06;
+  pointer-events: none;
+  user-select: none;
+}
+
+.paw-1 { top: 8%;  left: 4%;  width: 58px; transform: rotate(16deg); }
+.paw-2 { top: 24%; left: 90%; width: 70px; transform: rotate(-26deg); }
+.paw-3 { top: 50%; left: 8%;  width: 52px; transform: rotate(40deg); }
+.paw-4 { top: 60%; left: 93%; width: 60px; transform: rotate(-12deg); }
+.paw-5 { top: 80%; left: 16%; width: 66px; transform: rotate(-40deg); }
+.paw-6 { top: 88%; left: 70%; width: 54px; transform: rotate(22deg); }
+
 .learning-container {
   padding: 48px 56px;
-  max-width: 1300px;
+  max-width: 1440px;
   margin: 0 auto;
   font-family: 'JetBrains Mono', monospace;
   color: #1c1c1c;
@@ -20,24 +50,28 @@
 }
 
 .header-icon {
-  width: 56px;
-  height: 56px;
-  background-color: #00b4cc;
-  border-radius: 12px;
+  width: 74px;
+  height: 74px;
+  background-color: #ffffff;
+  border: 2px solid #f0f2f4;
+  border-radius: 17px;
   display: flex;
   justify-content: center;
   align-items: center;
-  color: white;
   flex-shrink: 0;
+  overflow: hidden;
 }
 
-.header-icon svg {
-  width: 26px;
-  height: 26px;
+.header-icon img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  padding: 3px;
+  box-sizing: border-box;
 }
 
 .path-header h2 {
-  font-size: 34px;
+  font-size: 38px;
   font-weight: 800;
   margin: 0;
   color: #1a1a1a;
@@ -47,28 +81,28 @@
 /* ── Card de progresso ───────────────────────────────────────────────────────── */
 .progress-card {
   background-color: #00b4cc;
-  border-radius: 20px;
-  padding: 32px 40px;
+  border-radius: 22px;
+  padding: 38px 46px;
   color: white;
   margin-bottom: 60px;
-  box-shadow: 0 4px 20px rgba(0, 180, 204, 0.2);
+  box-shadow: 0 8px 24px rgba(0, 180, 204, 0.22);
 }
 
 .progress-info {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 16px;
+  margin-bottom: 18px;
 }
 
 .progress-info h3 {
   margin: 0;
-  font-size: 22px;
+  font-size: 25px;
   font-weight: 700;
 }
 
 .progress-text {
-  font-size: 14px;
+  font-size: 15px;
   font-weight: 600;
   background: rgba(255,255,255,0.2);
   padding: 4px 12px;
@@ -145,7 +179,7 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  width: 150px;
+  width: 168px;
   z-index: 2;
 }
 
@@ -160,20 +194,20 @@
 
 /* Círculo base */
 .node-circle {
-  width: 86px;
-  height: 86px;
+  width: 98px;
+  height: 98px;
   border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
   border: 4px solid transparent;
   transition: transform 0.18s ease, box-shadow 0.18s ease;
-  margin-bottom: 12px;
+  margin-bottom: 14px;
 }
 
 .node-circle svg {
-  width: 36px;
-  height: 36px;
+  width: 42px;
+  height: 42px;
 }
 
 /* Estado: concluído ── verde */
@@ -222,12 +256,12 @@
 
 /* ── Rótulo do nó ────────────────────────────────────────────────────────────── */
 .node-label {
-  font-size: 14px;
+  font-size: 15px;
   font-weight: 700;
   color: #4b5563;
   text-align: center;
   line-height: 1.3;
-  max-width: 140px;
+  max-width: 158px;
   word-break: break-word;
 }
 

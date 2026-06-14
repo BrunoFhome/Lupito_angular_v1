@@ -1,103 +1,252 @@
 .sidebar {
-  width: 320px;
-  background-color: #343838;
-  color: white;
+  width: 280px;
+  background-color: #ffffff;
+  color: #3c3c3c;
   display: flex;
   flex-direction: column;
   height: 100%;
-  box-shadow: 2px 0 5px rgba(0,0,0,0.1);
+  border-right: 2px solid #f0f2f4;
 }
 
 .logo-container {
-  padding: 12px 10px;
-  text-align: center;
-  border-bottom: 1px solid #3d4242;
+  padding: 22px 24px 14px;
+  text-align: left;
 }
 
 .logo-img {
-  width: 100%;
-  max-width: 160px;
+  width: auto;
+  max-width: 120px;
   height: auto;
   display: block;
-  margin: 0 auto;
   object-fit: contain;
 }
 
 .nav-links {
   list-style: none;
   padding: 0;
-  margin: 20px 0;
+  margin: 14px 0;
   display: flex;
   flex-direction: column;
-  gap: 10px;
+  gap: 6px;
 }
 
 .nav-links li {
-  padding: 0 20px;
+  padding: 0 14px;
 }
 
 .nav-links a {
   display: flex;
   align-items: center;
-  gap: 12px;
-  padding: 12px 15px;
-  color: #bdc3c7;
+  gap: 14px;
+  padding: 10px 12px;
+  color: #4b4b4b;
   text-decoration: none;
-  border-radius: 6px;
-  transition: all 0.2s ease;
+  border-radius: 14px;
+  transition: background-color 0.18s ease, color 0.18s ease;
   font-size: 15px;
+  font-weight: 600;
 }
 
-.nav-links a svg {
-  width: 18px;
-  height: 18px;
+/* Ícone colorido em "badge" arredondado */
+.nav-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 46px;
+  height: 46px;
+  border-radius: 13px;
   flex-shrink: 0;
-  opacity: 0.7;
-  transition: opacity 0.2s;
+  overflow: hidden;
+  background-color: var(--ic-bg);
+  color: var(--ic-fg);
+  transition: background-color 0.18s ease, color 0.18s ease;
+}
+
+/* Perfil dentro da lista (avatar circular, caso esteja na nav-links) */
+.nav-icon-avatar {
+  border-radius: 50%;
+  background-color: rgba(0, 180, 204, 0.1);
+}
+
+.nav-icon-avatar img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transform: scale(1.5);
+  transform-origin: center 38%;
+  display: block;
+}
+
+.nav-icon svg {
+  width: 24px;
+  height: 24px;
+}
+
+/* Perfil no rodapé da sidebar: avatar maior */
+.profile-link {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  margin: 0 14px 6px;
+  padding: 10px 12px;
+  color: #4b4b4b;
+  text-decoration: none;
+  border-radius: 14px;
+  font-size: 15px;
+  font-weight: 600;
+  transition: background-color 0.18s ease, color 0.18s ease;
+}
+
+.profile-avatar {
+  width: 64px;
+  height: 64px;
+  border-radius: 50%;
+  overflow: hidden;
+  flex-shrink: 0;
+  background-color: rgba(0, 180, 204, 0.1);
+  border: 2px solid #f0f2f4;
+  transition: border-color 0.18s ease;
+}
+
+.profile-avatar img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  /* Zoom no rosto/tronco para cortar a moldura escura e dar mais nitidez */
+  transform: scale(1.6);
+  transform-origin: center 38%;
+  display: block;
+}
+
+.profile-link:hover {
+  background-color: #f5f7f9;
+}
+
+.profile-link.active {
+  background-color: #00b4cc;
+  color: #ffffff;
+}
+
+.profile-link.active .profile-avatar {
+  border-color: rgba(255, 255, 255, 0.5);
+}
+
+/* Ícones em imagem (ilustrações coloridas) */
+.nav-icon-img {
+  background-color: #ffffff;
+  padding: 2px;
+}
+
+.nav-icon-img img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  display: block;
+}
+
+/* No item ativo o badge permanece branco para a ilustração aparecer limpa */
+.nav-links a.active .nav-icon-img {
+  background-color: #ffffff;
 }
 
 .nav-links a:hover {
-  background-color: #3d4242;
-  color: #ecf0f1;
-  transform: translateX(4px);
+  background-color: #f5f7f9;
 }
 
-.nav-links a:hover svg {
-  opacity: 1;
-}
-
+/* Item ativo: fundo azul-turquesa */
 .nav-links a.active {
   background-color: #00b4cc;
-  color: white;
-  font-weight: 600;
-  box-shadow: 0 2px 8px rgba(0, 180, 204, 0.35);
+  color: #ffffff;
 }
 
-.nav-links a.active svg {
-  opacity: 1;
+.nav-links a.active .nav-icon {
+  background-color: rgba(255, 255, 255, 0.22);
+  color: #ffffff;
 }
 
 .spacer {
   flex-grow: 1;
 }
 
+/* Estatísticas (streak / XP) */
+.stats {
+  padding: 14px 22px;
+  border-top: 1px solid #f0f2f4;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.stat-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 14px;
+  color: #6b7280;
+}
+
+.stat-emoji {
+  font-size: 18px;
+  line-height: 1;
+}
+
+.stat-text strong {
+  color: #3c3c3c;
+}
+
 .logout-container {
-  padding: 20px;
-  border-top: 1px solid #34495e;
+  padding: 12px 22px 22px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.settings-btn {
+  width: 100%;
+  padding: 11px 15px;
+  box-sizing: border-box;
+  background-color: #ffffff;
+  color: #4b4b4b;
+  border: 2px solid #f0f2f4;
+  border-radius: 14px;
+  cursor: pointer;
+  font-weight: 700;
+  font-size: 14px;
+  text-decoration: none;
+  transition: background-color 0.18s ease, border-color 0.18s ease, color 0.18s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+}
+
+.settings-btn svg {
+  width: 17px;
+  height: 17px;
+  flex-shrink: 0;
+}
+
+.settings-btn:hover {
+  background-color: #f5f7f9;
+}
+
+.settings-btn.active {
+  background-color: #e6f6fe;
+  border-color: #b9e6fb;
+  color: #00b4cc;
 }
 
 .logout-btn {
   width: 100%;
   padding: 11px 15px;
-  background-color: transparent;
-  color: #bdc3c7;
-  border: 1px solid #4a5050;
-  border-radius: 6px;
+  background-color: #ffffff;
+  color: #ef4444;
+  border: 2px solid #f0f2f4;
+  border-radius: 14px;
   cursor: pointer;
-  font-weight: 600;
+  font-weight: 700;
   font-size: 14px;
-  font-family: 'JetBrains Mono', monospace;
-  transition: all 0.2s ease;
+  transition: background-color 0.18s ease, border-color 0.18s ease, color 0.18s ease;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -111,7 +260,6 @@
 }
 
 .logout-btn:hover {
-  background-color: #e74c3c;
-  border-color: #e74c3c;
-  color: white;
+  background-color: #fef2f2;
+  border-color: #fecaca;
 }

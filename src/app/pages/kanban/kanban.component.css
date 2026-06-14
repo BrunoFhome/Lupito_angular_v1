@@ -1,9 +1,36 @@
 .kanban-page {
+  position: relative;
+  isolation: isolate; /* cria contexto de empilhamento p/ o ::before das pegadas aparecer */
   padding: 1rem 2rem;
-  background-color: #f1f5f9;
   min-height: calc(100vh - 80px);
   font-family: 'JetBrains Mono', monospace;
+  /* Formas geométricas transparentes (blobs suaves) + gradiente muito leve */
+  background-color: #f1f5f9;
+  background-image:
+    radial-gradient(circle at 12% 18%, rgba(0, 180, 204, 0.10), transparent 40%),
+    radial-gradient(circle at 88% 72%, rgba(32, 128, 224, 0.09), transparent 42%),
+    radial-gradient(circle at 70% 8%, rgba(112, 192, 80, 0.08), transparent 38%),
+    linear-gradient(135deg, #f6f9fc 0%, #eef2f7 100%);
 }
+
+/* Pegadas do Lupito — poucas, espalhadas e rotacionadas aleatoriamente */
+.paw-deco {
+  position: absolute;
+  z-index: -1;
+  width: 64px;
+  height: auto;
+  opacity: 0.06;
+  pointer-events: none;
+  user-select: none;
+}
+
+.paw-1 { top: 9%;  left: 5%;  width: 58px; transform: rotate(18deg); }
+.paw-2 { top: 20%; left: 82%; width: 72px; transform: rotate(-28deg); }
+.paw-3 { top: 44%; left: 28%; width: 50px; transform: rotate(42deg); }
+.paw-4 { top: 38%; left: 60%; width: 66px; transform: rotate(-14deg); }
+.paw-5 { top: 70%; left: 12%; width: 70px; transform: rotate(-44deg); }
+.paw-6 { top: 82%; left: 48%; width: 54px; transform: rotate(24deg); }
+.paw-7 { top: 64%; left: 85%; width: 60px; transform: rotate(-8deg); }
 
 /* ── Skeleton ─────────────────────────────────────── */
 @keyframes shimmer {
@@ -74,18 +101,51 @@
 .kanban-header {
   display: flex;
   justify-content: space-between;
-  align-items: center;
+  align-items: flex-end;
   background-color: #fff;
-  padding: 1.5rem;
+  padding: 1.25rem 1.5rem 0 0;
   margin: -1rem -2rem 2rem -2rem;
   box-shadow: 0 1px 3px rgba(0,0,0,0.1);
 }
 
-.kanban-header h1 {
-  font-size: 1.5rem;
-  font-weight: 700;
+/* Banner de boas-vindas (Lupito acenando) */
+.kanban-hero {
+  position: relative;
+  width: 100%;
+  max-width: 320px;
+  /* empurra a imagem para baixo para o mascote encostar na divisão do cabeçalho */
+  margin-bottom: -29px;
+}
+
+.kanban-hero .hero-img {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
+.kanban-hero .hero-text {
+  position: absolute;
+  top: 50%;
+  left: 44%;
+  right: 6%;
+  transform: translateY(-50%);
+  text-align: center;
+}
+
+.hero-greeting {
+  margin: 0 0 0.3rem;
+  font-size: 1.15rem;
+  font-weight: 800;
   color: #1e293b;
+  line-height: 1.2;
+}
+
+.hero-sub {
   margin: 0;
+  font-size: 0.85rem;
+  font-weight: 500;
+  color: #64748b;
+  line-height: 1.25;
 }
 
 .board-container {
@@ -97,7 +157,7 @@
 }
 
 .kanban-column {
-  flex: 0 0 320px;
+  flex: 0 0 370px;
   background-color: #fff;
   border-radius: 8px;
   display: flex;
@@ -106,23 +166,23 @@
   overflow: hidden;
 }
 
-/* Identificando as cores diferentes de cada coluna */
+/* Cabeçalho como imagem (banner do Lupito) */
 .column-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 1rem 1.25rem;
+  position: relative;
   color: #fff;
 }
 
-.column-header h2 {
-  font-size: 1.1rem;
-  font-weight: 600;
-  margin: 0;
+.column-header .header-img {
+  display: block;
+  width: 100%;
+  height: auto;
 }
 
 .column-header .task-count {
-  background-color: rgba(255, 255, 255, 0.2);
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  background-color: rgba(0, 0, 0, 0.35);
   border-radius: 50%;
   width: 24px;
   height: 24px;
@@ -132,12 +192,6 @@
   font-size: 0.8rem;
   font-weight: bold;
 }
-
-/* Cores das colunas pela imagem */
-.col-todo { background-color: #4b5563; } /* Slate 600 */
-.col-in-progress { background-color: #00b4cc; }
-.col-review { background-color: #d97706; } /* Amber 600 */
-.col-done { background-color: #10b981; } /* Emerald 500 */
 
 .column-content {
   padding: 1rem;
@@ -306,6 +360,19 @@
   background-color: #008c9e;
 }
 
+/* Botões primários com a cor do banner de cada coluna */
+.btn-missoes { background-color: #2080e0; }
+.btn-missoes:hover { background-color: #1a6bc0; }
+
+.btn-progresso { background-color: #20b0c0; }
+.btn-progresso:hover { background-color: #1a95a3; }
+
+.btn-revisao { background-color: #f0b020; }
+.btn-revisao:hover { background-color: #d89a12; }
+
+.btn-conquistas { background-color: #70c050; }
+.btn-conquistas:hover { background-color: #5cab40; }
+
 .secondary-actions {
   display: flex;
   gap: 0.5rem;
@@ -430,6 +497,26 @@
   height: 18px;
   margin-top: 0.1rem;
   cursor: pointer;
+}
+
+/* Checkbox bloqueado (verificação automática da saída) */
+.checkbox-locked {
+  cursor: not-allowed;
+  background-color: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  padding: 0.6rem 0.75rem;
+  font-weight: 600;
+  color: #475569;
+}
+.checkbox-locked input {
+  cursor: not-allowed;
+  accent-color: #22c55e;
+}
+.checkbox-locked em {
+  color: #94a3b8;
+  font-style: normal;
+  font-weight: 500;
 }
 
 .modal-footer {
