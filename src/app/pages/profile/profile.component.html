@@ -1,4 +1,12 @@
 <div class="page-container">
+    <!-- Pegadas decorativas (fundo) -->
+    <img class="paw-deco paw-1" src="assets/images/pawprint.png" alt="" aria-hidden="true" />
+    <img class="paw-deco paw-2" src="assets/images/pawprint.png" alt="" aria-hidden="true" />
+    <img class="paw-deco paw-3" src="assets/images/pawprint.png" alt="" aria-hidden="true" />
+    <img class="paw-deco paw-4" src="assets/images/pawprint.png" alt="" aria-hidden="true" />
+    <img class="paw-deco paw-5" src="assets/images/pawprint.png" alt="" aria-hidden="true" />
+    <img class="paw-deco paw-6" src="assets/images/pawprint.png" alt="" aria-hidden="true" />
+
     <div style="color: red; padding: 20px;" *ngIf="errorMessage">
         Erro ao carregar perfil: {{ errorMessage }}
     </div>
@@ -142,6 +150,9 @@
             </div>
         </div>
 
+        <div class="profile-grid">
+        <div class="profile-main">
+
         <!-- Heatmap de Atividade -->
         <div class="heatmap-section">
             <div class="heatmap-header">
@@ -195,6 +206,9 @@
             </div>
         </div>
 
+        </div><!-- .profile-main -->
+
+        <aside class="profile-side">
         <!-- Seção de Portfólio -->
         <div class="portfolio-section">
             <div class="portfolio-header">
@@ -231,6 +245,8 @@
                 </div>
             </div>
         </div>
+        </aside><!-- .profile-side -->
+        </div><!-- .profile-grid -->
 
    </div>
 

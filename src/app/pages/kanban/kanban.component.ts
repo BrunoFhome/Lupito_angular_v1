@@ -26,6 +26,7 @@ export class KanbanComponent implements OnInit, OnDestroy {
   showEvaluation: boolean = false;
   evaluationTask: KanbanTask | null = null;
   evalChecks: boolean[] = [false, false, false, false];
+  outputVerified = false; // checkbox bloqueado: saída do exercício verificada
 
   // Edição de prioridade
   priorityEditTaskId: number | null = null;
@@ -128,7 +129,17 @@ export class KanbanComponent implements OnInit, OnDestroy {
   openEvaluation(task: KanbanTask) {
     this.evaluationTask = task;
     this.evalChecks = [false, false, false, false];
+    // Checkbox bloqueado no topo: marcado só se a saída do exercício foi verificada.
+    this.outputVerified = this.isTaskVerified(task.id);
     this.showEvaluation = true;
+  }
+
+  private isTaskVerified(taskId: number): boolean {
+    try {
+      return localStorage.getItem(`taskVerified_${taskId}`) === 'true';
+    } catch {
+      return false;
+    }
   }
 
   closeEvaluation() {
@@ -137,7 +148,10 @@ export class KanbanComponent implements OnInit, OnDestroy {
   }
 
   allChecked(): boolean {
-    return this.evalChecks.every(c => c === true);
+    const manualOk = this.evalChecks.every(c => c === true);
+    // Quando a tarefa tem saída esperada, ela precisa estar verificada como correta.
+    const outputOk = !this.evaluationTask?.expectedOutput || this.outputVerified;
+    return manualOk && outputOk;
   }
 
   confirmEvaluation() {

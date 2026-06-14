@@ -499,6 +499,26 @@
   cursor: pointer;
 }
 
+/* Checkbox bloqueado (verificação automática da saída) */
+.checkbox-locked {
+  cursor: not-allowed;
+  background-color: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  padding: 0.6rem 0.75rem;
+  font-weight: 600;
+  color: #475569;
+}
+.checkbox-locked input {
+  cursor: not-allowed;
+  accent-color: #22c55e;
+}
+.checkbox-locked em {
+  color: #94a3b8;
+  font-style: normal;
+  font-weight: 500;
+}
+
 .modal-footer {
   padding: 1.25rem 1.5rem;
   background-color: #f8fafc;

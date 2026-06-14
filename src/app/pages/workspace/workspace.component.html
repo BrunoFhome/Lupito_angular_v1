@@ -46,6 +46,14 @@
         ✓ Conferir
       </button>
 
+      <button class="btn-review"
+        *ngIf="task?.expectedOutput"
+        [class.btn-review-hidden]="verifyResult !== 'correct' || isCompleted"
+        [disabled]="verifyResult !== 'correct' || isCompleted"
+        (click)="sendToReview()">
+        Enviar para Revisão
+      </button>
+
 
       <button class="btn-ai"
         (click)="evaluateWithAI()"

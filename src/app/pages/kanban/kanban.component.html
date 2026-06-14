@@ -232,6 +232,11 @@
         Antes de concluir a tarefa <strong>{{ evaluationTask?.title }}</strong>, confirme que você atendeu todos os critérios abaixo:
       </p>
       <div class="checkbox-group">
+        <label class="custom-checkbox checkbox-locked" *ngIf="evaluationTask?.expectedOutput"
+               [title]="outputVerified ? 'Verificado automaticamente' : 'Confira a saída no Espaço de Trabalho'">
+          <input type="checkbox" [checked]="outputVerified" disabled>
+          <span>Saída do exercício corresponde ao esperado <em>(automático)</em></span>
+        </label>
         <label class="custom-checkbox">
           <input type="checkbox" [(ngModel)]="evalChecks[0]">
           <span>Completei todos os exercícios propostos na tarefa.</span>

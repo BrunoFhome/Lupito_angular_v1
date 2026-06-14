@@ -55,18 +55,10 @@
         <p *ngIf="(user?.currentStreak ?? 0) >= 7 && (user?.currentStreak ?? 0) < 30" class="streak-msg">Incrível! {{ user?.currentStreak }} dias de sequência. Continue assim!</p>
         <p *ngIf="(user?.currentStreak ?? 0) >= 30" class="streak-msg">Lendário! {{ user?.currentStreak }} dias sem parar. 🏆</p>
       </div>
-      <div class="banner-stats">
-        <div class="banner-stat streak-stat" *ngIf="(user?.currentStreak ?? 0) > 0">
-          <span class="streak-fire">🔥</span>
-          <span class="stat-number">{{ user?.currentStreak }}</span>
-          <span class="stat-label">{{ (user?.currentStreak ?? 0) === 1 ? 'dia seguido' : 'dias seguidos' }}</span>
-        </div>
-        <div class="banner-stat overall-stat" *ngIf="totalLessons > 0">
-          <span class="stat-number">{{ overallPercent }}%</span>
-          <span class="stat-label">concluído no total</span>
-        </div>
-      </div>
     </div>
+
+    <div class="dash-main">
+    <div class="dash-left">
 
     <!-- Hero: Continuar aprendendo (próximo passo) -->
     <section class="next-hero" *ngIf="suggestedLesson">
@@ -148,6 +140,9 @@
       </div>
     </section>
 
+    </div><!-- .dash-left -->
+
+    <aside class="dash-right">
     <!-- Resumo de Projetos (Kanban) -->
     <section class="info-card kanban-card">
       <div class="info-card-header">
@@ -156,36 +151,30 @@
       </div>
       <div class="kanban-stats">
         <div class="kchip kchip-missoes">
-          <span class="kchip-value">{{ kanbanStats.todo }}</span>
+          <span class="kchip-emoji">🐾</span>
           <span class="kchip-label">Missões</span>
+          <span class="kchip-count">{{ kanbanStats.todo }}</span>
         </div>
         <div class="kchip kchip-progresso">
-          <span class="kchip-value">{{ kanbanStats.inProgress }}</span>
+          <span class="kchip-emoji">🚀</span>
           <span class="kchip-label">Em progresso</span>
+          <span class="kchip-count">{{ kanbanStats.inProgress }}</span>
         </div>
         <div class="kchip kchip-revisao">
-          <span class="kchip-value">{{ kanbanStats.inReview }}</span>
+          <span class="kchip-emoji">🔍</span>
           <span class="kchip-label">Revisão</span>
+          <span class="kchip-count">{{ kanbanStats.inReview }}</span>
         </div>
         <div class="kchip kchip-conquistas">
-          <span class="kchip-value">{{ kanbanStats.done }}</span>
-          <span class="kchip-label">Conquistas</span>
+          <span class="kchip-emoji">🏆</span>
+          <span class="kchip-label">Concluídas</span>
+          <span class="kchip-count">{{ kanbanStats.done }}</span>
         </div>
       </div>
     </section>
+    </aside><!-- .dash-right -->
+    </div><!-- .dash-main -->
 
   </ng-container>
   </div>
-</div>
-
-<!-- Mascote da Dashboard -->
-<div class="mascot-overlay"
-     [ngClass]="'mascot-' + mascotState"
-     *ngIf="mascotState !== 'hidden'"
-     (click)="hideMascot()"
-     title="Clique para fechar">
-  <div class="mascot-bubble">
-    <p>{{ mascotMessage }}</p>
-  </div>
-  <img [src]="mascotImage" alt="mascote" class="mascot-img" />
 </div>

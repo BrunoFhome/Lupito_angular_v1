@@ -1,4 +1,13 @@
-<div class="learning-container">
+<div class="learning-page">
+  <!-- Pegadas decorativas (fundo) -->
+  <img class="paw-deco paw-1" src="assets/images/pawprint.png" alt="" aria-hidden="true" />
+  <img class="paw-deco paw-2" src="assets/images/pawprint.png" alt="" aria-hidden="true" />
+  <img class="paw-deco paw-3" src="assets/images/pawprint.png" alt="" aria-hidden="true" />
+  <img class="paw-deco paw-4" src="assets/images/pawprint.png" alt="" aria-hidden="true" />
+  <img class="paw-deco paw-5" src="assets/images/pawprint.png" alt="" aria-hidden="true" />
+  <img class="paw-deco paw-6" src="assets/images/pawprint.png" alt="" aria-hidden="true" />
+
+  <div class="learning-container">
   <div class="path-section" *ngFor="let layout of layouts">
 
     <!-- Cabeçalho da trilha -->
@@ -103,7 +112,8 @@
     </div><!-- .trail-scroll -->
 
   </div><!-- .path-section -->
-</div>
+  </div><!-- .learning-container -->
+</div><!-- .learning-page -->
 
 <!-- Tooltip flutuante (position: fixed evita clipping do overflow do trail-scroll) -->
 <div class="node-floating-tooltip"
