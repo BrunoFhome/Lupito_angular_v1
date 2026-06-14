@@ -1,0 +1,31 @@
+<div class="prefs-container">
+  <h1 class="prefs-title">Preferências</h1>
+
+  <section class="prefs-section">
+    <h2 class="section-heading">Conta</h2>
+
+    <a routerLink="/edit-profile" class="pref-link-row">
+      <span class="pref-label">Editar perfil</span>
+      <svg class="pref-link-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <polyline points="9 18 15 12 9 6"/>
+      </svg>
+    </a>
+  </section>
+
+  <section class="prefs-section">
+    <h2 class="section-heading">Visual</h2>
+
+    <div class="pref-field">
+      <label class="pref-label" for="darkMode">Modo escuro</label>
+      <div class="select-wrapper">
+        <select id="darkMode" class="pref-select" [(ngModel)]="darkMode" (ngModelChange)="save()">
+          <option [ngValue]="false">DESABILITADO</option>
+          <option [ngValue]="true">HABILITADO</option>
+        </select>
+        <svg class="select-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <polyline points="6 9 12 15 18 9"/>
+        </svg>
+      </div>
+    </div>
+  </section>
+</div>

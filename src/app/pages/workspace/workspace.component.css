@@ -404,6 +404,26 @@
 .btn-verify:hover:not(:disabled) { background-color: #2e7d32; color: #fff; }
 .btn-verify:disabled { opacity: 0.45; cursor: not-allowed; }
 
+/* Botão de enviar para revisão — maior, na cor da coluna Revisão do Kanban */
+.btn-review {
+  display: flex;
+  align-items: center;
+  gap: 0.45rem;
+  background-color: #f0b020;
+  color: #fff;
+  border: none;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.95rem;
+  font-weight: 700;
+  padding: 0.55rem 1.35rem;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background-color 0.15s;
+}
+.btn-review:hover { background-color: #d89a12; }
+/* Oculto mas mantém o espaço reservado, para não deslocar o botão Conferir */
+.btn-review-hidden { visibility: hidden; pointer-events: none; }
+
 .btn-ai {
   display: flex;
   align-items: center;

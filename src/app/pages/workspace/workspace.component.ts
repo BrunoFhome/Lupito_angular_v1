@@ -198,6 +198,9 @@ export class WorkspaceComponent implements OnInit, AfterViewInit, OnDestroy {
         this.saveToLocalStorage(serialized);
         this.codeChange$.next(serialized);
         this.codeChangedSinceLastEval = true;
+        // O código mudou: invalida a verificação anterior (esconde "Enviar para Revisão")
+        this.verifyResult = null;
+        this.setVerifiedFlag(false);
       }
     });
 
@@ -349,8 +352,7 @@ export class WorkspaceComponent implements OnInit, AfterViewInit, OnDestroy {
     const execId = Date.now().toString();
     const outputLines: string[] = [];
 
-    // O código do usuário começa na linha 9 do srcdoc (após 8 linhas de setup).
-    // window.onerror recebe a linha absoluta do srcdoc; subtraímos 8 para obter a linha do usuário.
+    
     const USER_CODE_LINE_OFFSET = 8;
 
     const sandboxDoc = [
@@ -457,13 +459,19 @@ export class WorkspaceComponent implements OnInit, AfterViewInit, OnDestroy {
     this.verifyResult = null;
 
     const compare = () => {
-      if (this.outputType === 'error') { this.verifyResult = 'incorrect'; return; }
+      if (this.outputType === 'error') {
+        this.verifyResult = 'incorrect';
+        this.setVerifiedFlag(false);
+        return;
+      }
       const expected = this.task!.expectedOutput!.trim();
       const actual   = this.output.trim();
       if (actual === expected) {
         this.verifyResult = 'correct';
+        this.setVerifiedFlag(true);
       } else {
         this.verifyResult = 'incorrect';
+        this.setVerifiedFlag(false);
         this.output     = `Esperado:\n  ${expected}\n\nObtido:\n  ${actual}`;
         this.outputType = 'error';
       }
@@ -514,12 +522,21 @@ export class WorkspaceComponent implements OnInit, AfterViewInit, OnDestroy {
     this.webPreviewSrcdoc = '';
   }
 
-  completeTask() {
-    if (this.taskId) {
-      this.kanbanService.updateTaskStatus(this.taskId, 'done');
-      this.isCompleted = true;
-      this.toast.success('Tarefa marcada como concluída!');
-    }
+  sendToReview() {
+    if (!this.taskId) return;
+    this.kanbanService.updateTaskStatus(this.taskId, 'in-review');
+    this.toast.success('Tarefa enviada para revisão!');
+    this.router.navigate(['/kanban']);
+  }
+
+  /** Marca/limpa a flag de que a saída da tarefa foi verificada como correta. */
+  private setVerifiedFlag(verified: boolean): void {
+    if (!this.taskId) return;
+    const key = `taskVerified_${this.taskId}`;
+    try {
+      if (verified) localStorage.setItem(key, 'true');
+      else localStorage.removeItem(key);
+    } catch {}
   }
 
   goBack() {

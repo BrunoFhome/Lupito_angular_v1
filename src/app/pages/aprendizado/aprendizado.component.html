@@ -1,15 +1,19 @@
-<div class="learning-container">
+<div class="learning-page">
+  <!-- Pegadas decorativas (fundo) -->
+  <img class="paw-deco paw-1" src="assets/images/pawprint.png" alt="" aria-hidden="true" />
+  <img class="paw-deco paw-2" src="assets/images/pawprint.png" alt="" aria-hidden="true" />
+  <img class="paw-deco paw-3" src="assets/images/pawprint.png" alt="" aria-hidden="true" />
+  <img class="paw-deco paw-4" src="assets/images/pawprint.png" alt="" aria-hidden="true" />
+  <img class="paw-deco paw-5" src="assets/images/pawprint.png" alt="" aria-hidden="true" />
+  <img class="paw-deco paw-6" src="assets/images/pawprint.png" alt="" aria-hidden="true" />
+
+  <div class="learning-container">
   <div class="path-section" *ngFor="let layout of layouts">
 
     <!-- Cabeçalho da trilha -->
     <div class="path-header">
       <div class="header-icon">
-        <svg viewBox="0 0 24 24" fill="none">
-          <path d="M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1z"
-                stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-          <line x1="4" y1="22" x2="4" y2="15"
-                stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-        </svg>
+        <img [src]="pathIcon(layout.path.title)" alt="" aria-hidden="true" />
       </div>
       <h2>{{ layout.path.title }}</h2>
     </div>
@@ -108,7 +112,8 @@
     </div><!-- .trail-scroll -->
 
   </div><!-- .path-section -->
-</div>
+  </div><!-- .learning-container -->
+</div><!-- .learning-page -->
 
 <!-- Tooltip flutuante (position: fixed evita clipping do overflow do trail-scroll) -->
 <div class="node-floating-tooltip"

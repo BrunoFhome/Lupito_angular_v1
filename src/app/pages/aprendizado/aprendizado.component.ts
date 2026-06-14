@@ -58,10 +58,10 @@ export interface PathLayout {
 // ── Layout constants ───────────────────────────────────────────────────────────
 
 const NODES_PER_ROW = 5;
-const SPACING_X     = 220;
-const SPACING_Y     = 200;
-const PAD_X         = 120;
-const PAD_Y         = 110;
+const SPACING_X     = 250;
+const SPACING_Y     = 225;
+const PAD_X         = 135;
+const PAD_Y         = 125;
 
 // ── Component ─────────────────────────────────────────────────────────────────
 
@@ -277,6 +277,13 @@ export class AprendizadoComponent implements OnInit, OnDestroy {
 
   onNodeMouseLeave(): void {
     this.hoveredNode = null;
+  }
+
+  pathIcon(title: string): string {
+    const t = (title ?? '').toLowerCase();
+    if (t.includes('html') || t.includes('css')) return 'assets/images/lupito_tecs/2.png';
+    if (t.includes('javascript') || t.includes('js')) return 'assets/images/lupito_tecs/1.png';
+    return 'assets/images/lupito_tecs/1.png';
   }
 
   getNodeStatus(module: Module): { label: string; css: string } {

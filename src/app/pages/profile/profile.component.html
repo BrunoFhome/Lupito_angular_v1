@@ -1,4 +1,12 @@
 <div class="page-container">
+    <!-- Pegadas decorativas (fundo) -->
+    <img class="paw-deco paw-1" src="assets/images/pawprint.png" alt="" aria-hidden="true" />
+    <img class="paw-deco paw-2" src="assets/images/pawprint.png" alt="" aria-hidden="true" />
+    <img class="paw-deco paw-3" src="assets/images/pawprint.png" alt="" aria-hidden="true" />
+    <img class="paw-deco paw-4" src="assets/images/pawprint.png" alt="" aria-hidden="true" />
+    <img class="paw-deco paw-5" src="assets/images/pawprint.png" alt="" aria-hidden="true" />
+    <img class="paw-deco paw-6" src="assets/images/pawprint.png" alt="" aria-hidden="true" />
+
     <div style="color: red; padding: 20px;" *ngIf="errorMessage">
         Erro ao carregar perfil: {{ errorMessage }}
     </div>
@@ -52,11 +60,9 @@
         <!-- Header / Perfil Pessoal -->
         <div class="profile-card">
             <div class="profile-header-section">
-                <div class="avatar" (click)="photoInput.click()" title="Clique para alterar a foto">
+                <div class="avatar" (click)="openPhotoChooser()" title="Clique para escolher seu avatar">
                     <img [src]="currentPhoto" alt="Avatar User" />
                     <div class="avatar-edit-overlay">✎</div>
-                    <input #photoInput type="file" accept=".png,.jpg,.jpeg,image/png,image/jpeg"
-                        (change)="onPhotoChange($event)" style="display:none" />
                 </div>
 
                 <div class="profile-details">
@@ -64,16 +70,8 @@
                     <h3 class="role-title">Desenvolvedor(a) Full Stack</h3>
 
                     <div class="bio-section">
-                        <div *ngIf="isEditingBio" class="bio-edit-container">
-                            <textarea [(ngModel)]="user.bio" rows="4" placeholder="Fale um pouco sobre você..."></textarea>
-                            <div class="bio-actions">
-                                <button class="btn-save" (click)="saveBio()">Salvar</button>
-                                <button class="btn-cancel" (click)="toggleEditBio()">Cancelar</button>
-                            </div>
-                        </div>
-                        <div *ngIf="!isEditingBio" class="bio-text-container">
+                        <div class="bio-text-container">
                             <p class="bio-text">{{ user.bio || 'Desenvolvedor(a) apaixonado(a) por criar soluções inovadoras. Sempre em busca de novos desafios e aprendizados.' }}</p>
-                            <button class="btn-edit-icon" (click)="toggleEditBio()">✎</button>
                         </div>
                     </div>
 
@@ -93,33 +91,13 @@
                     </div>
 
                     <div class="social-links">
-                        <!-- Localização editável -->
-                        <div class="location-wrapper">
-                            <ng-container *ngIf="!isEditingLocation">
-                                <span class="location">
-                                    <i class="icon-location">📌</i>
-                                    <span *ngIf="user.city || user.state">
-                                        {{ user.city }}{{ user.city && user.state ? ', ' : '' }}{{ user.state }}
-                                    </span>
-                                    <span *ngIf="!user.city && !user.state" class="location-empty">Localização não informada</span>
-                                </span>
-                                <button class="btn-edit-icon btn-edit-location" (click)="toggleEditLocation()">✎</button>
-                            </ng-container>
-
-                            <ng-container *ngIf="isEditingLocation">
-                                <div class="location-edit-row">
-                                    <select [(ngModel)]="user.state" name="profileState">
-                                        <option value="">Estado</option>
-                                        <option *ngFor="let s of brazilianStates" [value]="s.sigla">
-                                            {{ s.sigla }} — {{ s.nome }}
-                                        </option>
-                                    </select>
-                                    <input type="text" [(ngModel)]="user.city" name="profileCity" placeholder="Cidade" />
-                                    <button class="btn-save btn-save-sm" (click)="saveLocation()">Salvar</button>
-                                    <button class="btn-cancel btn-cancel-sm" (click)="toggleEditLocation()">✕</button>
-                                </div>
-                            </ng-container>
-                        </div>
+                        <span class="location">
+                            <i class="icon-location">📌</i>
+                            <span *ngIf="user.city || user.state">
+                                {{ user.city }}{{ user.city && user.state ? ', ' : '' }}{{ user.state }}
+                            </span>
+                            <span *ngIf="!user.city && !user.state" class="location-empty">Localização não informada</span>
+                        </span>
 
                         <span class="email"><i class="icon-email">✉️</i> {{ user.email }}</span>
                     </div>
@@ -171,6 +149,9 @@
                 </div>
             </div>
         </div>
+
+        <div class="profile-grid">
+        <div class="profile-main">
 
         <!-- Heatmap de Atividade -->
         <div class="heatmap-section">
@@ -225,6 +206,9 @@
             </div>
         </div>
 
+        </div><!-- .profile-main -->
+
+        <aside class="profile-side">
         <!-- Seção de Portfólio -->
         <div class="portfolio-section">
             <div class="portfolio-header">
@@ -261,7 +245,35 @@
                 </div>
             </div>
         </div>
+        </aside><!-- .profile-side -->
+        </div><!-- .profile-grid -->
 
+   </div>
+
+   <!-- Modal de escolha de avatar -->
+   <div class="modal-overlay" *ngIf="isChoosingPhoto" (click)="closePhotoChooser()">
+        <div class="modal-content avatar-chooser" (click)="$event.stopPropagation()">
+            <div class="modal-header">
+                <div class="modal-title-area">
+                    <h2>Escolha seu avatar</h2>
+                    <p>Selecione um dos mascotes do Lupito para o seu perfil.</p>
+                </div>
+                <button class="modal-close" (click)="closePhotoChooser()">✕</button>
+            </div>
+
+            <div class="avatar-grid">
+                <button
+                    type="button"
+                    class="avatar-option"
+                    *ngFor="let option of avatarOptions"
+                    [class.selected]="option === currentPhoto"
+                    (click)="selectAvatar(option)"
+                    title="Selecionar avatar">
+                    <img [src]="option" alt="Avatar Lupito" />
+                    <span class="avatar-check" *ngIf="option === currentPhoto">✓</span>
+                </button>
+            </div>
+        </div>
    </div>
 
    <!-- Modal do Projeto -->

@@ -1,7 +1,6 @@
 # See https://docs.github.com/get-started/getting-started-with-git/ignoring-files for more about ignoring files.
 
-# Claude Code
-/CLAUDE.md
+
 
 # Compiled output
 /dist
@@ -17,7 +16,6 @@ yarn-error.log
 # IDEs and editors
 .idea/
 .project
-.claude
 .classpath
 .c9/
 *.launch

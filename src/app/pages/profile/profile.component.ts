@@ -18,47 +18,28 @@ import { ToastService } from '../../services/toast.service';
 export class ProfileComponent implements OnInit, OnDestroy {
     user: User | null = null;
     loadingProfile = true;
-    isEditingBio = false;
-    isEditingLocation = false;
+    errorMessage: string | null = null;
+
     isEditingSocial = false;
     socialGithub = '';
     socialLinkedin = '';
     githubError = '';
     linkedinError = '';
-    errorMessage: string | null = null;
 
-    readonly DEFAULT_PHOTO = 'assets/images/loboIcon.jpg';
-    currentPhoto: string = localStorage.getItem('userPhoto') || this.DEFAULT_PHOTO;
-
-    readonly brazilianStates = [
-        { sigla: 'AC', nome: 'Acre' },
-        { sigla: 'AL', nome: 'Alagoas' },
-        { sigla: 'AP', nome: 'Amapá' },
-        { sigla: 'AM', nome: 'Amazonas' },
-        { sigla: 'BA', nome: 'Bahia' },
-        { sigla: 'CE', nome: 'Ceará' },
-        { sigla: 'DF', nome: 'Distrito Federal' },
-        { sigla: 'ES', nome: 'Espírito Santo' },
-        { sigla: 'GO', nome: 'Goiás' },
-        { sigla: 'MA', nome: 'Maranhão' },
-        { sigla: 'MT', nome: 'Mato Grosso' },
-        { sigla: 'MS', nome: 'Mato Grosso do Sul' },
-        { sigla: 'MG', nome: 'Minas Gerais' },
-        { sigla: 'PA', nome: 'Pará' },
-        { sigla: 'PB', nome: 'Paraíba' },
-        { sigla: 'PR', nome: 'Paraná' },
-        { sigla: 'PE', nome: 'Pernambuco' },
-        { sigla: 'PI', nome: 'Piauí' },
-        { sigla: 'RJ', nome: 'Rio de Janeiro' },
-        { sigla: 'RN', nome: 'Rio Grande do Norte' },
-        { sigla: 'RS', nome: 'Rio Grande do Sul' },
-        { sigla: 'RO', nome: 'Rondônia' },
-        { sigla: 'RR', nome: 'Roraima' },
-        { sigla: 'SC', nome: 'Santa Catarina' },
-        { sigla: 'SP', nome: 'São Paulo' },
-        { sigla: 'SE', nome: 'Sergipe' },
-        { sigla: 'TO', nome: 'Tocantins' },
+    readonly avatarOptions: string[] = [
+        'assets/images/lupito_pers/4.png',
+        'assets/images/lupito_pers/7.png',
+        'assets/images/lupito_pers/10.png',
+        'assets/images/lupito_pers/12.png',
+        'assets/images/lupito_pers/13.png',
+        'assets/images/lupito_pers/14.png',
+        'assets/images/lupito_pers/15.png',
+        'assets/images/lupito_pers/17.png',
     ];
+    readonly DEFAULT_PHOTO = this.avatarOptions[0];
+    currentPhoto: string = localStorage.getItem('userPhoto') || this.DEFAULT_PHOTO;
+    isChoosingPhoto = false;
+
     selectedProject: KanbanTask | null = null;
     completedProjects: KanbanTask[] = [];
     loadingProjects = true;
@@ -127,14 +108,6 @@ export class ProfileComponent implements OnInit, OnDestroy {
         return `${formatted} — ${count} ${count === 1 ? 'lição' : 'lições'}`;
     }
 
-    toggleEditBio(): void {
-        this.isEditingBio = !this.isEditingBio;
-    }
-
-    toggleEditLocation(): void {
-        this.isEditingLocation = !this.isEditingLocation;
-    }
-
     toggleEditSocial(): void {
         if (!this.isEditingSocial) {
             this.socialGithub   = this.user?.githubUrl   ?? '';
@@ -196,54 +169,19 @@ export class ProfileComponent implements OnInit, OnDestroy {
         window.open(full, '_blank', 'noopener,noreferrer');
     }
 
-    saveLocation(): void {
-        if (this.user) {
-            this.authService.updateUserProfile(this.user).subscribe({
-                next: (updatedUser) => {
-                    this.user = updatedUser;
-                    this.isEditingLocation = false;
-                    this.toast.success('Localização atualizada!');
-                },
-                error: () => {
-                    this.isEditingLocation = false;
-                }
-            });
-        }
+    openPhotoChooser(): void {
+        this.isChoosingPhoto = true;
     }
 
-    saveBio(): void {
-        if (this.user) {
-            this.authService.updateUserProfile(this.user).subscribe({
-                next: (updatedUser) => {
-                    this.user = updatedUser;
-                    this.isEditingBio = false;
-                    this.toast.success('Bio atualizada!');
-                },
-                error: () => {
-                    this.isEditingBio = false;
-                }
-            });
-        }
+    closePhotoChooser(): void {
+        this.isChoosingPhoto = false;
     }
 
-    onPhotoChange(event: Event): void {
-        const input = event.target as HTMLInputElement;
-        const file = input.files?.[0];
-        if (!file) return;
-
-        const allowedTypes = ['image/png', 'image/jpeg'];
-        if (!allowedTypes.includes(file.type)) {
-            alert('Apenas arquivos PNG, JPG ou JPEG são permitidos.');
-            input.value = '';
-            return;
-        }
-
-        const reader = new FileReader();
-        reader.onload = () => {
-            this.currentPhoto = reader.result as string;
-            localStorage.setItem('userPhoto', this.currentPhoto);
-        };
-        reader.readAsDataURL(file);
+    selectAvatar(path: string): void {
+        this.currentPhoto = path;
+        localStorage.setItem('userPhoto', path);
+        this.isChoosingPhoto = false;
+        this.toast.success('Avatar atualizado!');
     }
 
     onLogout(): void {
