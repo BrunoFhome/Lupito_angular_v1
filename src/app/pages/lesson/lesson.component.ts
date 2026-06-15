@@ -7,6 +7,7 @@ import { takeUntil } from 'rxjs/operators';
 import { LearningService, SectionDetails, Exercise } from '../../services/learning.service';
 import { AuthService, User } from '../../services/auth.service';
 import { ConfettiService } from '../../services/confetti.service';
+import { LoadingBannerComponent } from '../../components/loading-banner/loading-banner.component';
 
 import { EditorView } from '@codemirror/view';
 import { EditorState } from '@codemirror/state';
@@ -29,7 +30,7 @@ interface LessonResult {
 @Component({
   selector: 'app-lesson',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, LoadingBannerComponent],
   templateUrl: './lesson.component.html',
   styleUrl: './lesson.component.css'
 })

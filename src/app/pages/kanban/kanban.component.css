@@ -166,6 +166,21 @@
   overflow: hidden;
 }
 
+/* ── Mobile: colunas ocupam ~85% da tela e "passam" com scroll-snap ──────────── */
+@media (max-width: 768px) {
+  .kanban-page {
+    padding: 1rem;
+  }
+  .board-container {
+    gap: 1rem;
+    scroll-snap-type: x mandatory;
+  }
+  .kanban-column {
+    flex: 0 0 85vw;
+    scroll-snap-align: start;
+  }
+}
+
 /* Cabeçalho como imagem (banner do Lupito) */
 .column-header {
   position: relative;

@@ -6,6 +6,12 @@
   margin: 0 auto;
 }
 
+@media (max-width: 480px) {
+  .lesson-container {
+    padding: 1rem;
+  }
+}
+
 .lesson-header {
   display: flex;
   align-items: center;
@@ -894,6 +900,12 @@
   gap: 10px;
 }
 
+.drag-fill-hint {
+  margin: -0.5rem 0 1rem;
+  font-size: 0.85rem;
+  color: #888;
+}
+
 .code-token {
   background: #2d2d3f;
   border: 1px solid #444;
@@ -902,8 +914,9 @@
   font-family: 'JetBrains Mono', 'Fira Code', monospace;
   font-size: 0.9rem;
   color: #d4d4d4;
-  cursor: grab;
+  cursor: pointer;
   user-select: none;
+  touch-action: manipulation;  /* responde ao toque sem atraso/zoom */
   transition: border-color 0.15s, color 0.15s, opacity 0.15s;
 }
 

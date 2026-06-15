@@ -81,6 +81,7 @@
         <!-- ── Complete o Código (drag-fill) ── -->
         <ng-container *ngSwitchCase="'drag-fill'">
           <h2 class="exercise-question drag-fill-title">Complete o código</h2>
+          <p class="drag-fill-hint">Toque em uma opção (ou arraste) para preencher a lacuna.</p>
 
           <div class="drag-fill-container">
             <!-- Linha de código com lacuna -->
@@ -104,7 +105,8 @@
                     *ngFor="let opt of currentExercise.options"
                     [class.token-used]="dragAnswer === opt && !isDragSubmitted"
                     draggable="true"
-                    (dragstart)="draggedToken = opt">
+                    (dragstart)="draggedToken = opt"
+                    (click)="onTokenDrop(opt)">
                 {{ opt }}
               </span>
             </div>
@@ -236,7 +238,8 @@
 
 <ng-template #loading>
   <div class="loading-state">
-    <div class="spinner"></div>
-    <p>Carregando lição...</p>
+    <app-loading-banner
+      title="Carregando a lição…"
+      subtitle="Preparando o conteúdo e os exercícios"></app-loading-banner>
   </div>
 </ng-template>

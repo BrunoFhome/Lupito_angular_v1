@@ -4,6 +4,12 @@
   padding: 48px 32px;
 }
 
+@media (max-width: 480px) {
+  .prefs-container {
+    padding: 28px 16px;
+  }
+}
+
 .prefs-title {
   font-size: 30px;
   font-weight: 800;

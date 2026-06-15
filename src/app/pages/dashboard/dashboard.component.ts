@@ -6,6 +6,7 @@ import { catchError, switchMap, takeUntil } from 'rxjs/operators';
 import { AuthService, User } from '../../services/auth.service';
 import { LearningService, CourseDTO, SectionDTO, LessonDTO } from '../../services/learning.service';
 import { KanbanService, KanbanTask } from '../../services/kanban.service';
+import { LoadingBannerComponent } from '../../components/loading-banner/loading-banner.component';
 
 interface CourseCard {
   id: number;
@@ -30,7 +31,7 @@ interface KanbanStats {
 @Component({
   selector: 'app-dashboard',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, LoadingBannerComponent],
   templateUrl: './dashboard.component.html',
   styleUrl: './dashboard.component.css'
 })

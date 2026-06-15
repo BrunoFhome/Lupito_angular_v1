@@ -297,6 +297,16 @@ h1 {
   }
 }
 
+@media (max-width: 480px) {
+  .page-container {
+    padding: 24px 14px;
+  }
+
+  .form-card {
+    padding: 28px 20px;
+  }
+}
+
 /* ── Sucesso pós-cadastro ────────────────────────────── */
 .success-state {
   text-align: center;

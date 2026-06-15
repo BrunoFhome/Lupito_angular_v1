@@ -14,6 +14,10 @@
     <!-- Skeleton loader -->
     <div class="profile-layout" *ngIf="loadingProfile">
 
+        <app-loading-banner
+            title="Carregando seu perfil…"
+            subtitle="Reunindo suas conquistas e atividades"></app-loading-banner>
+
         <!-- Skeleton: profile card -->
         <div class="profile-card">
             <div class="profile-header-section">
@@ -147,6 +151,16 @@
                         </div>
                     </div>
                 </div>
+            </div>
+
+            <!-- Ações da conta: visíveis só no mobile, onde a sidebar vira barra inferior -->
+            <div class="mobile-account-actions">
+                <a routerLink="/preferences" class="mobile-account-btn">
+                    <span class="mobile-account-icon">⚙️</span> Configurações
+                </a>
+                <button type="button" class="mobile-account-btn mobile-logout" (click)="onLogout()">
+                    <span class="mobile-account-icon">↩️</span> Sair
+                </button>
             </div>
         </div>
 

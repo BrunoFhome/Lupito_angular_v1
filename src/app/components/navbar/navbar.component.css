@@ -263,3 +263,86 @@
   background-color: #fef2f2;
   border-color: #fecaca;
 }
+
+/* ── Mobile: sidebar vira barra inferior de navegação (tabs) ─────────────────── */
+@media (max-width: 768px) {
+  .sidebar {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    width: 100%;
+    height: 64px;
+    flex-direction: row;
+    align-items: stretch;
+    border-right: none;
+    border-top: 2px solid #f0f2f4;
+    box-shadow: 0 -4px 14px rgba(0, 0, 0, 0.06);
+    z-index: 1000;
+  }
+
+  /* Itens não-essenciais migram para a página de Perfil no mobile */
+  .logo-container,
+  .spacer,
+  .stats,
+  .logout-container {
+    display: none;
+  }
+
+  /* Os 3 links de navegação ocupam 3/4 e o Perfil 1/4 (4 tabs iguais) */
+  .nav-links {
+    flex: 3;
+    flex-direction: row;
+    margin: 0;
+    gap: 0;
+  }
+
+  .nav-links li {
+    flex: 1;
+    padding: 0;
+  }
+
+  /* Cada tab: ícone em cima, label pequeno embaixo */
+  .nav-links a,
+  .profile-link {
+    flex-direction: column;
+    justify-content: center;
+    gap: 3px;
+    height: 100%;
+    margin: 0;
+    padding: 6px 2px;
+    border-radius: 0;
+    font-size: 10px;
+    font-weight: 600;
+    text-align: center;
+  }
+
+  .profile-link {
+    flex: 1;
+  }
+
+  /* Ícones menores para caber na barra de 64px */
+  .nav-icon {
+    width: 26px;
+    height: 26px;
+    border-radius: 8px;
+  }
+
+  .profile-avatar {
+    width: 26px;
+    height: 26px;
+    border-width: 1px;
+  }
+
+  /* Tab ativa: sem fundo cheio (ficaria pesado); usa cor de destaque */
+  .nav-links a.active,
+  .profile-link.active {
+    background-color: transparent;
+    color: #00b4cc;
+  }
+
+  .nav-links a.active .nav-icon {
+    background-color: rgba(0, 180, 204, 0.12);
+    color: #00b4cc;
+  }
+}

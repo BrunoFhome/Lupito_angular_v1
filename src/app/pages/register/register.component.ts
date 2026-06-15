@@ -3,11 +3,12 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
 import { AuthService } from '../../services/auth.service';
+import { WalkingLupitoLoaderComponent } from '../../components/walking-lupito-loader/walking-lupito-loader.component';
 
 @Component({
     selector: 'app-register',
     standalone: true,
-    imports: [CommonModule, FormsModule, RouterLink],
+    imports: [CommonModule, FormsModule, RouterLink, WalkingLupitoLoaderComponent],
     templateUrl: './register.component.html',
     styleUrl: './register.component.css'
 })
@@ -22,6 +23,7 @@ export class RegisterComponent {
     registrationSuccess = false;
     showPassword = false;
     showConfirmPassword = false;
+    loading = false;
 
     get strengthScore(): number {
         const p = this.password;
@@ -113,13 +115,18 @@ export class RegisterComponent {
             return;
         }
 
+        this.loading = true;
         this.authService.register(
             this.name, this.email, this.password,
             this.city || undefined,
             this.state || undefined
         ).subscribe({
-            next: () => { this.registrationSuccess = true; },
+            next: () => {
+                this.loading = false;
+                this.registrationSuccess = true;
+            },
             error: (err) => {
+                this.loading = false;
                 this.errorMessage = err.message;
             }
         });

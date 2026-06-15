@@ -535,3 +535,48 @@
   color: #ccc;
   margin: 0;
 }
+
+/* ── Mobile: 3 painéis empilham verticalmente e a página rola ────────────────── */
+@media (max-width: 768px) {
+  .workspace-layout {
+    height: auto;
+    min-height: 100dvh;
+    overflow: visible;
+  }
+
+  /* Header com muitos botões: deixa quebrar em linhas */
+  .workspace-header {
+    flex-wrap: wrap;
+    gap: 0.5rem;
+  }
+  .header-left,
+  .header-right {
+    flex-wrap: wrap;
+  }
+
+  /* Painéis empilhados (instruções em cima, editor no meio, IA embaixo) */
+  .workspace-body {
+    flex-direction: column;
+    overflow: visible;
+  }
+
+  .panel-instructions {
+    width: 100%;
+    max-height: 38vh;
+    overflow-y: auto;
+    border-right: none;
+    border-bottom: 1px solid #3c3c3c;
+  }
+
+  .panel-editor {
+    width: 100%;
+    min-height: 55vh;   /* garante área de digitação utilizável */
+  }
+
+  .panel-ai {
+    width: 100%;
+    min-width: 0;
+    border-left: none;
+    border-top: 1px solid #3c3c3c;
+  }
+}

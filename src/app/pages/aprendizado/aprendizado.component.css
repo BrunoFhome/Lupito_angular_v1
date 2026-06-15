@@ -489,4 +489,12 @@
   .learning-loading {
     padding: 20px 16px;
   }
+  /* Card de progresso mais compacto; a trilha (.trail-scroll) mantém scroll horizontal */
+  .progress-card {
+    padding: 22px 20px;
+    margin-bottom: 32px;
+  }
+  .progress-info h3 {
+    font-size: 19px;
+  }
 }
