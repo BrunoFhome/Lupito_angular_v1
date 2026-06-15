@@ -76,6 +76,7 @@ export class AprendizadoComponent implements OnInit, OnDestroy {
   user: User | null = null;
   layouts: PathLayout[] = [];
   animated = false;
+  loading = true;
 
   hoveredNode: NodePos | null = null;
   tooltipX = 0;
@@ -104,6 +105,7 @@ export class AprendizadoComponent implements OnInit, OnDestroy {
   }
 
   loadCourses(): void {
+    this.loading = true;
     this.learningService.getCourses().pipe(
       switchMap(courses => {
         if (!courses || courses.length === 0) return of([]);
@@ -126,6 +128,7 @@ export class AprendizadoComponent implements OnInit, OnDestroy {
         }
       }
       this.layouts = paths.map(p => this.buildLayout(p));
+      this.loading = false;
       setTimeout(() => { this.animated = true; }, 120);
     });
   }

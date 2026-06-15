@@ -7,7 +7,30 @@
   <img class="paw-deco paw-5" src="assets/images/pawprint.png" alt="" aria-hidden="true" />
   <img class="paw-deco paw-6" src="assets/images/pawprint.png" alt="" aria-hidden="true" />
 
-  <div class="learning-container">
+  <!-- Estado de carregamento -->
+  <div class="learning-loading" *ngIf="loading">
+    <div class="loading-banner">
+      <div class="loading-spinner"></div>
+      <div class="loading-texts">
+        <span class="loading-title">Carregando sua trilha de aprendizado…</span>
+        <span class="loading-subtitle">Buscando seus cursos e progresso</span>
+      </div>
+    </div>
+
+    <!-- Placeholders animados que imitam o layout real -->
+    <div class="skeleton-path" *ngFor="let s of [1, 2]">
+      <div class="sk-header">
+        <div class="sk sk-icon"></div>
+        <div class="sk sk-title"></div>
+      </div>
+      <div class="sk sk-progress-card"></div>
+      <div class="sk-trail">
+        <div class="sk sk-node" *ngFor="let n of [1, 2, 3, 4, 5]"></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="learning-container" *ngIf="!loading">
   <div class="path-section" *ngFor="let layout of layouts">
 
     <!-- Cabeçalho da trilha -->
