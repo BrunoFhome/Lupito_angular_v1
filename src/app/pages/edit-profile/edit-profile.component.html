@@ -9,7 +9,10 @@
   <h1 class="edit-title">Editar perfil</h1>
   <p class="edit-subtitle">Atualize seus dados de conta.</p>
 
-  <div class="edit-skeleton" *ngIf="loading">Carregando...</div>
+  <app-loading-banner
+    *ngIf="loading"
+    title="Carregando seus dados…"
+    subtitle="Buscando as informações da sua conta"></app-loading-banner>
 
   <form class="edit-form" *ngIf="!loading" (ngSubmit)="save()">
     <div class="form-group">

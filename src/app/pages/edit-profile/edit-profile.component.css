@@ -4,6 +4,12 @@
   padding: 40px 32px;
 }
 
+@media (max-width: 480px) {
+  .edit-container {
+    padding: 24px 16px;
+  }
+}
+
 .btn-back {
   display: inline-flex;
   align-items: center;

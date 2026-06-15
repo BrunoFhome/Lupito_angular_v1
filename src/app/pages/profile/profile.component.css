@@ -1007,3 +1007,81 @@
         padding: 18px;
     }
 }
+
+/* ── Ações de conta no perfil: só aparecem no mobile (no desktop ficam na sidebar) ── */
+.mobile-account-actions {
+    display: none;
+}
+
+@media (max-width: 768px) {
+    .page-container {
+        padding: 24px 12px;
+    }
+
+    .profile-card {
+        padding: 24px 18px;
+    }
+
+    /* Cabeçalho do perfil empilha e centraliza no mobile */
+    .profile-header-section {
+        flex-direction: column;
+        align-items: center;
+        text-align: center;
+        gap: 18px;
+    }
+
+    .avatar {
+        width: 110px;
+        height: 110px;
+    }
+
+    .profile-stats-row,
+    .social-links,
+    .social-icons {
+        justify-content: center;
+    }
+
+    /* Heatmap de 30 dias: mantém células visíveis e permite scroll horizontal */
+    .heatmap-grid {
+        grid-template-columns: repeat(30, 12px);
+        overflow-x: auto;
+        padding-bottom: 6px;
+    }
+
+    /* Bloco Configurações / Sair */
+    .mobile-account-actions {
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+        margin-top: 22px;
+        padding-top: 20px;
+        border-top: 1px solid #f0f2f4;
+    }
+
+    .mobile-account-btn {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        width: 100%;
+        padding: 12px 16px;
+        background-color: #ffffff;
+        color: #4b4b4b;
+        border: 2px solid #f0f2f4;
+        border-radius: 14px;
+        font-family: 'JetBrains Mono', monospace;
+        font-weight: 700;
+        font-size: 14px;
+        text-decoration: none;
+        cursor: pointer;
+    }
+
+    .mobile-account-btn.mobile-logout {
+        color: #ef4444;
+    }
+
+    .mobile-account-icon {
+        font-size: 16px;
+        line-height: 1;
+    }
+}

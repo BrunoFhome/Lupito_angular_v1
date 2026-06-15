@@ -232,6 +232,16 @@ h1 {
   }
 }
 
+@media (max-width: 480px) {
+  .page-container {
+    padding: 24px 14px;
+  }
+
+  .form-card {
+    padding: 28px 20px;
+  }
+}
+
 /* ── E-mail não verificado ───────────────────────────── */
 .verify-warning {
   background-color: #fff8e1;

@@ -718,76 +718,9 @@
 /* ══════════════════════════════════════════════════════
    RESPONSIVIDADE
 ══════════════════════════════════════════════════════ */
-@media (max-width: 900px) {
-  .nav {
-    padding: 16px 24px;
-  }
-
-  .hero-content {
-    flex-direction: column-reverse;
-    gap: 40px;
-    padding: 48px 24px;
-    text-align: center;
-  }
-
-  .hero-text h1 {
-    font-size: 30px;
-  }
-
-  .hero-actions {
-    justify-content: center;
-  }
-
-  .image-circle {
-    width: 260px;
-    height: 260px;
-  }
-
-  .courses-strip {
-    padding: 20px 24px;
-  }
-
-  .feature-row {
-    padding: 60px 24px;
-  }
-
-  .feature-row-inner,
-  .feature-row-inner.reverse {
-    flex-direction: column;
-    gap: 40px;
-    text-align: center;
-  }
-
-  .feature-list li {
-    justify-content: center;
-  }
-
-  .gamification {
-    padding: 60px 24px;
-  }
-
-  .cta {
-    padding: 60px 24px;
-  }
-
-  .footer-main {
-    padding: 40px 24px 32px;
-    gap: 32px;
-    justify-content: flex-start;
-  }
-
-  .footer-bottom {
-    padding: 16px 24px;
-  }
-
-  .trail-panel {
-    display: none;
-  }
-
-  .landing-content {
-    flex: 0 0 100%;
-  }
-}
+/* NOTA: as regras responsivas (@media) ficam no FINAL do arquivo, depois das
+   definições base de layout abaixo — caso contrário as regras base (mesma
+   especificidade, declaradas depois) sobrescreveriam os ajustes mobile. */
 
 /* ══════════════════════════════════════════════════════
    TRILHA INTERATIVA — LAYOUT WRAPPER
@@ -937,4 +870,141 @@
 .trail-mascot--zoom {
   object-fit: cover;
   padding: 0;
+}
+
+/* ══════════════════════════════════════════════════════
+   RESPONSIVO — declarado por último para sobrescrever as regras base acima
+══════════════════════════════════════════════════════ */
+@media (max-width: 900px) {
+  .nav {
+    padding: 16px 24px;
+  }
+
+  /* Esconde a trilha lateral e o conteúdo ocupa 100% da largura */
+  .trail-panel {
+    display: none;
+  }
+
+  .landing-wrapper {
+    display: block;
+  }
+
+  .landing-content {
+    flex: 0 0 100%;
+    width: 100%;
+  }
+
+  .hero-content {
+    flex-direction: column-reverse;
+    gap: 40px;
+    padding: 48px 24px;
+    text-align: center;
+  }
+
+  .hero-text h1 {
+    font-size: 30px;
+  }
+
+  .hero-actions {
+    justify-content: center;
+  }
+
+  .image-circle {
+    width: 260px;
+    height: 260px;
+  }
+
+  .courses-strip {
+    padding: 20px 24px;
+  }
+
+  .feature-row {
+    padding: 60px 24px;
+  }
+
+  .feature-row-inner,
+  .feature-row-inner.reverse {
+    flex-direction: column;
+    gap: 40px;
+    text-align: center;
+  }
+
+  .feature-list li {
+    justify-content: center;
+  }
+
+  .gamification {
+    padding: 60px 24px;
+  }
+
+  .cta {
+    padding: 60px 24px;
+  }
+
+  .footer-main {
+    padding: 40px 24px 32px;
+    gap: 32px;
+    justify-content: flex-start;
+  }
+
+  .footer-bottom {
+    padding: 16px 24px;
+  }
+}
+
+/* Celular pequeno: hero/títulos/ações mais compactos e footer em 2 colunas */
+@media (max-width: 480px) {
+  .nav {
+    padding: 14px 16px;
+  }
+
+  .nav-logo {
+    height: 42px;
+  }
+
+  .hero-content {
+    padding: 32px 16px;
+    gap: 28px;
+  }
+
+  .hero-text h1 {
+    font-size: 25px;
+  }
+
+  .hero-text p {
+    font-size: 15px;
+  }
+
+  .hero-actions {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .image-circle {
+    width: 200px;
+    height: 200px;
+  }
+
+  .feature-row,
+  .gamification,
+  .cta {
+    padding: 44px 16px;
+  }
+
+  /* Cartões de tecnologia e grade de conquistas empilham melhor */
+  .tech-cards {
+    justify-content: center;
+  }
+
+  .stat-grid {
+    grid-template-columns: 1fr;
+  }
+
+  /* Footer: de 6 colunas para 2 no celular */
+  .footer-main {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 24px;
+    padding: 32px 16px 24px;
+  }
 }

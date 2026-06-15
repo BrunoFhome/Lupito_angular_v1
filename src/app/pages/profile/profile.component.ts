@@ -1,17 +1,18 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { Router } from '@angular/router';
+import { Router, RouterLink } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 import { AuthService, User, ActivityDay } from '../../services/auth.service';
 import { KanbanService, KanbanTask } from '../../services/kanban.service';
 import { ToastService } from '../../services/toast.service';
+import { LoadingBannerComponent } from '../../components/loading-banner/loading-banner.component';
 
 @Component({
     selector: 'app-profile',
     standalone: true,
-    imports: [CommonModule, FormsModule],
+    imports: [CommonModule, FormsModule, LoadingBannerComponent, RouterLink],
     templateUrl: './profile.component.html',
     styleUrl: './profile.component.css'
 })

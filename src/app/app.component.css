@@ -10,3 +10,18 @@
   flex-grow: 1;
   overflow-y: auto;
 }
+
+/* ── Mobile: shell empilha e a navegação vai para a barra inferior ───────────── */
+@media (max-width: 768px) {
+  .app-layout {
+    flex-direction: column;
+    height: 100dvh;          /* respeita a barra de endereço do navegador mobile */
+    overflow: visible;
+  }
+
+  /* espaço para o conteúdo não ficar atrás da barra fixa (só quando logado,
+     i.e. quando a navbar existe — páginas públicas como a landing não têm barra) */
+  .app-layout:has(app-navbar) .main-content {
+    padding-bottom: 64px;
+  }
+}

@@ -9,6 +9,7 @@ import { AIService } from '../../services/ai.service';
 import { AuthService } from '../../services/auth.service';
 import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
 import { ToastService } from '../../services/toast.service';
+import { LoadingBannerComponent } from '../../components/loading-banner/loading-banner.component';
 
 import { EditorView, keymap, lineNumbers, highlightActiveLine, drawSelection } from '@codemirror/view';
 import { EditorState, Extension } from '@codemirror/state';
@@ -25,7 +26,7 @@ type WebFile  = 'html' | 'css' | 'js';
 @Component({
   selector: 'app-workspace',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, LoadingBannerComponent],
   templateUrl: './workspace.component.html',
   styleUrls: ['./workspace.component.css']
 })

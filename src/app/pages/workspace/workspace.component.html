@@ -83,7 +83,10 @@
         <pre *ngIf="task.challengeInstructions" class="instructions-text">{{ task.challengeInstructions }}</pre>
         <p *ngIf="!task.challengeInstructions" class="instructions-text">Implemente a lógica conforme a descrição acima.</p>
       </div>
-      <p *ngIf="!task" class="loading">Carregando...</p>
+      <app-loading-banner
+        *ngIf="!task"
+        title="Carregando o desafio…"
+        subtitle="Abrindo as instruções e o editor"></app-loading-banner>
     </aside>
 
     <!-- Right: Editor + Output -->

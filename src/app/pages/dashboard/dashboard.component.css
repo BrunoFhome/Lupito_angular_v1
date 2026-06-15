@@ -175,6 +175,9 @@
 }
 
 @media (max-width: 640px) {
+  .dashboard-container {
+    padding: 20px 14px;
+  }
   .welcome-banner {
     flex-wrap: wrap;
     gap: 16px;
@@ -183,6 +186,11 @@
     width: 72px;
     margin-bottom: 0;
     align-self: center;
+  }
+  /* Skeletons de carregamento empilham no celular */
+  .skeleton-cards,
+  .skeleton-grid {
+    grid-template-columns: 1fr;
   }
 }
 

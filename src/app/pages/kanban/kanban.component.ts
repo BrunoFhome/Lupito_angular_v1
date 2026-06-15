@@ -9,11 +9,12 @@ import { NavbarComponent } from '../../components/navbar/navbar.component';
 import { KanbanService, KanbanTask } from '../../services/kanban.service';
 import { ToastService } from '../../services/toast.service';
 import { AuthService } from '../../services/auth.service';
+import { LoadingBannerComponent } from '../../components/loading-banner/loading-banner.component';
 
 @Component({
   selector: 'app-kanban',
   standalone: true,
-  imports: [CommonModule, FormsModule, MatIconModule, NavbarComponent],
+  imports: [CommonModule, FormsModule, MatIconModule, NavbarComponent, LoadingBannerComponent],
   templateUrl: './kanban.component.html',
   styleUrls: ['./kanban.component.css']
 })

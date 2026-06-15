@@ -1,5 +1,8 @@
 <div class="page-container">
 
+  <!-- Overlay de carregamento (Lupito caminhando) -->
+  <app-walking-lupito-loader *ngIf="loading" message="Criando sua conta…"></app-walking-lupito-loader>
+
   <!-- Formulário -->
   <div class="form-card">
 
@@ -111,7 +114,9 @@
         {{ errorMessage }}
       </div>
 
-      <button type="submit" class="btn-primary">Criar conta</button>
+      <button type="submit" class="btn-primary" [disabled]="loading">
+        {{ loading ? 'Criando conta…' : 'Criar conta' }}
+      </button>
 
     </form>
 

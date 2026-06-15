@@ -20,6 +20,11 @@
   </div>
 
   <!-- Skeleton loader -->
+  <app-loading-banner
+    *ngIf="loading"
+    title="Carregando seu quadro de missões…"
+    subtitle="Buscando suas tarefas e projetos"></app-loading-banner>
+
   <div class="board-container" *ngIf="loading">
     <div class="kanban-column sk-column" *ngFor="let col of [
       {color: '#64748b'}, {color: '#00b4cc'}, {color: '#d97706'}, {color: '#10b981'}
